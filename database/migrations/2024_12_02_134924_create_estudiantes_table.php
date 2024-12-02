@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('usuarios', function (Blueprint $table) {
+        Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
+            $table->string('dni', 15);
             $table->string('nombres');
             $table->string('apellidos');
-            $table->string('usuario');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('codigo_bcp', 50);
+            $table->enum('vive_con', ['ambos', 'uno', 'tiempo_compartido']);
+            $table->json('motivos_beca');
+            $table->text('razones_motivos')->nullable();
             $table->timestamps();
+
+            $table->foreignId('solicitud_id')->constrained('solicitudes')->cascadeOnDelete();
         });
     }
 
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('usuarios');
+        Schema::dropIfExists('estudiantes');
     }
 };

@@ -99,7 +99,7 @@
                                     <div class="mb-3">
                                         <label class="form-label"><strong>1. Confirmo haber revisado y leído a detalle el Reglamento de Becas 2025:</strong></label>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reglamento" id="opcionSi" value="Si">
+                                            <input class="form-check-input" type="radio" name="reglamento" id="opcionSi" value="Si" required>
                                             <label class="form-check-label" for="opcionSi">
                                                 Sí
                                             </label>
@@ -1102,43 +1102,6 @@
 
                 </div>
             </div>
-
-            <!--Direccion
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-google-maps f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Location</h5>
-                            <p class="f-14 mb-0 text-muted">2276 Lynn Ogden Lane Beaumont</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center mt-4 mt-lg-0">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-email f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Email</h5>
-                            <p class="f-14 mb-0 text-muted">Email: FredVWeaver@rhyta.com</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center mt-4 mt-lg-0">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-phone f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Phone</h5>
-                            <p class="f-14 mb-0 text-muted">2276 Lynn Ogden Lane Beaumont</p>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
 
 
@@ -1190,6 +1153,27 @@
                 });
 
                 nextBtn.addEventListener("click", () => {
+                    const currentForm = formSteps[currentStep].querySelector("form"); // Seleccionar el formulario actual
+
+                    if (currentForm) {
+                        if (!currentForm.checkValidity()) {
+                            currentForm.reportValidity(); // Muestra los mensajes de validación del navegador
+                            return; // Detiene el avance al siguiente paso
+                        }
+                    }
+
+                    // Validación manual para el grupo de radio "reglamento"
+                    const reglamentoRadio = currentForm.querySelector('input[name="reglamento"]:checked');
+                    if (!reglamentoRadio) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Por favor confirma si has leído el Reglamento de Becas 2025.',
+                            icon: 'error',
+                            confirmButtonText: 'Entendido',
+                        });
+                        return; // Detiene el avance si no está seleccionado
+                    }
+
                     if (currentStep < stepperItems.length - 1) {
                         currentStep++;
                         updateStepper();
