@@ -14,15 +14,15 @@
                     <img src="images/aleph-icon-rbg.png" alt="" class="img-fluid mb-4 smallphone-image">
                     <h1>Educación innovadora</h1>
                     <h3 >para las soluciones del mañana.</h3>
-                    <p class="mt-4 text-muted">Nuestra metodología educativa está alineada con las neurociencias y los últimos estudios sobre el aprendizaje efectivo y significativo.</p>
-                    <!--<button class="btn bg-gradiant mt-4" href="#contact">Ver mas</button>-->
+                    <!--<p class="mt-4 text-muted">Nuestra metodología educativa está alineada con las neurociencias y los últimos estudios sobre el aprendizaje efectivo y significativo.</p>
+                    <button class="btn bg-gradiant mt-4" href="#contact">Ver mas</button>-->
                     <a class="btn bg-gradiant mt-4" href="#contact">Ver más</a>
                 </div>
 
 
 
                 <div class="col-lg-5 offset-md-1 ">
-                    <img src="images/ninamiss-bg.png" alt="" class="img-fluid">
+                    <img src="images/img-aleph.jpeg" alt="" class="img-fluid">
                 </div>
             </div>
             <!-- end row -->

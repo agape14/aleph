@@ -2367,9 +2367,9 @@ body[data-bs-theme=dark] .footer {
   background-color: #343f4b !important;
   color: #ffffff !important;
 }
-body[data-bs-theme=dark] .footer .bg-arrow {
+/*body[data-bs-theme=dark] .footer .bg-arrow {
   background-image: url(../images/home/arrow-bg2.png) !important;
-}
+}*/
 body[data-bs-theme=dark] .footer .form-control {
   height: 56px;
   border: 1px solid #343f4b !important;
