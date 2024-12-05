@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
-            $table->string('dni', 15);
+            $table->string('tipo_documento', 80);
+            $table->string('nro_documento', 15);
             $table->string('nombres');
             $table->string('apellidos');
             $table->string('codigo_bcp', 50);
