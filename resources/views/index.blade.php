@@ -14,15 +14,15 @@
                     <img src="images/aleph-icon-rbg.png" alt="" class="img-fluid mb-4 smallphone-image">
                     <h1>Educación innovadora</h1>
                     <h3 >para las soluciones del mañana.</h3>
-                    <p class="mt-4 text-muted">Nuestra metodología educativa está alineada con las neurociencias y los últimos estudios sobre el aprendizaje efectivo y significativo.</p>
-                    <!--<button class="btn bg-gradiant mt-4" href="#contact">Ver mas</button>-->
+                    <!--<p class="mt-4 text-muted">Nuestra metodología educativa está alineada con las neurociencias y los últimos estudios sobre el aprendizaje efectivo y significativo.</p>
+                    <button class="btn bg-gradiant mt-4" href="#contact">Ver mas</button>-->
                     <a class="btn bg-gradiant mt-4" href="#contact">Ver más</a>
                 </div>
 
 
 
                 <div class="col-lg-5 offset-md-1 ">
-                    <img src="images/ninamiss-bg.png" alt="" class="img-fluid">
+                    <img src="images/img-aleph.jpeg" alt="" class="img-fluid">
                 </div>
             </div>
             <!-- end row -->
@@ -97,9 +97,16 @@
                                         <li class="list-group-item"><strong>3.</strong> Reglamento de Becas 2025</li>
                                     </ul>
                                     <div class="mb-3">
-                                        <label class="form-label"><strong>1. Confirmo haber revisado y leído a detalle el Reglamento de Becas 2025:</strong></label>
+                                        <label class="form-label">
+                                            <strong>
+                                                1. Confirmo haber revisado y leído a detalle el
+                                                <a href="{{ asset('files/Revisión Formulario Beca 2025.pdf') }}" target="_blank" class="text-primary">
+                                                    Reglamento de Becas 2025
+                                                </a>:
+                                            </strong>
+                                        </label>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="reglamento" id="opcionSi" value="Si">
+                                            <input class="form-check-input" type="radio" name="reglamento" id="opcionSi" value="Si" required>
                                             <label class="form-check-label" for="opcionSi">
                                                 Sí
                                             </label>
@@ -130,8 +137,11 @@
                                             </select>
                                         </div>
                                         <div class="col-lg-6 col-12">
-                                            <label for="dni" class="form-label"><strong>Número de Documento</strong></label>
-                                            <input type="text" id="dni" class="form-control" placeholder="Ingrese el número de documento" required>
+                                            <label for="nroDocumento" class="form-label"><strong>Número de Documento</strong></label>
+                                            <input type="text" id="nroDocumento" class="form-control" placeholder="Ingrese el número de documento" required>
+                                            <div class="invalid-feedback">
+                                                El número de documento no es válido para el tipo seleccionado.
+                                            </div>
                                         </div>
                                     </div>
                                     <hr>
@@ -140,15 +150,15 @@
                                     <h5 class="mt-4">Datos del Estudiante</h5>
                                     <div class="mb-3">
                                         <label for="nombres" class="form-label">Nombres</label>
-                                        <input type="text" id="nombres" class="form-control" placeholder="Nombres del estudiante" readonly>
+                                        <input type="text" id="nombres" class="form-control" placeholder="Nombres del estudiante" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="apellidos" class="form-label">Apellidos</label>
-                                        <input type="text" id="apellidos" class="form-control" placeholder="Apellidos del estudiante" readonly>
+                                        <input type="text" id="apellidos" class="form-control" placeholder="Apellidos del estudiante" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="codigoBCP" class="form-label">Código BCP</label>
-                                        <input type="text" id="codigoBCP" class="form-control" placeholder="Código BCP del estudiante" readonly>
+                                        <input type="text" id="codigoBCP" class="form-control" placeholder="Código BCP del estudiante" maxlength="15" required>
                                     </div>
                                     <hr>
 
@@ -1102,48 +1112,20 @@
 
                 </div>
             </div>
-
-            <!--Direccion
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-google-maps f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Location</h5>
-                            <p class="f-14 mb-0 text-muted">2276 Lynn Ogden Lane Beaumont</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center mt-4 mt-lg-0">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-email f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Email</h5>
-                            <p class="f-14 mb-0 text-muted">Email: FredVWeaver@rhyta.com</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center mt-4 mt-lg-0">
-                        <div class="flex-shrink-0">
-                            <i class="mdi mdi-phone f-50 text-primary"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1">Phone</h5>
-                            <p class="f-14 mb-0 text-muted">2276 Lynn Ogden Lane Beaumont</p>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
 
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                 // Selecciona todos los inputs de tipo texto
+                const textInputs = document.querySelectorAll('input[type="text"]');
+
+                textInputs.forEach(input => {
+                    input.addEventListener("input", function () {
+                        // Convierte el valor del input a mayúsculas
+                        this.value = this.value.toUpperCase();
+                    });
+                });
                 const stepperItems = document.querySelectorAll(".stepper-item");
                 const formSteps = document.querySelectorAll(".form-step");
                 const prevBtn = document.getElementById("prev-btn");
@@ -1190,6 +1172,44 @@
                 });
 
                 nextBtn.addEventListener("click", () => {
+                    const currentForm = formSteps[currentStep].querySelector("form"); // Seleccionar el formulario actual
+
+                    if (currentForm) {
+                        if (!currentForm.checkValidity()) {
+                            currentForm.reportValidity(); // Muestra los mensajes de validación del navegador
+                            return; // Detiene el avance al siguiente paso
+                        }
+
+                        // Validación manual para el grupo de radio "reglamento" solo si existe
+                        const reglamentoRadio = currentForm.querySelector('input[name="reglamento"]:checked');
+                        const reglamentoGroupExists = currentForm.querySelector('input[name="reglamento"]');
+
+                        if (reglamentoGroupExists && !reglamentoRadio) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Por favor confirma si has leído el Reglamento de Becas 2025.',
+                                icon: 'error',
+                                confirmButtonText: 'Entendido',
+                            });
+                            return; // Detiene el avance si no está seleccionado
+                        }
+
+                        // Validación manual para los checkboxes en el formulario actual
+                        const checkboxes = currentForm.querySelectorAll('input[type="checkbox"]'); // Seleccionar checkboxes solo en el formulario actual
+                        if (checkboxes.length > 0) { // Solo validar si hay checkboxes
+                            const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                            if (!isChecked) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Debe seleccionar al menos un motivo.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Entendido',
+                                });
+                                return; // Detiene la acción si no se seleccionó ninguna
+                            }
+                        }
+                    }
+
                     if (currentStep < stepperItems.length - 1) {
                         currentStep++;
                         updateStepper();
@@ -1213,11 +1233,6 @@
 
 
                 updateStepper();
-
-
-
-
-
 
 
 
@@ -1295,8 +1310,73 @@
                 inmuebleNo.addEventListener("change", function () {
                     if (inmuebleNo.checked) inmueblesDetalles.classList.add("d-none");
                 });
-            });
 
+
+
+
+
+                const tipoDocumento = document.getElementById("tipoDocumento");
+                const nroDocumento = document.getElementById("nroDocumento");
+
+                tipoDocumento.addEventListener("change", function () {
+                    // Restablece el estado y elimina restricciones previas
+                    nroDocumento.setCustomValidity("");
+                    nroDocumento.value = ""; // Limpia el campo
+                    nroDocumento.removeAttribute("maxlength");
+                    nroDocumento.removeAttribute("minlength");
+                    nroDocumento.removeAttribute("pattern");
+
+                    // Aplica las restricciones en base al tipo de documento seleccionado
+                    switch (tipoDocumento.value) {
+                        case "DNI":
+                            nroDocumento.setAttribute("maxlength", "8");
+                            nroDocumento.setAttribute("minlength", "8");
+                            nroDocumento.setAttribute("pattern", "\\d{8}"); // Solo 8 dígitos
+                            nroDocumento.placeholder = "Debe tener 8 dígitos";
+                            break;
+                        case "Pasaporte":
+                            nroDocumento.setAttribute("maxlength", "12");
+                            nroDocumento.setAttribute("pattern", "[a-zA-Z0-9]{1,12}"); // Alfanumérico
+                            nroDocumento.placeholder = "Máximo 12 caracteres alfanuméricos";
+                            break;
+                        case "Carnet de Extranjería":
+                            nroDocumento.setAttribute("maxlength", "9");
+                            nroDocumento.setAttribute("minlength", "9");
+                            nroDocumento.setAttribute("pattern", "\\d{9}"); // Solo 9 dígitos
+                            nroDocumento.placeholder = "Debe tener 9 dígitos";
+                            break;
+                    }
+                });
+
+                nroDocumento.addEventListener("input", function () {
+                    const tipo = tipoDocumento.value;
+
+                    // Validación dinámica
+                    switch (tipo) {
+                        case "DNI":
+                        case "Carnet de Extranjería":
+                            // Permitir solo números
+                            nroDocumento.value = nroDocumento.value.replace(/[^0-9]/g, "");
+                            break;
+                        case "Pasaporte":
+                            // Permitir solo caracteres alfanuméricos
+                            nroDocumento.value = nroDocumento.value.replace(/[^a-zA-Z0-9]/g, "");
+                            break;
+                    }
+
+                    const minLength = nroDocumento.getAttribute("minlength");
+                    const maxLength = nroDocumento.getAttribute("maxlength");
+                    const valueLength = nroDocumento.value.length;
+
+                    // Validación dinámica del campo
+                    if ((minLength && valueLength < minLength) || (maxLength && valueLength > maxLength)) {
+                        nroDocumento.setCustomValidity("La cantidad de caracteres no es válida para el tipo de documento seleccionado.");
+                    } else {
+                        nroDocumento.setCustomValidity("");
+                    }
+                });
+
+            });
         </script>
 
         <!-- end container -->
