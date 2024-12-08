@@ -157,8 +157,8 @@
                                         <input type="text" id="apellidos" class="form-control" placeholder="Apellidos del estudiante" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="codigoBCP" class="form-label">Código BCP</label>
-                                        <input type="text" id="codigoBCP" class="form-control" placeholder="Código BCP del estudiante" maxlength="15" required>
+                                        <label for="codigoBCP" class="form-label">Código Sianet Estudiante</label>
+                                        <input type="text" id="codigoBCP" class="form-control" placeholder="Código Sianet del estudiante" maxlength="15" required>
                                     </div>
                                     <hr>
 
