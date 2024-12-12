@@ -1,4 +1,4 @@
-<form id="estudianteForm" class="p-4 border rounded">
+<div id="estudianteForm">
     <!-- Sección de Identificación -->
     <h4 class="mt-4">Información del Estudiante</h4>
     <div class="row g-3 mb-3">
@@ -69,19 +69,19 @@
     <h5 class="mt-4">3. Marque los motivos por los que usted solicita la beca</h5>
     <div class="mb-3">
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoEconomico" value="economico">
+            <input class="form-check-input" type="checkbox" id="motivoEconomico" name="motivoEconomico" value="economico">
             <label class="form-check-label" for="motivoEconomico">Económico</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoSalud" value="salud">
+            <input class="form-check-input" type="checkbox" id="motivoSalud" name="motivoSalud" value="salud">
             <label class="form-check-label" for="motivoSalud">Salud</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoHijosMatriculados" value="hijosMatriculados">
+            <input class="form-check-input" type="checkbox" id="motivoHijosMatriculados" name="motivoHijosMatriculados" value="hijosMatriculados">
             <label class="form-check-label" for="motivoHijosMatriculados">De 2 a más hijos matriculados en la institución educativa</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoEducativasEspeciales" value="educativasEspeciales">
+            <input class="form-check-input" type="checkbox" id="motivoEducativasEspeciales" name="motivoEducativasEspeciales" value="educativasEspeciales">
             <label class="form-check-label" for="motivoEducativasEspeciales">Necesidades educativas especiales</label>
         </div>
     </div>
@@ -91,6 +91,6 @@
     <h5 class="mt-4">4. Cuéntanos las razones por las que han seleccionado los motivos en el ítem anterior</h5>
     <div class="mb-3">
         <label for="razones" class="form-label">Razones</label>
-        <textarea id="razones" class="form-control" rows="4" placeholder="Explique las razones aquí"></textarea>
+        <textarea id="razones" name="razones"  class="form-control" rows="4" placeholder="Explique las razones aquí"></textarea>
     </div>
-</form>
+</div>

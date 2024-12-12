@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Solicitud extends Model
 {
     use HasFactory;
+    protected $table = 'solicitudes';
     protected $fillable = [
         'periodo_academico',
         'reglamento_leido',
-        'estado_solicitud'
+        'estado_solicitud',
+        'estudiante_id',
+        'vive_con',
+        'motivos_beca',
+        'razones_motivos',
+
     ];
 
     // Relación con Progenitores
@@ -30,5 +36,11 @@ class Solicitud extends Model
     public function documentosAdjuntos()
     {
         return $this->hasMany(DocumentoAdjunto::class);
+    }
+
+    // Solicitud.php
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class);
     }
 }

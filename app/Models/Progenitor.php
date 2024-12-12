@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Progenitor extends Model
 {
     use HasFactory;
+    protected $table = 'progenitores';
     protected $fillable = [
         'solicitud_id',
         'estudiante_id',
+        'tipo_documento',
         'tipo',
         'dni',
         'nombres',
         'apellidos',
+        'codigo_sianet',
         'numero_hijos',
         'hijos_matriculados',
         'formacion_academica',

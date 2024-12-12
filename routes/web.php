@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\ProgenitorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,9 +35,12 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::get("/admin/home",[App\Http\Controllers\HomeController::class, 'adminHome'])->name("admin.home");
     Route::post('/importar-excel', [EstudianteController::class, 'importarExcel']);
     Route::get("/estudiantes",[EstudianteController::class, 'index'])->name("estudiantes.index");
+    Route::get("/progenitores",[ProgenitorController::class, 'index'])->name("progenitores.index");
     Route::put('/estudiantes/update', [EstudianteController::class, 'update'])->name('estudiantes.update');
 
 });
 
+Route::post('/progenitores/transfer', [EstudianteController::class, 'transferToProgenitores'])->name('progenitores.transfer');
 Route::get('/estudiantes/buscar', [EstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+Route::get('/progenitores/buscar', [ProgenitorController::class, 'buscar'])->name('progenitores.buscar');
 Route::post('/setdatos', [EstudianteController::class, 'setdatos'])->name('set.datos');
