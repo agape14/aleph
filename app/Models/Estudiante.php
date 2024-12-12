@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Estudiante extends Model
 {
     use HasFactory;
+    protected $table = 'estudiantes';
     protected $fillable = [
+        'id',
         'tipo_documento',
         'nro_documento',
         'apepaterno',
@@ -19,4 +21,10 @@ class Estudiante extends Model
         'motivos_beca',
         'razones_motivos',
     ];
+
+    // Estudiante.php
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class);
+    }
 }

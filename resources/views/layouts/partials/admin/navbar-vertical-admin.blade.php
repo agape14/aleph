@@ -17,9 +17,12 @@
                 <a class="nav-link has-arrow " href="{{ route('estudiantes.index') }}">
                     <i data-feather="user" class="nav-icon icon-xs me-2"></i>Estudiantes
                 </a>
-
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link has-arrow " href="{{ route('progenitores.index') }}">
+                    <i data-feather="user" class="nav-icon icon-xs me-2"></i>Progenitores
+                </a>
+            </li>
              {{--
 
              <!-- Nav item -->

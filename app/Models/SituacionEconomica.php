@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SituacionEconomica extends Model
 {
     use HasFactory;
+    protected $table = 'situacion_economica';
     protected $fillable = [
         'solicitud_id',
         'ingresos_planilla',

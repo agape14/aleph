@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentoAdjunto extends Model
 {
     use HasFactory;
-
+    protected $table = 'documentos_adjuntos';
     protected $fillable = [
         'solicitud_id',
         'progenitor_id',

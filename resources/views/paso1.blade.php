@@ -1,4 +1,4 @@
-<form class="p-4 border rounded" id="solcitudesForm">
+<div id="solcitudesForm">
     <p class="text-justify">
         <strong>La solicitud de beca</strong> tiene carácter de declaración jurada y su presentación da inicio a un
         procedimiento de evaluación del estado de necesidad económica de la familia solicitante a fin
@@ -37,4 +37,4 @@
             </label>
         </div>
     </div>
-</form>
+</div>

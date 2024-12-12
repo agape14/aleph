@@ -31,6 +31,19 @@
                             <input type="file" name="file" required>
                             <button type="submit"  class="btn btn-success">Importar Excel</button>
                         </form>
+
+                        <form action="{{ route('progenitores.transfer') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">Transferir a Progenitores</button>
+                        </form>
+
+                        @if(session('success'))
+                            <p class="text-primary">{{ session('success') }}</p>
+                        @endif
+
+                        @if(session('error'))
+                            <p class="text-danger">{{ session('error') }}</p>
+                        @endif
                     </div>
                     <!-- table  -->
                     <div class="table-responsive">
