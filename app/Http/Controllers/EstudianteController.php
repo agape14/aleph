@@ -180,7 +180,7 @@ class EstudianteController extends Controller
                 $progenitor1->numero_hijos = $request->numeroHijos_Prog1;
                 $progenitor1->hijos_matriculados = $request->hijosMatriculados_Prog1;
                 $progenitor1->formacion_academica = $request->formacionAcademica_Prog1;
-                $progenitor1->trabaja = $request->trabajoRemunerado_Prog1==='si'?1:null;
+                $progenitor1->trabaja = $request->trabajoRemunerado_Prog1==='si'?1:0;
                 $progenitor1->tiempo_desempleo = $request->tiempoDesempleo_Prog1;
                 $progenitor1->cargo = $request->cargo_Prog1;
                 $progenitor1->anio_inicio_laboral = $request->anioLaboral_Prog1;
@@ -217,7 +217,7 @@ class EstudianteController extends Controller
                 $progenitor2->$numero_hijos=$request->numeroHijos_Prog2;
                 $progenitor2->$hijos_matriculados=$request->hijosMatriculados_Prog2;
                 $progenitor2->$formacion_academica=$request->formacionAcademica_Prog2;
-                $progenitor2->trabaja = $request->trabajoRemunerado_Prog2==='si'?1:null;
+                $progenitor2->trabaja = $request->trabajoRemunerado_Prog2==='si'?1:0;
                 $progenitor2->$tiempo_desempleo=$request->tiempoDesempleo_Prog2;
                 //$progenitor2->$sueldo_fijo=$request->sueldo_fijo_Prog2;
                 //$progenitor2->$sueldo_variable=$request->sueldo_variable_Prog2;
