@@ -441,7 +441,10 @@ class EstudianteController extends Controller
             $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
             $destinatario = User::find(3);
             // Enviar el correo
-            Mail::to($destinatario)->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa,$destinatario->name));
+            $emailCopia = env('MAIL_FROM_ADDRESS','gestor.aleph@gmail.com');
+            Mail::to($destinatario)
+            ->cc($emailCopia)
+            ->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa,$destinatario->name));
         } catch (\Exception $e) {
             \Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
         }
@@ -457,7 +460,10 @@ class EstudianteController extends Controller
             $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
             $destinatario = User::find(3);
             // Enviar el correo
-            Mail::to($destinatario)->send(new SolicitudCreadaMail($nombre, $apellido, $id, $url_alternativa,$destinatario->name));
+            $emailCopia = env('MAIL_FROM_ADDRESS','gestor.aleph@gmail.com');
+            Mail::to($destinatario)
+            ->cc($emailCopia)
+            ->send(new SolicitudCreadaMail($nombre, $apellido, $id, $url_alternativa,$destinatario->name));
             return response()->json(['message' => 'Notificación enviada correctamente.']);
         }
 
