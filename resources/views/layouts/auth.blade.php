@@ -6,7 +6,7 @@
   <title>Sign In | Dash Ui - Bootstrap 5 Admin Dashboard Template</title>
 </head>
 
-<body class="bg-light">
+<body style="background: linear-gradient(to right, #5487a7   , #45b39d);">
   <!-- container -->
   @yield('content')
 

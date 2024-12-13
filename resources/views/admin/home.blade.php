@@ -9,12 +9,10 @@
                 <div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="mb-2 mb-lg-0">
-                            <h3 class="mb-0  text-white">Bienvenido {{ ucfirst(Auth::user()->role) }}</h3>
+                            <h3 class="mb-0  text-white">Bienvenido {{ ucfirst(Auth::user()->name) }}</h3>
                         </div>
                         <div>
-                            <a href="#" class="btn btn-white">Nueno proyecto</a>
-
-
+                            {{-- <a href="#" class="btn btn-white">Nueno proyecto</a>--}}
                         </div>
                     </div>
                 </div>
@@ -35,7 +33,7 @@
                         </div>
                         <!-- project number -->
                         <div>
-                            <h1 class="fw-bold text-success">18</h1>
+                            <h1 class="fw-bold text-success">{{ $contadorDiario }}</h1>
                             <p class="mb-0">Registrados</p>
                         </div>
                     </div>
@@ -57,7 +55,7 @@
                         </div>
                         <!-- project number -->
                         <div>
-                            <h1 class="fw-bold text-primary">13</h1>
+                            <h1 class="fw-bold text-primary">{{ $contadorSemanal }}</h1>
                             <p class="mb-0">Registrados</p>
                         </div>
                     </div>
@@ -79,7 +77,7 @@
                         </div>
                         <!-- project number -->
                         <div>
-                            <h1 class="fw-bold">12</h1>
+                            <h1 class="fw-bold">{{ $contadorMensual }}</h1>
                             <p class="mb-0">Registrados</p>
                         </div>
                     </div>
@@ -102,7 +100,7 @@
                         </div>
                         <!-- project number -->
                         <div>
-                            <h1 class="fw-bold">176</h1>
+                            <h1 class="fw-bold">{{ $contadorAnual }}</h1>
                             <p class="mb-0">Registrados</p>
                         </div>
                     </div>
@@ -115,69 +113,151 @@
                 <!-- card  -->
                 <div class="card">
                     <!-- card header  -->
-                    <div class="card-header bg-white  py-4">
+                    <div class="card-header bg-white py-4 d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Listado de Solicitudes</h4>
+                        <div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Exportar
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ route('solicitudes.exportExcel') }}">Exportar a Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('solicitudes.exportPDF') }}">Exportar a PDF</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="window.print()">Imprimir</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <!-- table  -->
                     <div class="table-responsive">
                         <table class="table text-nowrap mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Estudiante</th>
-                                    <th>DNI</th>
-                                    <th>Estado</th>
+                                    <th>#</th>
+                                    <th>DNI <br> Estudiante</th>
+                                    <th>Nombres <br> Estudiante</th>
+                                    <th>Apellidos <br> Estudiante</th>
                                     <th>Progenitores</th>
-                                    <th>Progreso</th>
+                                    <th>Adjuntos</th>
+                                    <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($solicitudes as $solicitud)
                                 <tr>
-                                    <td class="align-middle">
-                                        <div class="d-flex align-items-center">
-                                            <div>
-                                                <div class="icon-shape icon-md border p-4  rounded-1">
-                                                    <img src="{{ asset('admin_assets/images/brand/github-logo.svg') }}"
-                                                        alt="">
-                                                </div>
-                                            </div>
-                                            <div class="ms-3 lh-1">
-                                                <h5 class=" mb-1"> <a href="#" class="text-inherit">Dropbox Design
-                                                        System</a></h5>
-
-                                            </div>
-                                        </div>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $solicitud->estudiante->nro_documento }}</td>
+                                    <td>{{ $solicitud->estudiante->nombres }}</td>
+                                    <td>{{ $solicitud->estudiante->apepaterno }} {{ $solicitud->estudiante->apematerno }}</td>
+                                    <td>
+                                        @if ($solicitud->progenitores->count() === 0)
+                                            <span class="badge bg-danger">{{ strtoupper(str_replace('_', ' ', ' Sin progenitores')) }} </span>
+                                        @elseif ($solicitud->progenitores->count() === 1)
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalProgenitor{{ $solicitud->id }}">
+                                                {{ strtoupper(str_replace('_', ' ', ' Ver progenitor')) }}
+                                            </button>
+                                        @else
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalProgenitor{{ $solicitud->id }}">
+                                                {{ strtoupper(str_replace('_', ' ', ' Ver Progenitores')) }}
+                                            </button>
+                                        @endif
                                     </td>
-                                    <td class="align-middle">34</td>
-                                    <td class="align-middle"><span class="badge  bg-warning">Medium</span>
+                                    <td>
+                                        @if ($solicitud->documentosAdjuntos->count() === 0)
+                                            <span class="badge bg-danger">{{ strtoupper(str_replace('_', ' ', ' Sin Adjuntos')) }}</span>
+                                        @else
+                                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdjuntos{{ $solicitud->id }}">
+                                               {{ strtoupper(str_replace('_', ' ', ' Ver Adjuntos')) }}
+                                            </button>
+                                        @endif
                                     </td>
-                                    <td class="align-middle">
-                                        <div class="avatar-group">
-                                            <span class="avatar avatar-sm">
-                                                <img alt="avatar" src="{{asset('admin_assets/images/avatar/avatar-1.jpg')}}"
-                                                    class="rounded-circle">
-                                            </span>
-                                            <span class="avatar avatar-sm">
-                                                <img alt="avatar" src="{{asset('admin_assets/images/avatar/avatar-2.jpg')}}"
-                                                    class="rounded-circle">
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="align-middle text-dark">
-                                        <div class="float-start me-3">15%</div>
-                                        <div class="mt-2">
-                                            <div class="progress" style="height: 5px;">
-                                                <div class="progress-bar" role="progressbar" style="width:15%"
-                                                    aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <td>
+                                        <form action="{{ route('solicitud.cambiarEstado', $solicitud->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('PUT')
+                                            @php
+                                                $colores = [
+                                                    'pendiente' => 'btn-warning',
+                                                    'en_revision' => 'btn-primary',
+                                                    'aprobada' => 'btn-success',
+                                                    'rechazada' => 'btn-danger',
+                                                ];
+                                            @endphp
+                                            <button type="submit" class="btn btn-sm {{ $colores[$solicitud->estado_solicitud] ?? 'btn-secondary' }}">
+                                                {{ strtoupper(str_replace('_', ' ', $solicitud->estado_solicitud)) }}
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
-
-
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
+
+                    @foreach ($solicitudes as $solicitud)
+                    <div class="modal fade" id="modalProgenitor{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalProgenitorLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Progenitores de {{ $solicitud->estudiante->nombres }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    @if ($solicitud->progenitores->count() === 0)
+                                        <p>No hay progenitores registrados.</p>
+                                    @else
+                                        <ul>
+                                            @foreach ($solicitud->progenitores as $progenitor)
+                                                <li>
+                                                    <strong>Nombre:</strong> {{ $progenitor->nombres }} {{ $progenitor->apellidos }}<br>
+                                                    <strong>DNI:</strong> {{ $progenitor->dni }}<br>
+                                                    <strong>Tipo:</strong> {{ ucfirst($progenitor->tipo) }}<br>
+                                                    <strong>Codigo Sianet:</strong> {{ $progenitor->codigo_sianet }}<br>
+                                                    <strong>Nro. Hijos:</strong> {{ $progenitor->numero_hijos??'' }}<br>
+                                                    <strong>Hijos Matriculados:</strong> {{ $progenitor->hijos_matriculados??'' }}<br>
+                                                    <strong>Formacion Academica:</strong> {{ $progenitor->formacion_academica??'' }}<br>
+                                                    <strong>Tiempo Desempleo:</strong> {{ $progenitor->tiempo_desempleo??'' }}<br>
+                                                    <strong>Sueldo Fijo:</strong> {{ $progenitor->sueldo_fijo }}<br>
+                                                    <strong>Cargo:</strong> {{ $progenitor->cargo??'' }}<br>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+
+                    @foreach ($solicitudes as $solicitud)
+                    <div class="modal fade" id="modalAdjuntos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalAdjuntosLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Documentos Adjuntos</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    @if ($solicitud->documentosAdjuntos->count() === 0)
+                                        <p>No hay documentos adjuntos.</p>
+                                    @else
+                                        <ul>
+                                            @foreach ($solicitud->documentosAdjuntos as $documento)
+                                                <li>
+                                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" target="_blank">
+                                                        Ver PDF {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
                     <!-- card footer  -->
                     <div class="card-footer bg-white text-center">
                     </div>

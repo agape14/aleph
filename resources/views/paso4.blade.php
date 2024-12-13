@@ -147,7 +147,7 @@
                 <label class="form-check-label" for="bonosNo_Prog2">No</label>
             </div>
         </div>
-        <div class="mb-3 d-none" id="bonosMonto">
+        <div class="mb-3 d-none" id="bonosMonto_Prog2">
             <label for="montoBonos_Prog2" class="form-label"><strong>Monto aproximado de bonos (S/)</strong></label>
             <select id="montoBonos_Prog2" name="montoBonos_Prog2" class="form-select">
                 <option value="" selected disabled>Seleccione un rango</option>
@@ -167,7 +167,7 @@
                 <label class="form-check-label" for="utilidades_Prog2">No</label>
             </div>
         </div>
-        <div class="mb-3 d-none" id="utilidadesMonto">
+        <div class="mb-3 d-none" id="utilidadesMonto_Prog2">
             <label for="montoUtilidades_Prog2" class="form-label"><strong>Monto aproximado de utilidades (S/)</strong></label>
             <select id="montoUtilidades_Prog2" name="montoUtilidades_Prog2" class="form-select">
                 <option value="" selected disabled>Seleccione un rango</option>
@@ -180,7 +180,7 @@
 
 
     <!-- Campos habilitados si tiene trabajo remunerado -->
-    <div id="trabajoRemuneradoCampos" class="d-none">
+    <div id="trabajoRemuneradoCampos_Prog2" class="d-none">
         <div class="mb-3">
             <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
             <div class="form-check">
@@ -296,7 +296,7 @@
             <label class="form-check-label" for="inmuebleNo_Prog2">No</label>
         </div>
     </div>
-    <div id="inmueblesDetalles" class="d-none">
+    <div id="inmueblesDetalles_Prog2" class="d-none">
         <label for="numInmuebles_Prog2" class="form-label">N° de inmuebles:</label>
         <input type="number" id="numInmuebles_Prog2" name="numInmuebles_Prog2" class="form-control" placeholder="Ingrese el número de inmuebles">
     </div>

@@ -14,7 +14,7 @@ class DocumentoAdjunto extends Model
         'progenitor_id',
         'tipo_documento',
         'ruta_archivo',
-        'no_aplica'
+        'no_aplica',
     ];
 
     // Relación con Solicitud

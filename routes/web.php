@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProgenitorController;
+use App\Http\Controllers\SolicitudController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,6 +39,12 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::get("/estudiantes",[EstudianteController::class, 'index'])->name("estudiantes.index");
     Route::get("/progenitores",[ProgenitorController::class, 'index'])->name("progenitores.index");
     Route::put('/estudiantes/update', [EstudianteController::class, 'update'])->name('estudiantes.update');
+    Route::put('/solicitud/{id}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitud.cambiarEstado');
+
+    Route::get('/solicitudes/export/excel', [SolicitudController::class, 'exportExcel'])->name('solicitudes.exportExcel');
+    Route::get('/solicitudes/export/pdf', [SolicitudController::class, 'exportPDF'])->name('solicitudes.exportPDF');
+
+
 
 });
 
@@ -44,3 +52,4 @@ Route::post('/progenitores/transfer', [EstudianteController::class, 'transferToP
 Route::get('/estudiantes/buscar', [EstudianteController::class, 'buscar'])->name('estudiantes.buscar');
 Route::get('/progenitores/buscar', [ProgenitorController::class, 'buscar'])->name('progenitores.buscar');
 Route::post('/setdatos', [EstudianteController::class, 'setdatos'])->name('set.datos');
+Route::get('/enviar-notificacion/{id}', [EstudianteController::class, 'notificarPorCorreoprueba']);

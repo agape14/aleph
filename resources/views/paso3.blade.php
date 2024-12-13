@@ -78,7 +78,7 @@
     </div>
 
     <!-- Campos para "No tiene trabajo remunerado" -->
-    <div id="desempleoCampos" class="d-none">
+    <div id="desempleoCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label for="tiempoDesempleo_Prog1" class="form-label"><strong>Tiempo de desempleo (en meses)</strong></label>
             <input type="number" id="tiempoDesempleo_Prog1" name="tiempoDesempleo_Prog1" class="form-control" placeholder="Ingrese el tiempo en meses" min="0">
@@ -86,7 +86,7 @@
     </div>
 
     <!-- Campos para "Sí tiene trabajo remunerado" -->
-    <div id="trabajoRemuneradoCampos" class="d-none">
+    <div id="trabajoRemuneradoCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
             <div class="form-check">
@@ -147,7 +147,7 @@
                 <label class="form-check-label" for="bonosNo_Prog1">No</label>
             </div>
         </div>
-        <div class="mb-3 d-none" id="bonosMonto">
+        <div class="mb-3 d-none" id="bonosMonto_Prog1">
             <label for="montoBonos_Prog1" class="form-label"><strong>Monto aproximado de bonos (S/)</strong></label>
             <select id="montoBonos_Prog1" name="montoBonos_Prog1" class="form-select">
                 <option value="" selected disabled>Seleccione un rango</option>
@@ -167,7 +167,7 @@
                 <label class="form-check-label" for="utilidades_Prog1">No</label>
             </div>
         </div>
-        <div class="mb-3 d-none" id="utilidadesMonto">
+        <div class="mb-3 d-none" id="utilidadesMonto_Prog1">
             <label for="montoUtilidades_Prog1" class="form-label"><strong>Monto aproximado de utilidades (S/)</strong></label>
             <select id="montoUtilidades_Prog1" name="montoUtilidades_Prog1" class="form-select">
                 <option value="" selected disabled>Seleccione un rango</option>
@@ -180,7 +180,7 @@
 
 
     <!-- Campos habilitados si tiene trabajo remunerado -->
-    <div id="trabajoRemuneradoCampos" class="d-none">
+    <div id="trabajoRemuneradoCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
             <div class="form-check">
@@ -296,7 +296,7 @@
             <label class="form-check-label" for="inmuebleNo_Prog1">No</label>
         </div>
     </div>
-    <div id="inmueblesDetalles" class="d-none">
+    <div id="inmueblesDetalles_Prog1" class="d-none">
         <label for="numInmuebles_Prog1" class="form-label">N° de inmuebles:</label>
         <input type="number" id="numInmuebles_Prog1" name="numInmuebles_Prog1" class="form-control" placeholder="Ingrese el número de inmuebles">
     </div>

@@ -9,9 +9,10 @@
                 <div class="card smooth-shadow-md">
                     <!-- Card body -->
                     <div class="card-body p-6">
-                        <div class="mb-4">
-                            <a href="../index.html">@include('layouts.partials.admin.logo')</a>
-                            <p class="mb-6">{{ __('Login') }}</p>
+                        <div class="mb-4 text-center">
+                            <a href="../"><img width="180" src="{{ asset('images/Aleph-school.png') }}" alt="" /></a>
+
+                            <p class="mb-6 mt-4 ">{{ __('Login') }}</p>
                         </div>
                         <!-- Form -->
                         <form method="POST" action="{{ route('login') }}">
@@ -19,7 +20,7 @@
 
                             <!-- Username -->
                             <div class="mb-3">
-                                <label for="email" class="form-label">{{ __('Email Address') }}</label>
+                                <label for="email" class="form-label">{{ __('Correo') }}</label>
                                 <input id="email" type="email"
                                     class="form-control @error('email') is-invalid @enderror" name="email"
                                     value="{{ old('email') }}"  autocomplete="email" autofocus>
@@ -31,7 +32,7 @@
                             </div>
                             <!-- Password -->
                             <div class="mb-3">
-                                <label for="password" class="form-label">{{ __('Password') }}</label>
+                                <label for="password" class="form-label">{{ __('Contraseña') }}</label>
                                 <input id="password" type="password"
                                     class="form-control @error('password') is-invalid @enderror" name="password"
                                     autocomplete="current-password">
@@ -48,7 +49,7 @@
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember"
                                         {{ old('remember') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
+                                        {{ __('Recordarme') }}
                                     </label>
                                 </div>
 
@@ -56,10 +57,10 @@
                             <div>
                                 <!-- Button -->
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary"> {{ __('Login') }}</button>
+                                    <button type="submit" class="btn btn-primary"> {{ __('Iniciar Sesion') }}</button>
                                 </div>
 
-                                <div class="d-md-flex justify-content-between mt-4">
+                                {{-- <div class="d-md-flex justify-content-between mt-4">
                                     <div class="mb-2 mb-md-0">
                                         <a href="{{ route('register') }}" class="fs-5">Crear An
                                             Account </a>
@@ -72,7 +73,7 @@
                                         @endif
                                     </div>
 
-                                </div>
+                                </div> --}}
                             </div>
 
 

@@ -119,31 +119,20 @@
         $(this).val($(this).val().toUpperCase());
     });
 
-	function toggleVisibility(triggerSelector, targetSelector, condition) {
+    function toggleVisibility(triggerSelector, targetSelector, condition) {
         $(triggerSelector).on('change', function () {
             $(targetSelector).toggleClass('d-none', !condition($(this)));
         });
     }
 
-    toggleVisibility('#trabajoSi', '#trabajoRemuneradoCampos', () => true);
-    toggleVisibility('#trabajoNo', '#trabajoRemuneradoCampos', () => false);
-    toggleVisibility('#trabajoNo', '#desempleoCampos', () => true);
-    toggleVisibility('#trabajoSi', '#desempleoCampos', () => false);
+	function toggleVisibilityByPrefix(prefix, radioYesId, radioNoId, fieldId) {
+        toggleVisibility(`#${radioYesId}_${prefix}`, `#${fieldId}_${prefix}`, () => true);
+        toggleVisibility(`#${radioNoId}_${prefix}`, `#${fieldId}_${prefix}`, () => false);
+    }
 
-    toggleVisibility('#bonosSi', '#bonosMonto', () => true);
-    toggleVisibility('#bonosNo', '#bonosMonto', () => false);
-
-    toggleVisibility('#utilidadesSi', '#utilidadesMonto', () => true);
-    toggleVisibility('#utilidadesNo', '#utilidadesMonto', () => false);
-
-    toggleVisibility('#titularSi', '#titularCampos', () => true);
-    toggleVisibility('#titularNo', '#titularCampos', () => false);
-
-    toggleVisibility('#inmuebleSi', '#inmueblesDetalles', () => true);
-    toggleVisibility('#inmuebleNo', '#inmueblesDetalles', () => false);
-
-    $('#tipoDocumento').on('change', function () {
-        const $nroDocumento = $('#nroDocumento');
+function configureTipoDocumentoChange(prefix) {
+    $(`#tipoDocumento_${prefix}`).on('change', function () {
+        const $nroDocumento = $(`#numeroDocumento_${prefix}`);
         const tipo = $(this).val();
 
         $nroDocumento.val('').removeAttr('maxlength minlength pattern placeholder');
@@ -175,8 +164,8 @@
         }
     });
 
-    $('#nroDocumento').on('input', function () {
-        const tipo = $('#tipoDocumento').val();
+    $(`#numeroDocumento_${prefix}`).on('input', function () {
+        const tipo = $(`#tipoDocumento_${prefix}`).val();
         const value = $(this).val();
 
         switch (tipo) {
@@ -189,6 +178,26 @@
                 break;
         }
     });
+}
+
+// Configuración para Prog1
+toggleVisibilityByPrefix('Prog1', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
+toggleVisibilityByPrefix('Prog1', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
+toggleVisibilityByPrefix('Prog1', 'bonosSi', 'bonosNo', 'bonosMonto');
+toggleVisibilityByPrefix('Prog1', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
+toggleVisibilityByPrefix('Prog1', 'titularSi', 'titularNo', 'titularCampos');
+toggleVisibilityByPrefix('Prog1', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
+configureTipoDocumentoChange('Prog1');
+
+// Configuración para Prog2
+toggleVisibilityByPrefix('Prog2', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
+toggleVisibilityByPrefix('Prog2', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
+toggleVisibilityByPrefix('Prog2', 'bonosSi', 'bonosNo', 'bonosMonto');
+toggleVisibilityByPrefix('Prog2', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
+toggleVisibilityByPrefix('Prog2', 'titularSi', 'titularNo', 'titularCampos');
+toggleVisibilityByPrefix('Prog2', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
+configureTipoDocumentoChange('Prog2');
+
 </script>
 
 <script>
@@ -441,34 +450,32 @@
         });
 
 
-        $('#buscarProgenitor1').on('click', function() {
-            const tipoDocumento = $('#tipoDocumento_Prog1').val();
-            const numeroDocumento = $('#numeroDocumento_Prog1').val();
+        function buscarProgenitor(prefix) {
+            const tipoDocumento = $(`#tipoDocumento_${prefix}`).val();
+            const numeroDocumento = $(`#numeroDocumento_${prefix}`).val();
 
             if (!tipoDocumento) {
-                //alert('Por favor, ingrese un número de documento.');
                 Swal.fire({
                     title: 'Error',
                     text: 'Por favor, seleccione un tipo de documento.',
-                    icon: 'danger',
+                    icon: 'error',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#3085d6',
                     background: '#fff',
-                    timer: 4000 // Si deseas que desaparezca después de 4 segundos
+                    timer: 4000
                 });
                 return;
             }
 
             if (!numeroDocumento) {
-                //alert('Por favor, ingrese un número de documento.');
                 Swal.fire({
                     title: 'Error',
                     text: 'Por favor, ingrese un número de documento.',
-                    icon: 'danger',
+                    icon: 'error',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#3085d6',
                     background: '#fff',
-                    timer: 4000 // Si deseas que desaparezca después de 4 segundos
+                    timer: 4000
                 });
                 return;
             }
@@ -477,104 +484,45 @@
             $.ajax({
                 url: "{{ route('progenitores.buscar') }}",
                 type: "GET",
-                data: { tipoDocumento: tipoDocumento ,nroDocumento: numeroDocumento },
-                success: function(response) {
+                data: { tipoDocumento, nroDocumento: numeroDocumento },
+                success: function (response) {
                     if (response.success) {
-                        $('#id_progenitor').val(response.data.id);
-                        $('#nombres_Prog1').val(response.data.nombres);
-                        $('#apellidos_Prog1').val(response.data.apellidos);
+                        $(`#id_progenitor${prefix === 'Prog1' ? '' : '2'}`).val(response.data.id);
+                        $(`#nombres_${prefix}`).val(response.data.nombres);
+                        $(`#apellidos_${prefix}`).val(response.data.apellidos);
                     } else {
                         Swal.fire({
                             title: 'Error',
                             text: response.message,
-                            icon: 'danger',
+                            icon: 'error',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#3085d6',
                             background: '#fff',
-                            timer: 4000 // Si deseas que desaparezca después de 4 segundos
+                            timer: 4000
                         });
                     }
                 },
-                error: function() {
+                error: function () {
                     Swal.fire({
-                            title: 'Error',
-                            text: 'Error al buscar el progenitor. Verifique el número de documento.',
-                            icon: 'danger',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#3085d6',
-                            background: '#fff',
-                            timer: 4000 // Si deseas que desaparezca después de 4 segundos
-                        });
+                        title: 'Error',
+                        text: 'Error al buscar el progenitor. Verifique el número de documento.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#3085d6',
+                        background: '#fff',
+                        timer: 4000
+                    });
                 }
             });
+        }
+
+        // Asociar la función a los botones
+        $('#buscarProgenitor1').on('click', function () {
+            buscarProgenitor('Prog1');
         });
 
-        $('#buscarProgenitor2').on('click', function() {
-            const tipoDocumento = $('#tipoDocumento_Prog2').val();
-            const numeroDocumento = $('#numeroDocumento_Prog2').val();
-
-            if (!tipoDocumento) {
-                //alert('Por favor, ingrese un número de documento.');
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Por favor, seleccione un tipo de documento.',
-                    icon: 'danger',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#3085d6',
-                    background: '#fff',
-                    timer: 4000 // Si deseas que desaparezca después de 4 segundos
-                });
-                return;
-            }
-
-            if (!numeroDocumento) {
-                //alert('Por favor, ingrese un número de documento.');
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Por favor, ingrese un número de documento.',
-                    icon: 'danger',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#3085d6',
-                    background: '#fff',
-                    timer: 4000 // Si deseas que desaparezca después de 4 segundos
-                });
-                return;
-            }
-
-            // Realizar la solicitud AJAX
-            $.ajax({
-                url: "{{ route('progenitores.buscar') }}",
-                type: "GET",
-                data: { tipoDocumento: tipoDocumento ,nroDocumento: numeroDocumento },
-                success: function(response) {
-                    if (response.success) {
-                        $('#id_progenitor2').val(response.data.id);
-                        $('#nombres_Prog2').val(response.data.nombres);
-                        $('#apellidos_Prog2').val(response.data.apellidos);
-                    } else {
-                        Swal.fire({
-                            title: 'Error',
-                            text: response.message,
-                            icon: 'danger',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#3085d6',
-                            background: '#fff',
-                            timer: 4000 // Si deseas que desaparezca después de 4 segundos
-                        });
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                            title: 'Error',
-                            text: 'Error al buscar el progenitor. Verifique el número de documento.',
-                            icon: 'danger',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#3085d6',
-                            background: '#fff',
-                            timer: 4000 // Si deseas que desaparezca después de 4 segundos
-                        });
-                }
-            });
+        $('#buscarProgenitor2').on('click', function () {
+            buscarProgenitor('Prog2');
         });
     });
 </script>

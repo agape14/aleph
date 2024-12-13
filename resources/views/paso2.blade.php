@@ -69,19 +69,19 @@
     <h5 class="mt-4">3. Marque los motivos por los que usted solicita la beca</h5>
     <div class="mb-3">
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoEconomico" name="motivoEconomico" value="economico">
+            <input class="form-check-input" type="checkbox" id="motivoEconomico" name="motivosBeca[]" value="economico">
             <label class="form-check-label" for="motivoEconomico">Económico</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoSalud" name="motivoSalud" value="salud">
+            <input class="form-check-input" type="checkbox" id="motivoSalud" name="motivosBeca[]" value="salud">
             <label class="form-check-label" for="motivoSalud">Salud</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoHijosMatriculados" name="motivoHijosMatriculados" value="hijosMatriculados">
+            <input class="form-check-input" type="checkbox" id="motivoHijosMatriculados" name="motivosBeca[]" value="hijosMatriculados">
             <label class="form-check-label" for="motivoHijosMatriculados">De 2 a más hijos matriculados en la institución educativa</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="motivoEducativasEspeciales" name="motivoEducativasEspeciales" value="educativasEspeciales">
+            <input class="form-check-input" type="checkbox" id="motivoEducativasEspeciales" name="motivosBeca[]" value="educativasEspeciales">
             <label class="form-check-label" for="motivoEducativasEspeciales">Necesidades educativas especiales</label>
         </div>
     </div>

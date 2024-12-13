@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
+use App\Models\Solicitud;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -24,10 +26,28 @@ class HomeController extends Controller
      */
     public function adminHome()
     {
-        $estudiantes=Estudiante::all();
+        // Obtener todas las solicitudes
+        $solicitudes = Solicitud::with(['progenitores', 'estudiante','documentosAdjuntos'])->get();
+        // Obtener fechas actuales
+        $hoy = Carbon::today();
+        $inicioSemana = Carbon::now()->startOfWeek();
+        $inicioMes = Carbon::now()->startOfMonth();
+        $inicioAnio = Carbon::now()->startOfYear();
+
+        // Contar las solicitudes según el rango de tiempo
+        $contadorDiario = Solicitud::whereDate('created_at', $hoy)->count();
+        $contadorSemanal = Solicitud::whereBetween('created_at', [$inicioSemana, Carbon::now()])->count();
+        $contadorMensual = Solicitud::whereBetween('created_at', [$inicioMes, Carbon::now()])->count();
+        $contadorAnual = Solicitud::whereBetween('created_at', [$inicioAnio, Carbon::now()])->count();
+
+        // Pasar los datos a la vista
         return view('admin.home', [
             'msg' => "Hello! I am admin",
-            'estudiantes' => $estudiantes // Pasar la colección a la vista
+            'solicitudes' => $solicitudes,
+            'contadorDiario' => $contadorDiario,
+            'contadorSemanal' => $contadorSemanal,
+            'contadorMensual' => $contadorMensual,
+            'contadorAnual' => $contadorAnual,
         ]);
     }
     public function userHome()
