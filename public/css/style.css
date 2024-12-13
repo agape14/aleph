@@ -71,7 +71,8 @@ body[data-bs-theme=dark] .style-switcher h6 {
   color: #ffffff !important;
 }
 body[data-bs-theme=dark] .home {
-  background-image: url(../images/dark-bg.png) !important;
+  /*background-image: url(../images/dark-bg.png) !important;*/
+  background-color: #303841 !important;
 }
 body[data-bs-theme=dark] .navbar .navbar-nav .nav-link.active {
   color: #0076a3 !important;
@@ -1575,7 +1576,7 @@ body[data-bs-theme=dark] .title h6 {
   min-height: 100vh;
   align-items: center;
   display: flex;
-  background-image: url(../images/bg.png);
+  /*background-image: url(../images/bg.png);*/
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -1943,7 +1944,7 @@ body[data-bs-theme=dark] .title h6 {
 }
 
 body[data-bs-theme=dark] .home {
-  background-image: url(../images/dark-bg.png);
+  /*background-image: url(../images/dark-bg.png);*/
   background-color: #303841 !important;
 }
 body[data-bs-theme=dark] .home .display-5 {
