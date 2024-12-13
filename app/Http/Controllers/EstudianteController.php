@@ -439,7 +439,7 @@ class EstudianteController extends Controller
             $nombre = $solicitud->estudiante->nombres;
             $apellido = $solicitud->estudiante->apepaterno. ' ' .  $solicitud->estudiante->apematerno;
             $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
-            $destinatario = User::find(1);
+            $destinatario = User::find(3);
             // Enviar el correo
             Mail::to($destinatario)->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa,$destinatario->name));
         } catch (\Exception $e) {
@@ -455,7 +455,7 @@ class EstudianteController extends Controller
             $nombre = $solicitud->estudiante->nombres;
             $apellido = $solicitud->estudiante->apepaterno. ' ' .  $solicitud->estudiante->apematerno;
             $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
-            $destinatario = User::find(1);
+            $destinatario = User::find(3);
             // Enviar el correo
             Mail::to($destinatario)->send(new SolicitudCreadaMail($nombre, $apellido, $id, $url_alternativa,$destinatario->name));
             return response()->json(['message' => 'Notificación enviada correctamente.']);
