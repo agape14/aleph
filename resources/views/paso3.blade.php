@@ -5,7 +5,7 @@
     <div class="row g-3 mb-3">
         <div class="col-lg-6 col-12">
             <label for="tipoDocumento_Prog1" class="form-label"><strong>Tipo de Documento</strong></label>
-            <select id="tipoDocumento_Prog1" name="tipoDocumento_Prog1" class="form-select" required>
+            <select id="tipoDocumento_Prog1" name="tipoDocumento_Prog1" class="form-select"  data-name="Tipo de Documento" required>
                 <option value="" selected disabled>Seleccione un tipo de documento</option>
                 <option value="DNI">DNI</option>
                 <option value="Pasaporte">Pasaporte</option>
@@ -15,7 +15,7 @@
         <div class="col-lg-6 col-12">
             <label for="numeroDocumento_Prog1" class="form-label"><strong>Número de Documento</strong></label>
             <div class="input-group">
-                <input type="text" id="numeroDocumento_Prog1"  name="numeroDocumento_Prog1" class="form-control" placeholder="Ingrese el número de documento" required>
+                <input type="text" id="numeroDocumento_Prog1"  name="numeroDocumento_Prog1" class="form-control" placeholder="Ingrese el número de documento" required data-name="Número de Documento">
             </div>
             <div class="invalid-feedback">
                 El número de documento no es válido para el tipo seleccionado.
@@ -24,15 +24,15 @@
     </div>
     <div class="mb-3">
         <label for="nombres_Prog1" class="form-label">Nombres</label>
-        <input type="text" id="nombres_Prog1" name="nombres_Prog1" class="form-control" placeholder="Nombres del progenitor" >
+        <input type="text" id="nombres_Prog1" name="nombres_Prog1" class="form-control" placeholder="Nombres del progenitor" required data-name="Nombres del progenitor">
     </div>
     <div class="mb-3">
         <label for="apellidos_Prog1" class="form-label">Apellidos</label>
-        <input type="text" id="apellidos_Prog1" name="apellidos_Prog1" class="form-control" placeholder="Apellidos del progenitor" >
+        <input type="text" id="apellidos_Prog1" name="apellidos_Prog1" class="form-control" placeholder="Apellidos del progenitor"  required data-name="Apellidos del progenitor">
     </div>
     <div class="mb-3">
         <label for="correo_Prog1" class="form-label">Correo Electrónico</label>
-        <input type="text" id="correo_Prog1" name="correo_Prog1" class="form-control" placeholder="Correo Electrónico del progenitor" >
+        <input type="email" id="correo_Prog1" name="correo_Prog1" class="form-control" placeholder="Correo Electrónico del progenitor" required data-name="Correo Electrónico del progenitor">
     </div>
     <hr>
 
@@ -40,11 +40,11 @@
     <div class="row g-3 mb-3">
         <div class="col-lg-6 col-12">
             <label for="numeroHijos_Prog1" class="form-label"><strong>Número de Hijos</strong></label>
-            <input type="number" id="numeroHijos_Prog1" name="numeroHijos_Prog1" class="form-control" placeholder="Ingrese el número de hijos" min="0" required>
+            <input type="number" id="numeroHijos_Prog1" name="numeroHijos_Prog1" class="form-control" placeholder="Ingrese el número de hijos" min="0" required data-name="Número de Hijos">
         </div>
         <div class="col-lg-6 col-12">
             <label for="hijosMatriculados_Prog1" class="form-label"><strong>Número de hijos matriculados en la institución</strong></label>
-            <input type="number" id="hijosMatriculados_Prog1" name="hijosMatriculados_Prog1" class="form-control" placeholder="Ingrese el número de hijos matriculados" min="0" required>
+            <input type="number" id="hijosMatriculados_Prog1" name="hijosMatriculados_Prog1" class="form-control" placeholder="Ingrese el número de hijos matriculados" min="0" required data-name="Número de Hijos matriculados">
         </div>
     </div>
     <hr>
@@ -52,7 +52,7 @@
     <!-- Formación académica -->
     <h5 class="mt-4">Formación Académica</h5>
     <div class="mb-3">
-        <select id="formacionAcademica_Prog1" name="formacionAcademica_Prog1" class="form-select" required>
+        <select id="formacionAcademica_Prog1" name="formacionAcademica_Prog1" class="form-select" required data-name="Formación Académica">
             <option value="" selected disabled>Seleccione su nivel de formación</option>
             <option value="tecnica">Formación Superior Técnica</option>
             <option value="universitaria">Formación Superior Universitaria</option>
@@ -70,7 +70,7 @@
     <div class="mb-3">
         <label class="form-label"><strong>Actualmente, ¿se encuentra desempeñando un trabajo remunerado?</strong></label>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="trabajoRemunerado_Prog1" id="trabajoSi_Prog1" value="si" required>
+            <input class="form-check-input" type="radio" name="trabajoRemunerado_Prog1" id="trabajoSi_Prog1" value="si" required data-name="Ocupación Laboral e Ingresos">
             <label class="form-check-label" for="trabajoSi_Prog1">Sí</label>
         </div>
         <div class="form-check">

@@ -115,6 +115,7 @@
         </div>
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
 <script>
 	$('input[type="text"]').on('input', function () {
         $(this).val($(this).val().toUpperCase());
@@ -257,19 +258,36 @@ configureTipoDocumentoChange('Prog2');
             let isValid = true;
             let errorMessages = [];
 
-            // Busca los campos con el atributo required dentro del currentDiv
+            // Validar campos required
             currentDiv.find('input[required], select[required], textarea[required]').each(function () {
                 const $field = $(this);
-                console.log($field);
-                // Si el campo está vacío, agrega un mensaje de error
                 const value = $field.val();
+
+                // Si el campo está vacío
                 if (!value || (typeof value === 'string' && !value.trim())) {
                     isValid = false;
                     const fieldName = $field.attr('data-name') || 'Este campo';
-                    errorMessages.push(`- ${fieldName}`);
+                    errorMessages.push(`- ${fieldName} es obligatorio.`);
+                    $field.addClass('is-invalid'); // Marcar campo como inválido
+                } else {
+                    $field.removeClass('is-invalid'); // Remover error si ya no está vacío
+                }
+
+                // Validar formato de correo si es un campo tipo email
+                if ($field.attr('type') === 'email') {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar email
+                    if (!emailRegex.test(value)) {
+                        isValid = false;
+                        const fieldName = $field.attr('data-name') || 'Correo Electrónico';
+                        errorMessages.push(`- ${fieldName} tiene un formato inválido.`);
+                        $field.addClass('is-invalid'); // Marcar correo como inválido
+                    } else {
+                        $field.removeClass('is-invalid'); // Remover error si el formato es correcto
+                    }
                 }
             });
 
+            // Validar grupos de radios
             currentDiv.find('input[type="radio"][required]').each(function () {
                 const name = $(this).attr('name'); // Nombre del grupo
                 const isChecked = currentDiv.find(`input[name="${name}"]:checked`).length > 0;
@@ -277,24 +295,26 @@ configureTipoDocumentoChange('Prog2');
                 if (!isChecked) {
                     isValid = false;
                     const fieldName = $(this).attr('data-name') || 'Una opción';
-                    errorMessages.push(`- Seleccionar ${fieldName}`);
+                    errorMessages.push(`- Seleccionar ${fieldName}.`);
                 }
             });
 
+            // Validar checkboxes
             currentDiv.find('input[type="checkbox"][required]').each(function () {
                 const name = $(this).attr('name'); // Nombre del grupo
-                console.log('name checkbox:',name);
                 const isChecked = currentDiv.find(`input[name="${name}"]:checked`).length > 0;
 
                 if (!isChecked) {
                     isValid = false;
                     const fieldName = $(this).attr('data-name') || 'Al menos una opción';
-                    errorMessages.push(`- Seleccionar ${fieldName}`);
+                    errorMessages.push(`- Seleccionar ${fieldName}.`);
                 }
             });
+
             // Log para depuración
             console.log('Paso actual:', currentStep, 'Validación:', isValid, 'Div actual:', currentDiv);
 
+            // Mostrar errores con Toastr si hay errores
             if (!isValid) {
                 toastr.error(errorMessages.join('<br>'), 'Faltan datos obligatorios', {
                     positionClass: 'toast-bottom-right',
@@ -303,6 +323,10 @@ configureTipoDocumentoChange('Prog2');
                 });
                 return;
             }
+
+            // Avanzar al siguiente paso si todo es válido
+            $(`#validacionpaso${currentStep}`).addClass('d-none');
+            $(`#validacionpaso${nextStep}`).removeClass('d-none');
             // Validaciones específicas para cada paso
             if (currentStep === 1) { // Validación para el paso 1
 
