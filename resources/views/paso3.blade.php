@@ -83,7 +83,7 @@
     <div id="desempleoCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label for="tiempoDesempleo_Prog1" class="form-label"><strong>Tiempo de desempleo (en meses)</strong></label>
-            <input type="number" id="tiempoDesempleo_Prog1" name="tiempoDesempleo_Prog1" class="form-control" placeholder="Ingrese el tiempo en meses" min="0" data-name="Tiempo de desempleo (en meses)">
+            <input type="number" id="tiempoDesempleo_Prog1" name="tiempoDesempleo_Prog1" class="form-control" placeholder="Ingrese el tiempo en meses" min="0" maxlength="10" data-name="Tiempo de desempleo (en meses)">
         </div>
     </div>
 
@@ -92,7 +92,7 @@
         <div class="mb-3">
             <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaSi_Prog1" value="si" data-name="Se encuentra en planilla" required>
+                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaSi_Prog1" value="si" data-name="Se encuentra en planilla">
                 <label class="form-check-label" for="planillaSi_Prog1">Sí</label>
             </div>
             <div class="form-check">
@@ -124,15 +124,15 @@
         </div>
         <div class="mb-3">
             <label for="cargo_Prog1" class="form-label"><strong>Cargo que desempeña</strong></label>
-            <input type="text" id="cargo_Prog1" name="cargo_Prog1" class="form-control" placeholder="Ingrese su cargo"  data-name="Cargo que desempeña">
+            <input type="text" id="cargo_Prog1" name="cargo_Prog1" class="form-control" placeholder="Ingrese su cargo"  data-name="Cargo que desempeña" maxlength="250">
         </div>
         <div class="mb-3">
             <label for="anioLaboral_Prog1" class="form-label"><strong>Desde qué año labora ahí</strong></label>
-            <input type="number" id="anioLaboral_Prog1" name="anioLaboral_Prog1" class="form-control" placeholder="Ingrese el año" min="1900" max="2099"  data-name="Año labora ahí">
+            <input type="number" id="anioLaboral_Prog1" name="anioLaboral_Prog1" class="form-control" placeholder="Ingrese el año" min="1960" max="2099"  data-name="Año labora">
         </div>
         <div class="mb-3">
             <label for="lugarTrabajo_Prog1" class="form-label"><strong>Lugar de trabajo</strong></label>
-            <input type="text" id="lugarTrabajo_Prog1" name="lugarTrabajo_Prog1" class="form-control" placeholder="Ingrese el lugar de trabajo" data-name="Lugar de trabajo">
+            <input type="text" id="lugarTrabajo_Prog1" name="lugarTrabajo_Prog1" class="form-control" placeholder="Ingrese el lugar de trabajo" data-name="Lugar de trabajo" maxlength="250">
         </div>
         <div class="mb-3">
             <label for="ingresos_Prog1" class="form-label"><strong>Remuneración o ingresos brutos mensuales (S/)</strong></label>
@@ -197,15 +197,15 @@
     <div id="titularCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label for="acciones_Prog1" class="form-label">Indique el % de acciones o participación:</label>
-            <input type="number" id="acciones_Prog1" name="acciones_Prog1" class="form-control" placeholder="Ingrese el porcentaje" data-name="Porcentaje de acciones o participación">
+            <input type="number" id="acciones_Prog1" name="acciones_Prog1" class="form-control" placeholder="Ingrese el porcentaje" data-name="Porcentaje de acciones o participación" min="1" max="100" step="1">
         </div>
         <div class="mb-3">
             <label for="razonSocial_Prog1" class="form-label">Precisar Razón Social:</label>
-            <input type="text" id="razonSocial_Prog1" name="razonSocial_Prog1" class="form-control" placeholder="Razón Social" data-name="Razón Social">
+            <input type="text" id="razonSocial_Prog1" name="razonSocial_Prog1" class="form-control" placeholder="Razón Social" data-name="Razón Social" maxlength="250">
         </div>
         <div class="mb-3">
             <label for="nroRuc_Prog1" class="form-label">Precisar Nro de RUC:</label>
-            <input type="text" id="nroRuc_Prog1" name="nroRuc_Prog1" class="form-control" placeholder="Número de RUC" data-name="Número de RUC">
+            <input type="text" id="nroRuc_Prog1" name="nroRuc_Prog1" class="form-control"  placeholder="Número de RUC" data-name="Número de RUC" maxlength="11" minlength="11" pattern="\d{11}" >
         </div>
     </div>
 
@@ -224,7 +224,7 @@
     <div class="mb-3">
         <label class="form-label">¿Cuenta con crédito hipotecario vigente?</label>
         <div class="form-check">
-            <input type="radio" id="creditoSi_Prog1" name="creditoHipotecario_Prog1" class="form-check-input" value="Si" data-name="Crédito hipotecario vigente">
+            <input type="radio" id="creditoSi_Prog1" name="creditoHipotecario_Prog1" class="form-check-input" value="Si" data-name="Crédito hipotecario vigente" required>
             <label class="form-check-label" for="creditoSi_Prog1">Sí</label>
         </div>
         <div class="form-check">
@@ -235,11 +235,11 @@
     <div id="viviendaDetalles_Prog1">
         <div class="mb-3">
             <label for="direccion_Prog1" class="form-label">Especifique dirección:</label>
-            <input type="text" id="direccion_Prog1" name="direccion_Prog1" class="form-control" placeholder="Ingrese la dirección" required data-name="Dirección">
+            <input type="text" id="direccion_Prog1" name="direccion_Prog1" class="form-control" placeholder="Ingrese la dirección" required data-name="Dirección" maxlength="250">
         </div>
         <div class="mb-3">
             <label for="metros_Prog1" class="form-label">Indicar m<sup>2</sup> aproximados:</label>
-            <input type="number" id="metros_Prog1" name="metros_Prog1" class="form-control" placeholder="Metros cuadrados" required data-name="Metros cuadrados">
+            <input type="number" id="metros_Prog1" name="metros_Prog1" class="form-control" placeholder="Metros cuadrados" required data-name="Metros cuadrados" maxlength="20">
         </div>
     </div>
 
@@ -257,6 +257,6 @@
     </div>
     <div id="inmueblesDetalles_Prog1" class="d-none">
         <label for="numInmuebles_Prog1" class="form-label">N° de inmuebles:</label>
-        <input type="number" id="numInmuebles_Prog1" name="numInmuebles_Prog1" class="form-control" placeholder="Ingrese el número de inmuebles">
+        <input type="number" id="numInmuebles_Prog1" name="numInmuebles_Prog1" class="form-control" placeholder="Ingrese el número de inmuebles" data-name="Número de inmuebles" min="1" max="1000" step="1">
     </div>
 </div>
