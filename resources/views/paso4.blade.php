@@ -1,5 +1,5 @@
 
-<div id="progenitor2Form">
+<div id="validacionpaso4">
     <!-- Información del progenitor -->
     <h4 class="mt-4">Información del Progenitor 2</h4>
     <div class="row g-3 mb-3">
@@ -24,13 +24,16 @@
         </div>
     </div>
     <div class="mb-3">
-        <input type="hidden" id="id_progenitor2" name="id_progenitor2">
         <label for="nombres_Prog2" class="form-label">Nombres</label>
         <input type="text" id="nombres_Prog2" name="nombres_Prog2" class="form-control" placeholder="Nombres del progenitor" readonly>
     </div>
     <div class="mb-3">
         <label for="apellidos_Prog2" class="form-label">Apellidos</label>
         <input type="text" id="apellidos_Prog2" name="apellidos_Prog2" class="form-control" placeholder="Apellidos del progenitor" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="correo_Prog2" class="form-label">Correo Electrónico</label>
+        <input type="text" id="correo_Prog2" name="correo_Prog2" class="form-control" placeholder="Correo Electrónico del progenitor" >
     </div>
     <hr>
 

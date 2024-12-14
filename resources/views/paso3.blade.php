@@ -1,5 +1,5 @@
 
-<div id="progenitor1Form">
+<div id="validacionpaso3">
     <!-- Información del progenitor -->
     <h4 class="mt-4">Información del Progenitor 1</h4>
     <div class="row g-3 mb-3">
@@ -16,7 +16,6 @@
             <label for="numeroDocumento_Prog1" class="form-label"><strong>Número de Documento</strong></label>
             <div class="input-group">
                 <input type="text" id="numeroDocumento_Prog1"  name="numeroDocumento_Prog1" class="form-control" placeholder="Ingrese el número de documento" required>
-                <button type="button" id="buscarProgenitor1" class="btn btn-primary">Buscar</button>
             </div>
             <div class="invalid-feedback">
                 El número de documento no es válido para el tipo seleccionado.
@@ -24,13 +23,16 @@
         </div>
     </div>
     <div class="mb-3">
-        <input type="hidden" id="id_progenitor" name="id_progenitor">
         <label for="nombres_Prog1" class="form-label">Nombres</label>
-        <input type="text" id="nombres_Prog1" name="nombres_Prog1" class="form-control" placeholder="Nombres del progenitor" readonly>
+        <input type="text" id="nombres_Prog1" name="nombres_Prog1" class="form-control" placeholder="Nombres del progenitor" >
     </div>
     <div class="mb-3">
         <label for="apellidos_Prog1" class="form-label">Apellidos</label>
-        <input type="text" id="apellidos_Prog1" name="apellidos_Prog1" class="form-control" placeholder="Apellidos del progenitor" readonly>
+        <input type="text" id="apellidos_Prog1" name="apellidos_Prog1" class="form-control" placeholder="Apellidos del progenitor" >
+    </div>
+    <div class="mb-3">
+        <label for="correo_Prog1" class="form-label">Correo Electrónico</label>
+        <input type="text" id="correo_Prog1" name="correo_Prog1" class="form-control" placeholder="Correo Electrónico del progenitor" >
     </div>
     <hr>
 

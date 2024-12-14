@@ -1,4 +1,4 @@
-<div id="ingresosGastosForm">
+<div id="validacionpaso5">
     <h3>Ingresos y Gastos Mensuales</h3>
 
     <!-- Sección de INGRESOS -->

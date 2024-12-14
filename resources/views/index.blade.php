@@ -114,6 +114,7 @@
             </div>
         </div>
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
 	$('input[type="text"]').on('input', function () {
         $(this).val($(this).val().toUpperCase());
@@ -252,9 +253,61 @@ configureTipoDocumentoChange('Prog2');
         $('#next-btn').click(function () {
             let nextStep = currentStep + 1;
 
+            const currentDiv = $(`#validacionpaso${currentStep}`); // Asegúrate de que este ID sea correcto
+            let isValid = true;
+            let errorMessages = [];
+
+            // Busca los campos con el atributo required dentro del currentDiv
+            currentDiv.find('input[required], select[required], textarea[required]').each(function () {
+                const $field = $(this);
+                console.log($field);
+                // Si el campo está vacío, agrega un mensaje de error
+                const value = $field.val();
+                if (!value || (typeof value === 'string' && !value.trim())) {
+                    isValid = false;
+                    const fieldName = $field.attr('data-name') || 'Este campo';
+                    errorMessages.push(`- ${fieldName}`);
+                }
+            });
+
+            currentDiv.find('input[type="radio"][required]').each(function () {
+                const name = $(this).attr('name'); // Nombre del grupo
+                const isChecked = currentDiv.find(`input[name="${name}"]:checked`).length > 0;
+
+                if (!isChecked) {
+                    isValid = false;
+                    const fieldName = $(this).attr('data-name') || 'Una opción';
+                    errorMessages.push(`- Seleccionar ${fieldName}`);
+                }
+            });
+
+            currentDiv.find('input[type="checkbox"][required]').each(function () {
+                const name = $(this).attr('name'); // Nombre del grupo
+                console.log('name checkbox:',name);
+                const isChecked = currentDiv.find(`input[name="${name}"]:checked`).length > 0;
+
+                if (!isChecked) {
+                    isValid = false;
+                    const fieldName = $(this).attr('data-name') || 'Al menos una opción';
+                    errorMessages.push(`- Seleccionar ${fieldName}`);
+                }
+            });
+            // Log para depuración
+            console.log('Paso actual:', currentStep, 'Validación:', isValid, 'Div actual:', currentDiv);
+
+            if (!isValid) {
+                toastr.error(errorMessages.join('<br>'), 'Faltan datos obligatorios', {
+                    positionClass: 'toast-bottom-right',
+                    closeButton: true,
+                    timeOut: 5000,
+                });
+                return;
+            }
             // Validaciones específicas para cada paso
             if (currentStep === 1) { // Validación para el paso 1
-                const $reglamentoGroup = $('input[name="reglamento"]');
+
+
+                /*const $reglamentoGroup = $('input[name="reglamento"]');
                 if ($reglamentoGroup.length && !$reglamentoGroup.filter(':checked').length) {
                     Swal.fire({
                         title: 'Error',
@@ -263,7 +316,7 @@ configureTipoDocumentoChange('Prog2');
                         confirmButtonText: 'Entendido'
                     });
                     return;
-                }
+                }*/
                 $('#prev-btn').attr('disabled', true);
             }else {
                 $('#prev-btn').attr('disabled', false);
@@ -423,6 +476,11 @@ configureTipoDocumentoChange('Prog2');
                         $('#nombres').val(response.data.nombres);
                         $('#apellidos').val(response.data.apellidos);
                         $('#codigo_sianet').val(response.data.codigo_sianet);
+                        toastr.success('Se obtuvieron los datos del estudiante, correctamente.', 'Éxito', {
+                            positionClass: 'toast-bottom-right',
+                            closeButton: true,
+                            timeOut: 5000,
+                        });
                     } else {
                         Swal.fire({
                             title: 'Error',
@@ -450,80 +508,6 @@ configureTipoDocumentoChange('Prog2');
         });
 
 
-        function buscarProgenitor(prefix) {
-            const tipoDocumento = $(`#tipoDocumento_${prefix}`).val();
-            const numeroDocumento = $(`#numeroDocumento_${prefix}`).val();
-
-            if (!tipoDocumento) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Por favor, seleccione un tipo de documento.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#3085d6',
-                    background: '#fff',
-                    timer: 4000
-                });
-                return;
-            }
-
-            if (!numeroDocumento) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Por favor, ingrese un número de documento.',
-                    icon: 'error',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#3085d6',
-                    background: '#fff',
-                    timer: 4000
-                });
-                return;
-            }
-
-            // Realizar la solicitud AJAX
-            $.ajax({
-                url: "{{ route('progenitores.buscar') }}",
-                type: "GET",
-                data: { tipoDocumento, nroDocumento: numeroDocumento },
-                success: function (response) {
-                    if (response.success) {
-                        $(`#id_progenitor${prefix === 'Prog1' ? '' : '2'}`).val(response.data.id);
-                        $(`#nombres_${prefix}`).val(response.data.nombres);
-                        $(`#apellidos_${prefix}`).val(response.data.apellidos);
-                    } else {
-                        Swal.fire({
-                            title: 'Error',
-                            text: response.message,
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#3085d6',
-                            background: '#fff',
-                            timer: 4000
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Error al buscar el progenitor. Verifique el número de documento.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#3085d6',
-                        background: '#fff',
-                        timer: 4000
-                    });
-                }
-            });
-        }
-
-        // Asociar la función a los botones
-        $('#buscarProgenitor1').on('click', function () {
-            buscarProgenitor('Prog1');
-        });
-
-        $('#buscarProgenitor2').on('click', function () {
-            buscarProgenitor('Prog2');
-        });
     });
 </script>
         <!-- end container -->

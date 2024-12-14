@@ -29,7 +29,8 @@
 
     <!-- colors -->
     <link href="{{ asset('css/colors/default.css') }} " rel="stylesheet" type="text/css" id="color-opt" />
-
+    <!-- Toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     @yield('head')
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarCollapse">

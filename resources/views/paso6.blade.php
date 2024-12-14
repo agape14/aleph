@@ -1,4 +1,4 @@
-<div id="documentosForm">
+<div id="validacionpaso6">
     <h3>General</h3>
     <div id="documentosProgenitor1">
         <h4 class="mt-4">Progenitor 1</h4>
