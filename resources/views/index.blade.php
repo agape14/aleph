@@ -123,7 +123,20 @@
 
     function toggleVisibility(triggerSelector, targetSelector, condition) {
         $(triggerSelector).on('change', function () {
-            $(targetSelector).toggleClass('d-none', !condition($(this)));
+            const $target = $(targetSelector);
+            const shouldShow = condition($(this));
+
+            // Mostrar/ocultar el elemento
+            $target.toggleClass('d-none', !shouldShow);
+
+            // Agregar o eliminar el atributo required en los inputs dentro del target
+            $target.find('input, select, textarea').each(function () {
+                if (shouldShow) {
+                    $(this).attr('required', 'required');
+                } else {
+                    $(this).removeAttr('required');
+                }
+            });
         });
     }
 
@@ -132,73 +145,73 @@
         toggleVisibility(`#${radioNoId}_${prefix}`, `#${fieldId}_${prefix}`, () => false);
     }
 
-function configureTipoDocumentoChange(prefix) {
-    $(`#tipoDocumento_${prefix}`).on('change', function () {
-        const $nroDocumento = $(`#numeroDocumento_${prefix}`);
-        const tipo = $(this).val();
+    function configureTipoDocumentoChange(prefix) {
+        $(`#tipoDocumento_${prefix}`).on('change', function () {
+            const $nroDocumento = $(`#numeroDocumento_${prefix}`);
+            const tipo = $(this).val();
 
-        $nroDocumento.val('').removeAttr('maxlength minlength pattern placeholder');
+            $nroDocumento.val('').removeAttr('maxlength minlength pattern placeholder');
 
-        switch (tipo) {
-            case 'DNI':
-                $nroDocumento.attr({
-                    maxlength: 8,
-                    minlength: 8,
-                    pattern: '\\d{8}',
-                    placeholder: 'Debe tener 8 dígitos'
-                });
-                break;
-            case 'Pasaporte':
-                $nroDocumento.attr({
-                    maxlength: 12,
-                    pattern: '[a-zA-Z0-9]{1,12}',
-                    placeholder: 'Máximo 12 caracteres alfanuméricos'
-                });
-                break;
-            case 'Carnet de Extranjería':
-                $nroDocumento.attr({
-                    maxlength: 9,
-                    minlength: 9,
-                    pattern: '\\d{9}',
-                    placeholder: 'Debe tener 9 dígitos'
-                });
-                break;
-        }
-    });
+            switch (tipo) {
+                case 'DNI':
+                    $nroDocumento.attr({
+                        maxlength: 8,
+                        minlength: 8,
+                        pattern: '\\d{8}',
+                        placeholder: 'Debe tener 8 dígitos'
+                    });
+                    break;
+                case 'Pasaporte':
+                    $nroDocumento.attr({
+                        maxlength: 12,
+                        pattern: '[a-zA-Z0-9]{1,12}',
+                        placeholder: 'Máximo 12 caracteres alfanuméricos'
+                    });
+                    break;
+                case 'Carnet de Extranjería':
+                    $nroDocumento.attr({
+                        maxlength: 9,
+                        minlength: 9,
+                        pattern: '\\d{9}',
+                        placeholder: 'Debe tener 9 dígitos'
+                    });
+                    break;
+            }
+        });
 
-    $(`#numeroDocumento_${prefix}`).on('input', function () {
-        const tipo = $(`#tipoDocumento_${prefix}`).val();
-        const value = $(this).val();
+        $(`#numeroDocumento_${prefix}`).on('input', function () {
+            const tipo = $(`#tipoDocumento_${prefix}`).val();
+            const value = $(this).val();
 
-        switch (tipo) {
-            case 'DNI':
-            case 'Carnet de Extranjería':
-                $(this).val(value.replace(/[^0-9]/g, ''));
-                break;
-            case 'Pasaporte':
-                $(this).val(value.replace(/[^a-zA-Z0-9]/g, ''));
-                break;
-        }
-    });
-}
+            switch (tipo) {
+                case 'DNI':
+                case 'Carnet de Extranjería':
+                    $(this).val(value.replace(/[^0-9]/g, ''));
+                    break;
+                case 'Pasaporte':
+                    $(this).val(value.replace(/[^a-zA-Z0-9]/g, ''));
+                    break;
+            }
+        });
+    }
 
-// Configuración para Prog1
-toggleVisibilityByPrefix('Prog1', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
-toggleVisibilityByPrefix('Prog1', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
-toggleVisibilityByPrefix('Prog1', 'bonosSi', 'bonosNo', 'bonosMonto');
-toggleVisibilityByPrefix('Prog1', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
-toggleVisibilityByPrefix('Prog1', 'titularSi', 'titularNo', 'titularCampos');
-toggleVisibilityByPrefix('Prog1', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
-configureTipoDocumentoChange('Prog1');
+    // Configuración para Prog1
+    toggleVisibilityByPrefix('Prog1', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
+    toggleVisibilityByPrefix('Prog1', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
+    toggleVisibilityByPrefix('Prog1', 'bonosSi', 'bonosNo', 'bonosMonto');
+    toggleVisibilityByPrefix('Prog1', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
+    toggleVisibilityByPrefix('Prog1', 'titularSi', 'titularNo', 'titularCampos');
+    toggleVisibilityByPrefix('Prog1', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
+    configureTipoDocumentoChange('Prog1');
 
-// Configuración para Prog2
-toggleVisibilityByPrefix('Prog2', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
-toggleVisibilityByPrefix('Prog2', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
-toggleVisibilityByPrefix('Prog2', 'bonosSi', 'bonosNo', 'bonosMonto');
-toggleVisibilityByPrefix('Prog2', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
-toggleVisibilityByPrefix('Prog2', 'titularSi', 'titularNo', 'titularCampos');
-toggleVisibilityByPrefix('Prog2', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
-configureTipoDocumentoChange('Prog2');
+    // Configuración para Prog2
+    toggleVisibilityByPrefix('Prog2', 'trabajoSi', 'trabajoNo', 'trabajoRemuneradoCampos');
+    toggleVisibilityByPrefix('Prog2', 'trabajoNo', 'trabajoSi', 'desempleoCampos');
+    toggleVisibilityByPrefix('Prog2', 'bonosSi', 'bonosNo', 'bonosMonto');
+    toggleVisibilityByPrefix('Prog2', 'utilidadesSi', 'utilidadesNo', 'utilidadesMonto');
+    toggleVisibilityByPrefix('Prog2', 'titularSi', 'titularNo', 'titularCampos');
+    toggleVisibilityByPrefix('Prog2', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
+    configureTipoDocumentoChange('Prog2');
 
 </script>
 

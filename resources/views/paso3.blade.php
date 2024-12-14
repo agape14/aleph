@@ -83,7 +83,7 @@
     <div id="desempleoCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label for="tiempoDesempleo_Prog1" class="form-label"><strong>Tiempo de desempleo (en meses)</strong></label>
-            <input type="number" id="tiempoDesempleo_Prog1" name="tiempoDesempleo_Prog1" class="form-control" placeholder="Ingrese el tiempo en meses" min="0">
+            <input type="number" id="tiempoDesempleo_Prog1" name="tiempoDesempleo_Prog1" class="form-control" placeholder="Ingrese el tiempo en meses" min="0" data-name="Tiempo de desempleo (en meses)">
         </div>
     </div>
 
@@ -92,7 +92,7 @@
         <div class="mb-3">
             <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaSi_Prog1" value="si">
+                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaSi_Prog1" value="si" data-name="Se encuentra en planilla" required>
                 <label class="form-check-label" for="planillaSi_Prog1">Sí</label>
             </div>
             <div class="form-check">
@@ -103,7 +103,7 @@
         <div class="mb-3">
             <label class="form-label"><strong>¿Emite recibo por honorarios?</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="honorarios_Prog1" id="honorariosSi_Prog1" value="si">
+                <input class="form-check-input" type="radio" name="honorarios_Prog1" id="honorariosSi_Prog1" value="si" data-name="Emite recibo por honorarios">
                 <label class="form-check-label" for="honorariosSi_Prog1">Sí</label>
             </div>
             <div class="form-check">
@@ -114,34 +114,34 @@
         <div class="mb-3">
             <label class="form-label"><strong>Tipo de sueldo</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="tipoSueldo_Prog1" id="sueldoFijo_Prog1" value="fijo">
+                <input class="form-check-input" type="radio" name="tipoSueldo_Prog1" id="sueldoFijo_Prog1" value="fijo" data-name="Tipo de sueldo">
                 <label class="form-check-label" for="sueldoFijo_Prog1">Fijo</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="tipoSueldo_Prog1" id="sueldoVariable_Prog1" value="variable">
+                <input class="form-check-input" type="radio" name="tipoSueldo_Prog1" id="sueldoVariable_Prog1" value="variable" >
                 <label class="form-check-label" for="sueldoVariable_Prog1">Variable</label>
             </div>
         </div>
         <div class="mb-3">
             <label for="cargo_Prog1" class="form-label"><strong>Cargo que desempeña</strong></label>
-            <input type="text" id="cargo_Prog1" name="cargo_Prog1" class="form-control" placeholder="Ingrese su cargo">
+            <input type="text" id="cargo_Prog1" name="cargo_Prog1" class="form-control" placeholder="Ingrese su cargo"  data-name="Cargo que desempeña">
         </div>
         <div class="mb-3">
             <label for="anioLaboral_Prog1" class="form-label"><strong>Desde qué año labora ahí</strong></label>
-            <input type="number" id="anioLaboral_Prog1" name="anioLaboral_Prog1" class="form-control" placeholder="Ingrese el año" min="1900" max="2099">
+            <input type="number" id="anioLaboral_Prog1" name="anioLaboral_Prog1" class="form-control" placeholder="Ingrese el año" min="1900" max="2099"  data-name="Año labora ahí">
         </div>
         <div class="mb-3">
             <label for="lugarTrabajo_Prog1" class="form-label"><strong>Lugar de trabajo</strong></label>
-            <input type="text" id="lugarTrabajo_Prog1" name="lugarTrabajo_Prog1" class="form-control" placeholder="Ingrese el lugar de trabajo">
+            <input type="text" id="lugarTrabajo_Prog1" name="lugarTrabajo_Prog1" class="form-control" placeholder="Ingrese el lugar de trabajo" data-name="Lugar de trabajo">
         </div>
         <div class="mb-3">
             <label for="ingresos_Prog1" class="form-label"><strong>Remuneración o ingresos brutos mensuales (S/)</strong></label>
-            <input type="number" id="ingresos_Prog1" name="ingresos_Prog1" class="form-control" placeholder="Ingrese el monto en soles" min="0">
+            <input type="number" id="ingresos_Prog1" name="ingresos_Prog1" class="form-control" placeholder="Ingrese el monto en soles" min="0" data-name="Remuneración o ingresos brutos mensuales">
         </div>
         <div class="mb-3">
             <label class="form-label"><strong>¿Durante el año percibe bonos?</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="bonos_Prog1" id="bonosSi_Prog1" value="si">
+                <input class="form-check-input" type="radio" name="bonos_Prog1" id="bonosSi_Prog1" value="si" data-name="Percibe bonos">
                 <label class="form-check-label" for="bonosSi_Prog1">Sí</label>
             </div>
             <div class="form-check">
@@ -151,7 +151,7 @@
         </div>
         <div class="mb-3 d-none" id="bonosMonto_Prog1">
             <label for="montoBonos_Prog1" class="form-label"><strong>Monto aproximado de bonos (S/)</strong></label>
-            <select id="montoBonos_Prog1" name="montoBonos_Prog1" class="form-select">
+            <select id="montoBonos_Prog1" name="montoBonos_Prog1" class="form-select" data-name="Monto de bono">
                 <option value="" selected disabled>Seleccione un rango</option>
                 <option value="5000-10000">De S/5,000 a S/10,000</option>
                 <option value="10000-15000">De S/10,000 a S/15,000</option>
@@ -161,7 +161,7 @@
         <div class="mb-3">
             <label class="form-label"><strong>¿Durante el año percibe utilidades?</strong></label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="utilidades_Prog1" id="utilidadesSi_Prog1" value="si">
+                <input class="form-check-input" type="radio" name="utilidades_Prog1" id="utilidadesSi_Prog1" value="si" data-name="Percibe utilidades">
                 <label class="form-check-label" for="utilidades_Prog1">Sí</label>
             </div>
             <div class="form-check">
@@ -171,55 +171,12 @@
         </div>
         <div class="mb-3 d-none" id="utilidadesMonto_Prog1">
             <label for="montoUtilidades_Prog1" class="form-label"><strong>Monto aproximado de utilidades (S/)</strong></label>
-            <select id="montoUtilidades_Prog1" name="montoUtilidades_Prog1" class="form-select">
+            <select id="montoUtilidades_Prog1" name="montoUtilidades_Prog1" class="form-select" data-name="Monto utilidades">
                 <option value="" selected disabled>Seleccione un rango</option>
                 <option value="5000-10000">De S/5,000 a S/10,000</option>
                 <option value="10000-15000">De S/10,000 a S/15,000</option>
                 <option value="15000-mas">De S/15,000 a más</option>
             </select>
-        </div>
-    </div>
-
-
-    <!-- Campos habilitados si tiene trabajo remunerado -->
-    <div id="trabajoRemuneradoCampos_Prog1" class="d-none">
-        <div class="mb-3">
-            <label class="form-label"><strong>¿Se encuentra en planilla?</strong></label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaSi_Prog1" value="si">
-                <label class="form-check-label" for="planillaSi_Prog1">Sí</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="planilla_Prog1" id="planillaNo_Prog1" value="no">
-                <label class="form-check-label" for="planillaNo_Prog1">No</label>
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label"><strong>¿Emite recibo por honorarios?</strong></label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="honorarios_Prog1" id="honorariosSi_Prog1" value="si">
-                <label class="form-check-label" for="honorariosSi_Prog1">Sí</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="honorarios_Prog1" id="honorariosNo_Prog1" value="no">
-                <label class="form-check-label" for="honorariosNo_Prog1">No</label>
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="cargo_Prog1" class="form-label"><strong>Cargo que desempeña</strong></label>
-            <input type="text" id="cargo_Prog1" name="cargo_Prog1" class="form-control" placeholder="Ingrese su cargo">
-        </div>
-        <div class="mb-3">
-            <label for="anioLaboral_Prog1" class="form-label"><strong>Desde qué año labora ahí</strong></label>
-            <input type="number" id="anioLaboral_Prog1" name="anioLaboral_Prog1" class="form-control" placeholder="Ingrese el año" min="1900" max="2099">
-        </div>
-        <div class="mb-3">
-            <label for="lugarTrabajo_Prog1" class="form-label"><strong>Lugar de trabajo</strong></label>
-            <input type="text" id="lugarTrabajo_Prog1" name="lugarTrabajo_Prog1" class="form-control" placeholder="Ingrese el lugar de trabajo">
-        </div>
-        <div class="mb-3">
-            <label for="ingresos_Prog1" class="form-label"><strong>Remuneración o ingresos brutos mensuales (S/)</strong></label>
-            <input type="number" id="ingresos_Prog1" name="ingresos_Prog1" class="form-control" placeholder="Ingrese el monto en soles" min="0">
         </div>
     </div>
 
@@ -229,7 +186,7 @@
     <div class="mb-3">
         <label class="form-label"><strong>¿Es titular o accionista de alguna empresa?</strong></label>
         <div class="form-check">
-            <input type="radio" id="titularSi_Prog1" name="titularEmpresa_Prog1" class="form-check-input" value="Si" required>
+            <input type="radio" id="titularSi_Prog1" name="titularEmpresa_Prog1" class="form-check-input" value="Si" required data-name="Es titular o accionista de alguna empresa">
             <label class="form-check-label" for="titularSi_Prog1">Sí</label>
         </div>
         <div class="form-check">
@@ -240,15 +197,15 @@
     <div id="titularCampos_Prog1" class="d-none">
         <div class="mb-3">
             <label for="acciones_Prog1" class="form-label">Indique el % de acciones o participación:</label>
-            <input type="number" id="acciones_Prog1" name="acciones_Prog1" class="form-control" placeholder="Ingrese el porcentaje">
+            <input type="number" id="acciones_Prog1" name="acciones_Prog1" class="form-control" placeholder="Ingrese el porcentaje" data-name="Porcentaje de acciones o participación">
         </div>
         <div class="mb-3">
             <label for="razonSocial_Prog1" class="form-label">Precisar Razón Social:</label>
-            <input type="text" id="razonSocial_Prog1" name="razonSocial_Prog1" class="form-control" placeholder="Razón Social">
+            <input type="text" id="razonSocial_Prog1" name="razonSocial_Prog1" class="form-control" placeholder="Razón Social" data-name="Razón Social">
         </div>
         <div class="mb-3">
             <label for="nroRuc_Prog1" class="form-label">Precisar Nro de RUC:</label>
-            <input type="text" id="nroRuc_Prog1" name="nroRuc_Prog1" class="form-control" placeholder="Número de RUC">
+            <input type="text" id="nroRuc_Prog1" name="nroRuc_Prog1" class="form-control" placeholder="Número de RUC" data-name="Número de RUC">
         </div>
     </div>
 
@@ -256,7 +213,7 @@
     <div class="mb-3">
         <label class="form-label"><strong>Información sobre su vivienda</strong></label>
         <div class="form-check">
-            <input type="radio" id="viviendaPropia_Prog1" name="tipoVivienda_Prog1" class="form-check-input" value="Propia" required>
+            <input type="radio" id="viviendaPropia_Prog1" name="tipoVivienda_Prog1" class="form-check-input" value="Propia" required data-name="Información sobre su vivienda">
             <label class="form-check-label" for="viviendaPropia_Prog1">Propia</label>
         </div>
         <div class="form-check">
@@ -267,7 +224,7 @@
     <div class="mb-3">
         <label class="form-label">¿Cuenta con crédito hipotecario vigente?</label>
         <div class="form-check">
-            <input type="radio" id="creditoSi_Prog1" name="creditoHipotecario_Prog1" class="form-check-input" value="Si">
+            <input type="radio" id="creditoSi_Prog1" name="creditoHipotecario_Prog1" class="form-check-input" value="Si" data-name="Crédito hipotecario vigente">
             <label class="form-check-label" for="creditoSi_Prog1">Sí</label>
         </div>
         <div class="form-check">
@@ -278,11 +235,11 @@
     <div id="viviendaDetalles_Prog1">
         <div class="mb-3">
             <label for="direccion_Prog1" class="form-label">Especifique dirección:</label>
-            <input type="text" id="direccion_Prog1" name="direccion_Prog1" class="form-control" placeholder="Ingrese la dirección">
+            <input type="text" id="direccion_Prog1" name="direccion_Prog1" class="form-control" placeholder="Ingrese la dirección" required data-name="Dirección">
         </div>
         <div class="mb-3">
             <label for="metros_Prog1" class="form-label">Indicar m<sup>2</sup> aproximados:</label>
-            <input type="number" id="metros_Prog1" name="metros_Prog1" class="form-control" placeholder="Metros cuadrados">
+            <input type="number" id="metros_Prog1" name="metros_Prog1" class="form-control" placeholder="Metros cuadrados" required data-name="Metros cuadrados">
         </div>
     </div>
 
@@ -290,7 +247,7 @@
     <div class="mb-3">
         <label class="form-label"><strong>¿Es propietario o copropietario de más de un inmueble?</strong></label>
         <div class="form-check">
-            <input type="radio" id="inmuebleSi_Prog1" name="masInmuebles_Prog1" class="form-check-input" value="Si">
+            <input type="radio" id="inmuebleSi_Prog1" name="masInmuebles_Prog1" class="form-check-input" value="Si" data-name="Propietario o Copropietario">
             <label class="form-check-label" for="inmuebleSi_Prog1">Sí</label>
         </div>
         <div class="form-check">

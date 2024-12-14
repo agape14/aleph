@@ -80,9 +80,10 @@ class EstudianteController extends Controller
     public function transferToProgenitores()
     {
         try {
-            // Obtener los estudiantes cuyo código SIANET empieza con 'F'
+            // Obtener los estudiantes cuyo código SIANET empieza con 'F' - y eliminarlos
+            Estudiante::where('codigo_sianet', 'LIKE', 'F%')->delete();
+            /*      
             $estudiantes = Estudiante::where('codigo_sianet', 'LIKE', 'F%')->get();
-
             foreach ($estudiantes as $estudiante) {
                 Progenitor::create([
                     'tipo' => $estudiante->tipo ?? 'progenitor1',
@@ -98,7 +99,8 @@ class EstudianteController extends Controller
                 ]);
                 $estudiante->delete();
             }
-
+             */
+            return redirect()->back()->with('success', 'Estudiantes eliminados exitosamente.');
             return redirect()->back()->with('success', 'Datos transferidos exitosamente de Estudiantes a Progenitores.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al transferir datos: ' . $e->getMessage());
