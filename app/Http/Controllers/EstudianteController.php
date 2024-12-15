@@ -82,7 +82,7 @@ class EstudianteController extends Controller
         try {
             // Obtener los estudiantes cuyo código SIANET empieza con 'F' - y eliminarlos
             Estudiante::where('codigo_sianet', 'LIKE', 'F%')->delete();
-            /*      
+            /*
             $estudiantes = Estudiante::where('codigo_sianet', 'LIKE', 'F%')->get();
             foreach ($estudiantes as $estudiante) {
                 Progenitor::create([
@@ -119,7 +119,10 @@ class EstudianteController extends Controller
             $estudiante = Estudiante::find($request->id_estudiante);
             // Manejar datos de progenitores
             $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor1');
-            $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor2');
+
+            if($request->is_insert_progenitor2=="1"){
+                $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor2');
+            }
 
             // Manejar documentos adjuntos
             $this->handleSituacionEconomica($solicitud->id, $request);
@@ -171,7 +174,7 @@ class EstudianteController extends Controller
         ]);
     }
 
-    private function handleProgenitor($solicitudId, $estudianteId, Request $request, $type)
+    /*private function handleProgenitor($solicitudId, $estudianteId, Request $request, $type)
     {
         // Determinar el prefijo basado en el tipo de progenitor
         $prefix = ($type === 'progenitor1') ? 'Prog1' : 'Prog2';
@@ -183,11 +186,11 @@ class EstudianteController extends Controller
         // Definir los campos comunes a ambos progenitores
         $fields = [
             'dni', 'nombres', 'apellidos', 'correo_electronico', 'codigo_sianet',
-            'numero_hijos', 'hijos_matriculados', 'formacion_academica', 'trabaja', 
-            'tiempo_desempleo', 'cargo', 'anio_inicio_laboral', 'lugar_trabajo', 
-            'ingresos_mensuales', 'recibe_bonos', 'monto_bonos', 'recibe_utilidades', 
-            'monto_utilidades', 'titular_empresa', 'porcentaje_acciones', 'razon_social', 
-            'numero_ruc', 'vivienda_tipo', 'credito_hipotecario', 'direccion_vivienda', 
+            'numero_hijos', 'hijos_matriculados', 'formacion_academica', 'trabaja',
+            'tiempo_desempleo', 'cargo', 'anio_inicio_laboral', 'lugar_trabajo',
+            'ingresos_mensuales', 'recibe_bonos', 'monto_bonos', 'recibe_utilidades',
+            'monto_utilidades', 'titular_empresa', 'porcentaje_acciones', 'razon_social',
+            'numero_ruc', 'vivienda_tipo', 'credito_hipotecario', 'direccion_vivienda',
             'm2_vivienda', 'cantidad_inmuebles'
         ];
 
@@ -218,12 +221,13 @@ class EstudianteController extends Controller
 
         // Log de éxito
         \Log::info("{$type} actualizado exitosamente. ID: {$progenitor->id}");
-    }
+    }*/
 
-    private function handleProgenitor_back($solicitudId,$estudianteId, Request $request, $type)
+    private function handleProgenitor($solicitudId,$estudianteId, Request $request, $type)
     {
         if($type=='progenitor1'){
             $progenitor1 = new Progenitor() ;
+            $progenitor1->tipo_documento = $request->tipoDocumento_Prog1;
             $progenitor1->tipo = 'progenitor1';
             $progenitor1->dni = $request->numeroDocumento_Prog1;
             $progenitor1->nombres = $request->nombres_Prog1;
@@ -259,11 +263,12 @@ class EstudianteController extends Controller
             $progenitor1->save();
             $this->handleDocuments($solicitudId,$progenitor1->id, $request);
             \Log::info("Progenitor1 actualizado exitosamente. ID: {$progenitor1->id}");
-            
+
         }
 
         if($type=='progenitor2'){
             $progenitor2 = new Progenitor() ;
+            $progenitor2->tipo_documento = $request->tipoDocumento_Prog2;
             $progenitor2->tipo = 'progenitor2';
             $progenitor2->dni = $request->numeroDocumento_Prog2;
             $progenitor2->nombres = $request->nombres_Prog2;
@@ -523,14 +528,14 @@ class EstudianteController extends Controller
             $mail->cc($emailCopia);
 
             // Enviar el correo
-            $mail->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa, $destinatario->name, $correo1cc, $correo2cc));
-            
+            $mail->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa, $destinatario->name));
+            \Log::info("Se notifico correctamente : emailCopia = {$emailCopia}; correo1cc={$correo1cc}; correo2cc={$correo2cc}");
         } catch (\Exception $e) {
             \Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
         }
     }
 
-    
+
 
     public function notificarPorCorreoprueba($id)
     {

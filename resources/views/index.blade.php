@@ -92,6 +92,7 @@
                             </div>
                             <!-- Paso 4: Progenitor 2 -->
                             <div class="form-step d-none" data-step="4" id="step-progenitor-2">
+                                <input type="hidden" id="is_insert_progenitor2" name="is_insert_progenitor2" value="0"/>
                                 @include('paso4')
                             </div>
                             <!-- Paso 5: Situación Económica -->
@@ -253,13 +254,15 @@
             const selectedValue = $('input[name="viveConProgenitores"]:checked').val();
             const stepProgenitor2 = $('#step-progenitor-2');
             const documentosProgenitor2 = $('#documentosProgenitor2');
-
+            const esInsertaProgenitor2 = $('#is_insert_progenitor2');
             if (selectedValue === 'uno' || selectedValue === 'compartido') {
                 stepProgenitor2.attr('data-skip', 'true');
                 documentosProgenitor2.addClass('d-none');
+                esInsertaProgenitor2.val("0");
             } else {
                 stepProgenitor2.attr('data-skip', 'false');
                 documentosProgenitor2.removeClass('d-none');
+                esInsertaProgenitor2.val("1");
             }
         });
         /**/
@@ -321,6 +324,61 @@
                     isValid = false;
                     const fieldName = $(this).attr('data-name') || 'Al menos una opción';
                     errorMessages.push(`- Seleccionar ${fieldName}.`);
+                }
+            });
+
+            // Continuamos con la validación de los archivos dentro de currentDiv
+
+            currentDiv.find('input[type="file"]').each(function () {
+                const $fileInput = $(this);
+                const files = $fileInput[0].files;
+
+                // Verificar si el div contenedor tiene la clase d-none
+                const parentDiv = $fileInput.closest('div[id^="documentosProgenitor"]'); // Encuentra el div padre
+                if (parentDiv.hasClass('d-none')) {
+                    // Si el div está oculto (tiene la clase d-none), no validamos los archivos y pasamos al siguiente input
+                    return true;
+                }
+
+                if (files.length > 0) {
+                    const file = files[0];
+                    const allowedExtensions = /(\.pdf|\.jpg|\.jpeg)$/i;
+                    const maxSize = 5 * 1024 * 1024; // 5 MB
+
+                    // Validar extensión del archivo
+                    if (!allowedExtensions.test(file.name)) {
+                        isValid = false;
+                        const fieldName = $fileInput.attr('data-name') || 'El archivo';
+                        errorMessages.push(`- ${fieldName} debe ser un PDF o imagen JPG.`);
+                        $fileInput.addClass('is-invalid');
+                    } else {
+                        $fileInput.removeClass('is-invalid');
+                    }
+
+                    // Validar tamaño del archivo
+                    if (file.size > maxSize) {
+                        isValid = false;
+                        const fieldName = $fileInput.attr('data-name') || 'El archivo';
+                        errorMessages.push(`- ${fieldName} no debe exceder 5 MB.`);
+                        $fileInput.addClass('is-invalid');
+                    } else {
+                        $fileInput.removeClass('is-invalid');
+                    }
+                } else {
+                    // Si no hay archivo, obtener el checkbox relacionado
+                    const fileInputId = $fileInput.attr('id'); // Obtener el ID del campo de archivo
+                    const checkboxId = fileInputId.replace('boletasPago', 'noAplicaBoletasPago') // Reemplaza "boletasPago" por "noAplicaBoletasPago"
+                                                .replace('declaracionJurada', 'noAplicaDeclaracionJurada') // Reemplaza "declaracionJurada" por "noAplicaDeclaracionJurada"
+                                                .replace('certificadoMovimientos', 'noAplicaCertificadoMovimientos') // Reemplaza "certificadoMovimientos" por "noAplicaCertificadoMovimientos"
+                                                .replace('constanciaBusquedaRegistros', 'noAplicaConstanciaBusquedaRegistros') // Reemplaza "constanciaBusquedaRegistros" por "noAplicaConstanciaBusquedaRegistros"
+                                                .replace('otrosDocumentos', 'noAplicaOtrosDocumentos'); // Reemplaza "otrosDocumentos" por "noAplicaOtrosDocumentos"
+                    const relatedCheckbox = $(`#${checkboxId}`);
+
+                    if (relatedCheckbox.length > 0 && !relatedCheckbox.is(':checked')) {
+                        isValid = false;
+                        errorMessages.push(`- Marque la opción "No aplica" si no subirá archivo para ${$fileInput.attr('data-name') || 'este campo'}.`);
+                    }
+
                 }
             });
 
@@ -395,17 +453,17 @@
                 }
             }
 
-            // Enviar todos los formularios en el paso 6
             if (currentStep === 6) {
-                 // Recolectar y enviar todos los formularios
-                 let formData = new FormData();
-                 formData = new FormData($('#frmSolicitud')[0]);
-                 //console.log('formDataaaaaaaaaa',formData); return;
+                // Recolectar y enviar todos los formularios
+                let formData = new FormData($('#frmSolicitud')[0]);
+                $('#next-btn').prop('disabled', true); // Deshabilitar el botón para evitar múltiples envíos
+                $('#next-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrand Solicitud...'); // Cambiar el contenido del botón a un spinner
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
+
                 // Enviar datos con AJAX (o método preferido)
                 $.ajax({
                     url: '/setdatos', // Cambiar por tu endpoint
@@ -414,24 +472,46 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
+                        // Mostrar mensaje de éxito
                         Swal.fire({
                             title: 'Éxito',
-                            text: 'La solicitud de beca se registro correctamente.',
+                            text: 'La solicitud de beca se registró correctamente.',
                             icon: 'success',
                             confirmButtonText: 'Entendido'
+                        }).then(() => {
+                            // Limpiar el formulario
+                            $('#frmSolicitud')[0].reset();
+                            // Regresar al paso 1
+                            currentStep = 1;
+                            updateSteps();
                         });
+                        // Eliminar el icono de loading y habilitar el botón
+                        $('#next-btn').html('Siguiente'); // Restaurar el texto del botón
+                        $('#next-btn').prop('disabled', false); // Habilitar el botón
                     },
                     error: function (xhr) {
+                        let errorMessage = 'Ocurrió un error al registrar la solicitud de beca. Por favor, inténtelo de nuevo.';
+
+                        // Si el servidor devuelve un mensaje de error específico
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = `Error: ${xhr.responseJSON.message}`; // Concatenar el mensaje del servidor
+                        } else if (xhr.responseText) {
+                            errorMessage = `Error: ${xhr.responseText}`; // Si no hay respuesta JSON, pero hay texto de error
+                        }
+
+                        // Mostrar mensaje de error con Swal
                         Swal.fire({
                             title: 'Error',
-                            text: 'Ocurrió un error al registrar la solicitud de beca. Por favor, inténtelo de nuevo.',
+                            text: errorMessage,
                             icon: 'error',
                             confirmButtonText: 'Entendido'
                         });
+                        $('#next-btn').html('Siguiente'); // Restaurar el texto del botón
+                        $('#next-btn').prop('disabled', false); // Habilitar el botón
                     }
                 });
-                return; // Detener avance al siguiente paso
 
+                return; // Detener avance al siguiente paso
             }
 
             // Saltar el paso 4 si está marcado como omitido
@@ -544,7 +624,56 @@
             });
         });
 
+       // Selecciona todos los inputs numéricos relacionados con ingresos
+        const ingresosFields = [
+            '#remuneracionPlanilla',
+            '#honorariosProfesionales',
+            '#pensionista',
+            '#rentasInmuebles',
+            '#rentasVehiculos',
+            '#otrosIngresos'
+        ];
 
+        const gastosFields = [
+            '#pagoColegios',
+            '#pagoTalleres',
+            '#pagoUniversidad',
+            '#pagoAlimentacion',
+            '#pagoCreditoPersonal',
+            '#pagoCreditoHipotecario',
+            '#pagoCreditoVehicular',
+            '#pagoServicios',
+            '#pagoMantenimiento',
+            '#pagoApoyoCasa',
+            '#pagoClubes',
+            '#pagoSeguros',
+            '#pagoApoyoFamiliar',
+            '#otrosGastos',
+        ];
+
+        // Escucha el evento 'input' en cada campo de ingresos
+        $(ingresosFields.join(',')).on('input', function () {
+            let totalIngresos = 0;
+            // Recorre cada campo de ingresos y suma sus valores
+            ingresosFields.forEach(field => {
+                const value = parseFloat($(field).val()) || 0; // Si el valor es NaN, usa 0
+                totalIngresos += value;
+            });
+            // Actualiza el campo totalIngresos
+            $('#totalIngresos').val(totalIngresos.toFixed(2)); // Redondea a 2 decimales
+        });
+
+        // Escucha el evento 'input' en cada campo de gastos
+        $(gastosFields.join(',')).on('input', function () {
+            let totalGastos = 0;
+            // Recorre cada campo de gastos y suma sus valores
+            gastosFields.forEach(field => {
+                const value = parseFloat($(field).val()) || 0; // Si el valor es NaN, usa 0
+                totalGastos += value;
+            });
+            // Actualiza el campo totalGastos
+            $('#totalGastos').val(totalGastos.toFixed(2)); // Redondea a 2 decimales
+        });
     });
 </script>
         <!-- end container -->
