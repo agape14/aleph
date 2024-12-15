@@ -17,6 +17,7 @@ class Progenitor extends Model
         'dni',
         'nombres',
         'apellidos',
+        'correo_electronico',
         'codigo_sianet',
         'numero_hijos',
         'hijos_matriculados',

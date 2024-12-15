@@ -37,7 +37,7 @@
     </div>
     <div class="mb-3">
         <label for="codigo_sianet" class="form-label">Código Estudiante Sianet</label>
-        <input type="text" id="codigo_sianet" class="form-control" placeholder="Código Sianet del estudiante" readonly>
+        <input type="text" id="codigo_sianet" name="codigo_sianet"  class="form-control" placeholder="Código Sianet del estudiante" readonly>
     </div>
     <hr>
 

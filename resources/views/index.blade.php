@@ -416,7 +416,7 @@
                     success: function (response) {
                         Swal.fire({
                             title: 'Éxito',
-                            text: 'El formulario se envió correctamente.',
+                            text: 'La solicitud de beca se registro correctamente.',
                             icon: 'success',
                             confirmButtonText: 'Entendido'
                         });
@@ -424,7 +424,7 @@
                     error: function (xhr) {
                         Swal.fire({
                             title: 'Error',
-                            text: 'Ocurrió un error al enviar el formulario. Por favor, inténtelo de nuevo.',
+                            text: 'Ocurrió un error al registrar la solicitud de beca. Por favor, inténtelo de nuevo.',
                             icon: 'error',
                             confirmButtonText: 'Entendido'
                         });

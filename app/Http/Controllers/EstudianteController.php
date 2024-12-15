@@ -171,81 +171,134 @@ class EstudianteController extends Controller
         ]);
     }
 
-    private function handleProgenitor($solicitudId,$estudianteId, Request $request, $type)
+    private function handleProgenitor($solicitudId, $estudianteId, Request $request, $type)
     {
-        if($request->id_progenitor){
-            $progenitor1 = Progenitor::find($request->id_progenitor);
-            if ($progenitor1) {
-                // Actualizar los campos del progenitor
-                $progenitor1->solicitud_id = $solicitudId;
-                $progenitor1->estudiante_id = $estudianteId;
-                $progenitor1->numero_hijos = $request->numeroHijos_Prog1;
-                $progenitor1->hijos_matriculados = $request->hijosMatriculados_Prog1;
-                $progenitor1->formacion_academica = $request->formacionAcademica_Prog1;
-                $progenitor1->trabaja = $request->trabajoRemunerado_Prog1==='si'?1:0;
-                $progenitor1->tiempo_desempleo = $request->tiempoDesempleo_Prog1;
-                $progenitor1->cargo = $request->cargo_Prog1;
-                $progenitor1->anio_inicio_laboral = $request->anioLaboral_Prog1;
-                $progenitor1->lugar_trabajo = $request->lugarTrabajo_Prog1;
-                $progenitor1->ingresos_mensuales = $request->ingresos_Prog1;
-                $progenitor1->recibe_bonos = $request->bonos_Prog1==='si'?1:null;
-                $progenitor1->monto_bonos = $request->montoBonos_Prog1;
-                $progenitor1->recibe_utilidades = $request->utilidades_Prog1==='si'?1:null;
-                $progenitor1->monto_utilidades = $request->montoUtilidades_Prog1;
-                $progenitor1->titular_empresa = $request->titularEmpresa_Prog1==='si'?1:null;
-                $progenitor1->porcentaje_acciones = $request->acciones_Prog1;
-                $progenitor1->razon_social = $request->razonSocial_Prog1;
-                $progenitor1->numero_ruc = $request->nroRuc_Prog1;
-                $progenitor1->vivienda_tipo = $request->tipoVivienda_Prog1;
-                $progenitor1->credito_hipotecario = $request->creditoHipotecario_Prog1==='si'?1:null;
-                $progenitor1->direccion_vivienda = $request->direccion_Prog1;
-                $progenitor1->m2_vivienda = $request->metros_Prog1;
-                $progenitor1->cantidad_inmuebles = $request->numInmuebles_Prog1;
+        // Determinar el prefijo basado en el tipo de progenitor
+        $prefix = ($type === 'progenitor1') ? 'Prog1' : 'Prog2';
 
-                // Guardar los cambios en la base de datos
-                $progenitor1->save();
-                $this->handleDocuments($solicitudId,$progenitor1->id, $request);
-                \Log::info("Progenitor1 actualizado exitosamente. ID: {$progenitor1->id}");
-            } else {
-                \Log::warning("No se encontró un progenitor1 con el ID: {$request->id_progenitor}");
+        // Crear un nuevo Progenitor
+        $progenitor = new Progenitor();
+        $progenitor->tipo = $type;
+
+        // Definir los campos comunes a ambos progenitores
+        $fields = [
+            'dni', 'nombres', 'apellidos', 'correo_electronico', 'codigo_sianet',
+            'numero_hijos', 'hijos_matriculados', 'formacion_academica', 'trabaja', 
+            'tiempo_desempleo', 'cargo', 'anio_inicio_laboral', 'lugar_trabajo', 
+            'ingresos_mensuales', 'recibe_bonos', 'monto_bonos', 'recibe_utilidades', 
+            'monto_utilidades', 'titular_empresa', 'porcentaje_acciones', 'razon_social', 
+            'numero_ruc', 'vivienda_tipo', 'credito_hipotecario', 'direccion_vivienda', 
+            'm2_vivienda', 'cantidad_inmuebles'
+        ];
+
+        // Asignar los valores a los campos, considerando el prefijo
+        foreach ($fields as $field) {
+            $fieldName = "{$field}_{$prefix}";
+            if ($request->has($fieldName)) {
+                $value = $request->input($fieldName);
+
+                // Para campos de tipo booleano (sí/no)
+                if (in_array($field, ['trabaja', 'recibe_bonos', 'recibe_utilidades', 'titular_empresa', 'credito_hipotecario'])) {
+                    $progenitor->$field = $value === 'si' ? 1 : ($value === 'no' ? 0 : null);
+                } else {
+                    $progenitor->$field = $value;
+                }
             }
         }
 
-        if($request->id_progenitor2){
-            $progenitor2 = Progenitor::find($request->id_progenitor2);
-            if ($progenitor2) {
-                $progenitor2->solicitud_id = $solicitudId;
-                $progenitor2->estudiante_id = $estudianteId;
-                $progenitor2->$numero_hijos=$request->numeroHijos_Prog2;
-                $progenitor2->$hijos_matriculados=$request->hijosMatriculados_Prog2;
-                $progenitor2->$formacion_academica=$request->formacionAcademica_Prog2;
-                $progenitor2->trabaja = $request->trabajoRemunerado_Prog2==='si'?1:0;
-                $progenitor2->$tiempo_desempleo=$request->tiempoDesempleo_Prog2;
-                //$progenitor2->$sueldo_fijo=$request->sueldo_fijo_Prog2;
-                //$progenitor2->$sueldo_variable=$request->sueldo_variable_Prog2;
-                $progenitor2->$cargo=$request->cargo_Prog2;
-                $progenitor2->$anio_inicio_laboral=$request->anioLaboral_Prog2;
-                $progenitor2->$lugar_trabajo=$request->lugarTrabajo_Prog2;
-                $progenitor2->$ingresos_mensuales=$request->ingresos_Prog2;
-                $progenitor2->$recibe_bonos=$request->bonos_Prog2==='si'?1:null;
-                $progenitor2->$monto_bonos=$request->montoBonos_Prog2;
-                $progenitor2->$recibe_utilidades=$request->utilidades_Prog2==='si'?1:null;
-                $progenitor2->$monto_utilidades=$request->montoUtilidades_Prog2;
-                $progenitor2->$titular_empresa=$request->titularEmpresa_Prog2==='si'?1:null;
-                $progenitor2->$porcentaje_acciones=$request->acciones_Prog2;
-                $progenitor2->$razon_social=$request->razonSocial_Prog2;
-                $progenitor2->$numero_ruc=$request->nroRuc_Prog2;
-                $progenitor2->$vivienda_tipo=$request->tipoVivienda_Prog2;
-                $progenitor2->$credito_hipotecario=$request->creditoHipotecario_Prog2==='si'?1:null;
-                $progenitor2->$direccion_vivienda=$request->direccion_Prog2;
-                $progenitor2->$m2_vivienda=$request->metros_Prog2;
-                $progenitor2->$cantidad_inmuebles=$request->numInmuebles_Prog2;
-                $progenitor2->save();
-                $this->handleDocuments($solicitudId,$progenitor2->id, $request);
-                \Log::info("Progenitor2 actualizado exitosamente. ID: {$progenitor2->id}");
-            } else {
-                \Log::warning("No se encontró un progenitor2 con el ID: {$request->id_progenitor2}");
-            }
+        // Asignar los IDs relacionados
+        $progenitor->solicitud_id = $solicitudId;
+        $progenitor->estudiante_id = $estudianteId;
+
+        // Guardar el progenitor en la base de datos
+        $progenitor->save();
+
+        // Manejar los documentos
+        $this->handleDocuments($solicitudId, $progenitor->id, $request);
+
+        // Log de éxito
+        \Log::info("{$type} actualizado exitosamente. ID: {$progenitor->id}");
+    }
+
+    private function handleProgenitor_back($solicitudId,$estudianteId, Request $request, $type)
+    {
+        if($type=='progenitor1'){
+            $progenitor1 = new Progenitor() ;
+            $progenitor1->tipo = 'progenitor1';
+            $progenitor1->dni = $request->numeroDocumento_Prog1;
+            $progenitor1->nombres = $request->nombres_Prog1;
+            $progenitor1->apellidos = $request->apellidos_Prog1;
+            $progenitor1->correo_electronico = $request->correo_Prog1;
+            $progenitor1->codigo_sianet = $request->codigo_sianet;
+            $progenitor1->solicitud_id = $solicitudId;
+            $progenitor1->estudiante_id = $estudianteId;
+            $progenitor1->numero_hijos = $request->numeroHijos_Prog1;
+            $progenitor1->hijos_matriculados = $request->hijosMatriculados_Prog1;
+            $progenitor1->formacion_academica = $request->formacionAcademica_Prog1;
+            $progenitor1->trabaja = $request->trabajoRemunerado_Prog1==='si'?1:0;
+            $progenitor1->tiempo_desempleo = $request->tiempoDesempleo_Prog1;
+            $progenitor1->cargo = $request->cargo_Prog1;
+            $progenitor1->anio_inicio_laboral = $request->anioLaboral_Prog1;
+            $progenitor1->lugar_trabajo = $request->lugarTrabajo_Prog1;
+            $progenitor1->ingresos_mensuales = $request->ingresos_Prog1;
+            $progenitor1->recibe_bonos = $request->bonos_Prog1==='si'?1:null;
+            $progenitor1->monto_bonos = $request->montoBonos_Prog1;
+            $progenitor1->recibe_utilidades = $request->utilidades_Prog1==='si'?1:null;
+            $progenitor1->monto_utilidades = $request->montoUtilidades_Prog1;
+            $progenitor1->titular_empresa = $request->titularEmpresa_Prog1==='si'?1:null;
+            $progenitor1->porcentaje_acciones = $request->acciones_Prog1;
+            $progenitor1->razon_social = $request->razonSocial_Prog1;
+            $progenitor1->numero_ruc = $request->nroRuc_Prog1;
+            $progenitor1->vivienda_tipo = $request->tipoVivienda_Prog1;
+            $progenitor1->credito_hipotecario = $request->creditoHipotecario_Prog1==='si'?1:null;
+            $progenitor1->direccion_vivienda = $request->direccion_Prog1;
+            $progenitor1->m2_vivienda = $request->metros_Prog1;
+            $progenitor1->cantidad_inmuebles = $request->numInmuebles_Prog1;
+
+            // Guardar los cambios en la base de datos
+            $progenitor1->save();
+            $this->handleDocuments($solicitudId,$progenitor1->id, $request);
+            \Log::info("Progenitor1 actualizado exitosamente. ID: {$progenitor1->id}");
+            
+        }
+
+        if($type=='progenitor2'){
+            $progenitor2 = new Progenitor() ;
+            $progenitor2->tipo = 'progenitor2';
+            $progenitor2->dni = $request->numeroDocumento_Prog2;
+            $progenitor2->nombres = $request->nombres_Prog2;
+            $progenitor2->apellidos = $request->apellidos_Prog2;
+            $progenitor2->correo_electronico = $request->correo_Prog2;
+            $progenitor2->codigo_sianet = $request->codigo_sianet;
+            $progenitor2->solicitud_id = $solicitudId;
+            $progenitor2->estudiante_id = $estudianteId;
+            $progenitor2->numero_hijos = $request->numeroHijos_Prog2;
+            $progenitor2->hijos_matriculados = $request->hijosMatriculados_Prog2;
+            $progenitor2->formacion_academica = $request->formacionAcademica_Prog2;
+            $progenitor2->trabaja = $request->trabajoRemunerado_Prog2==='si'?1:0;
+            $progenitor2->tiempo_desempleo = $request->tiempoDesempleo_Prog2;
+            $progenitor2->cargo = $request->cargo_Prog2;
+            $progenitor2->anio_inicio_laboral = $request->anioLaboral_Prog2;
+            $progenitor2->lugar_trabajo = $request->lugarTrabajo_Prog2;
+            $progenitor2->ingresos_mensuales = $request->ingresos_Prog2;
+            $progenitor2->recibe_bonos = $request->bonos_Prog2==='si'?1:null;
+            $progenitor2->monto_bonos = $request->montoBonos_Prog2;
+            $progenitor2->recibe_utilidades = $request->utilidades_Prog2==='si'?1:null;
+            $progenitor2->monto_utilidades = $request->montoUtilidades_Prog2;
+            $progenitor2->titular_empresa = $request->titularEmpresa_Prog2==='si'?1:null;
+            $progenitor2->porcentaje_acciones = $request->acciones_Prog2;
+            $progenitor2->razon_social = $request->razonSocial_Prog2;
+            $progenitor2->numero_ruc = $request->nroRuc_Prog2;
+            $progenitor2->vivienda_tipo = $request->tipoVivienda_Prog2;
+            $progenitor2->credito_hipotecario = $request->creditoHipotecario_Prog2==='si'?1:null;
+            $progenitor2->direccion_vivienda = $request->direccion_Prog2;
+            $progenitor2->m2_vivienda = $request->metros_Prog2;
+            $progenitor2->cantidad_inmuebles = $request->numInmuebles_Prog2;
+
+            // Guardar los cambios en la base de datos
+            $progenitor2->save();
+            $this->handleDocuments($solicitudId,$progenitor2->id, $request);
+            \Log::info("progenitor2 actualizado exitosamente. ID: {$progenitor2->id}");
         }
     }
 
@@ -436,21 +489,48 @@ class EstudianteController extends Controller
     public function notificarPorCorreo(Solicitud $solicitud)
     {
         try {
-            // Notificar al destinatario (puedes configurar dinámicamente el destinatario)
-            //$destinatario->notify(new SolicitudCreadaNotification($solicitud));
+            // Obtener los datos del estudiante
             $nombre = $solicitud->estudiante->nombres;
-            $apellido = $solicitud->estudiante->apepaterno. ' ' .  $solicitud->estudiante->apematerno;
-            $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
-            $destinatario = User::find(3);
+            $apellido = $solicitud->estudiante->apepaterno . ' ' . $solicitud->estudiante->apematerno;
+            $url_alternativa = "https://aleph.eximio.com.pe/login";  // O la ruta adecuada
+
+            // Obtener los correos de los progenitores
+            $progenitores = $solicitud->progenitores; // Obtienes todos los progenitores relacionados
+
+            // Obtener el correo del primer progenitor (si existe)
+            $correo1cc = $progenitores->first()->correo_electronico ?? null;  // Obtener el correo del primer progenitor
+
+            // Obtener el correo del segundo progenitor (si existe)
+            $correo2cc = $progenitores->count() > 1 ? $progenitores->skip(1)->first()->correo_electronico : null; // Segundo progenitor
+
+            // Establecer el destinatario principal CODIGO_USUARIO_NOTIFICA
+            $destinatario = User::find(env('CODIGO_USUARIO_NOTIFICA', 3));
+
+            // Correo para la copia
+            $emailCopia = env('MAIL_FROM_ADDRESS', 'gestor.aleph@gmail.com');
+
+            // Preparar la llamada para enviar el correo
+            $mail = Mail::to($destinatario);
+
+            // Verificar si hay correos para agregar a CC
+            if (!empty($correo1cc)) {
+                $mail->cc($correo1cc);
+            }
+            if (!empty($correo2cc)) {
+                $mail->cc($correo2cc);
+            }
+            // Agregar el correo de copia
+            $mail->cc($emailCopia);
+
             // Enviar el correo
-            $emailCopia = env('MAIL_FROM_ADDRESS','gestor.aleph@gmail.com');
-            Mail::to($destinatario)
-            ->cc($emailCopia)
-            ->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa,$destinatario->name));
+            $mail->send(new SolicitudCreadaMail($nombre, $apellido, $solicitud->id, $url_alternativa, $destinatario->name, $correo1cc, $correo2cc));
+            
         } catch (\Exception $e) {
             \Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
         }
     }
+
+    
 
     public function notificarPorCorreoprueba($id)
     {
