@@ -147,16 +147,16 @@ class EstudianteController extends Controller
             'solicitante_apellido' => 'required|string|max:255',
             'documentos.*' => 'nullable|file|mimes:jpg,png,pdf|max:2048',*/
             'motivosBeca' => 'nullable|array',
-            'boletasPagoProgenitor1'                    => 'nullable|file|mimes:pdf|max:2048',
-            'declaracionJuradaProgenitor1'              => 'nullable|file|mimes:pdf|max:2048',
-            'certificadoMovimientosProgenitor1'         => 'nullable|file|mimes:pdf|max:2048',
-            'constanciaBusquedaRegistrosProgenitor1'    => 'nullable|file|mimes:pdf|max:2048',
-            'otrosDocumentosProgenitor1'                => 'nullable|file|mimes:pdf|max:2048',
-            'boletasPagoProgenitor2'                    => 'nullable|file|mimes:pdf|max:2048',
-            'declaracionJuradaProgenitor2'              => 'nullable|file|mimes:pdf|max:2048',
-            'certificadoMovimientosProgenitor2'         => 'nullable|file|mimes:pdf|max:2048',
-            'constanciaBusquedaRegistrosProgenitor2'    => 'nullable|file|mimes:pdf|max:2048',
-            'otrosDocumentosProgenitor2'                => 'nullable|file|mimes:pdf|max:2048',
+            'boletasPagoProgenitor1'                    => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'declaracionJuradaProgenitor1'              => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'certificadoMovimientosProgenitor1'         => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'constanciaBusquedaRegistrosProgenitor1'    => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'otrosDocumentosProgenitor1'                => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'boletasPagoProgenitor2'                    => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'declaracionJuradaProgenitor2'              => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'certificadoMovimientosProgenitor2'         => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'constanciaBusquedaRegistrosProgenitor2'    => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
+            'otrosDocumentosProgenitor2'                => 'nullable|file|mimes:pdf|max:5242880',  // 5 MB
         ]);
     }
 

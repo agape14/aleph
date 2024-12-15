@@ -479,11 +479,7 @@
                             icon: 'success',
                             confirmButtonText: 'Entendido'
                         }).then(() => {
-                            // Limpiar el formulario
-                            $('#frmSolicitud')[0].reset();
-                            // Regresar al paso 1
-                            currentStep = 1;
-                            updateSteps();
+                            location.reload();
                         });
                         // Eliminar el icono de loading y habilitar el botón
                         $('#next-btn').html('Siguiente'); // Restaurar el texto del botón
@@ -510,8 +506,6 @@
                         $('#next-btn').prop('disabled', false); // Habilitar el botón
                     }
                 });
-
-                return; // Detener avance al siguiente paso
             }
 
             // Saltar el paso 4 si está marcado como omitido
