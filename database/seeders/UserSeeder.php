@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
         User::create([
             'id'=>4,
             'name' => 'Gestor Aleph',
-            'email' => 'gestor.aleph@gmail.com',
+            'email' => 'notificaciones@colegioaleph.edu.pe',
             'password'=>bcrypt('Aleph2025'),
             'role'=>'1' //1 for Admin
         ]);

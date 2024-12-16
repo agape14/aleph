@@ -578,7 +578,7 @@ class EstudianteController extends Controller
             $destinatario = User::find(env('CODIGO_USUARIO_NOTIFICA', 3));
 
             // Correo para la copia
-            $emailCopia = env('MAIL_FROM_ADDRESS', 'gestor.aleph@gmail.com');
+            $emailCopia = env('MAIL_FROM_ADDRESS', 'notificaciones@colegioaleph.edu.pe');
 
             // Preparar la llamada para enviar el correo
             $mail = Mail::to($destinatario);
@@ -613,7 +613,7 @@ class EstudianteController extends Controller
             $url_alternativa = "https://aleph.eximio.com.pe/login";//route('ver_solicitud', $id);
             $destinatario = User::find(3);
             // Enviar el correo
-            $emailCopia = env('MAIL_FROM_ADDRESS','gestor.aleph@gmail.com');
+            $emailCopia = env('MAIL_FROM_ADDRESS','notificaciones@colegioaleph.edu.pe');
             Mail::to($destinatario)
             ->cc($emailCopia)
             ->send(new SolicitudCreadaMail($nombre, $apellido, $id, $url_alternativa,$destinatario->name));
