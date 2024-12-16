@@ -113,10 +113,24 @@
                 <!-- card  -->
                 <div class="card">
                     <!-- card header  -->
-                    <div class="card-header bg-white py-4 d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Listado de Solicitudes</h4>
-                        <div>
-                            <div class="btn-group">
+                        <div class="bg-white py-2 d-flex flex-column flex-md-row justify-content-between align-items-start w-100">
+                            <!-- Formulario de búsqueda -->
+                            <form action="{{ route('admin.home') }}" method="GET" class="d-flex flex-column flex-md-row w-100 me-3">
+                                <div class="input-group mb-2 mb-md-0 flex-fill me-3">
+                                    <input type="text" class="form-control" name="dni" placeholder="Buscar por DNI" value="{{ request('dni') }}">
+                                </div>
+                                <div class="input-group mb-2 mb-md-0 flex-fill me-3">
+                                    <input type="date" class="form-control" name="fecha_inicio" value="{{ request('fecha_inicio') }}">
+                                </div>
+                                <div class="input-group mb-2 mb-md-0 flex-fill me-3">
+                                    <input type="date" class="form-control" name="fecha_fin" value="{{ request('fecha_fin') }}">
+                                </div>
+                                <button type="submit" class="btn btn-secondary mb-2 mb-md-0">Buscar</button>
+                            </form>
+                            <!-- Exportar dropdown -->
+                            <div class="btn-group mt-2 mt-md-0 w-100 w-md-15">
                                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     Exportar
                                 </button>
@@ -320,6 +334,7 @@
                                                         <strong>CANTIDAD DE INMUEBLES:</strong> {{ $progenitor->cantidad_inmuebles }}<br>
                                                     @endif
                                                 </li>
+                                                <hr>
                                             @endforeach
                                         </ul>
                                     @endif

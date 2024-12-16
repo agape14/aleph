@@ -24,11 +24,31 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function adminHome()
+    public function adminHome(Request $request)
     {
-        // Obtener todas las solicitudes
-        $solicitudes = Solicitud::with(['progenitores', 'estudiante','documentosAdjuntos'])->get();
-        // Obtener fechas actuales
+        // Obtener las solicitudes con relación a los progenitores, estudiantes y documentos adjuntos
+        $solicitudesQuery = Solicitud::with(['progenitores', 'estudiante','documentosAdjuntos']);
+
+        // Filtrar por DNI del estudiante
+        if ($request->has('dni') && $request->dni != '') {
+            $solicitudesQuery->whereHas('estudiante', function($query) use ($request) {
+                $query->where('nro_documento', 'like', '%' . $request->dni . '%');
+            });
+        }
+
+        // Filtrar por rango de fechas
+        if ($request->has('fecha_inicio') && $request->fecha_inicio != '') {
+            $solicitudesQuery->whereDate('created_at', '>=', $request->fecha_inicio);
+        }
+
+        if ($request->has('fecha_fin') && $request->fecha_fin != '') {
+            $solicitudesQuery->whereDate('created_at', '<=', $request->fecha_fin);
+        }
+
+        // Obtener todas las solicitudes filtradas
+        $solicitudes = $solicitudesQuery->get();
+
+        // Obtener fechas actuales para mostrar estadísticas
         $hoy = Carbon::today();
         $inicioSemana = Carbon::now()->startOfWeek();
         $inicioMes = Carbon::now()->startOfMonth();
@@ -50,6 +70,7 @@ class HomeController extends Controller
             'contadorAnual' => $contadorAnual,
         ]);
     }
+
     public function userHome()
     {
         return view('user.home',["msg"=>"Hello! I am user"]);
