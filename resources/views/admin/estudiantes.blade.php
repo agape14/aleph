@@ -34,7 +34,7 @@
 
                         <form action="{{ route('progenitores.transfer') }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-primary">Transferir a Progenitores</button>
+                            <button type="submit" class="btn btn-primary">Limpiar Alumnos</button>
                         </form>
 
                         @if(session('success'))

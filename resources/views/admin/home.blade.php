@@ -123,7 +123,6 @@
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="{{ route('solicitudes.exportExcel') }}">Exportar a Excel</a></li>
                                     <li><a class="dropdown-item" href="{{ route('solicitudes.exportPDF') }}">Exportar a PDF</a></li>
-                                    <li><a class="dropdown-item" href="#" onclick="window.print()">Imprimir</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -209,16 +208,117 @@
                                         <ul>
                                             @foreach ($solicitud->progenitores as $progenitor)
                                                 <li>
-                                                    <strong>Nombre:</strong> {{ $progenitor->nombres }} {{ $progenitor->apellidos }}<br>
-                                                    <strong>DNI:</strong> {{ $progenitor->dni }}<br>
-                                                    <strong>Tipo:</strong> {{ ucfirst($progenitor->tipo) }}<br>
-                                                    <strong>Codigo Sianet:</strong> {{ $progenitor->codigo_sianet }}<br>
-                                                    <strong>Nro. Hijos:</strong> {{ $progenitor->numero_hijos??'' }}<br>
-                                                    <strong>Hijos Matriculados:</strong> {{ $progenitor->hijos_matriculados??'' }}<br>
-                                                    <strong>Formacion Academica:</strong> {{ $progenitor->formacion_academica??'' }}<br>
-                                                    <strong>Tiempo Desempleo:</strong> {{ $progenitor->tiempo_desempleo??'' }}<br>
-                                                    <strong>Sueldo Fijo:</strong> {{ $progenitor->sueldo_fijo }}<br>
-                                                    <strong>Cargo:</strong> {{ $progenitor->cargo??'' }}<br>
+                                                    @if ($progenitor->nombres || $progenitor->apellidos)
+                                                        <strong>NOMBRE:</strong> {{ strtoupper($progenitor->nombres) }} {{ strtoupper($progenitor->apellidos) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->dni)
+                                                        <strong>DNI:</strong> {{ strtoupper($progenitor->dni) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->tipo)
+                                                        <strong>TIPO:</strong> {{ strtoupper($progenitor->tipo) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->codigo_sianet)
+                                                        <strong>CÓDIGO SIANET:</strong> {{ strtoupper($progenitor->codigo_sianet) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->numero_hijos)
+                                                        <strong>NRO. HIJOS:</strong> {{ $progenitor->numero_hijos }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->hijos_matriculados)
+                                                        <strong>HIJOS MATRICULADOS:</strong> {{ $progenitor->hijos_matriculados }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->formacion_academica)
+                                                        <strong>FORMACIÓN ACADÉMICA:</strong> {{ strtoupper($progenitor->formacion_academica) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->trabaja !== null)
+                                                        <strong>TRABAJA:</strong> {{ $progenitor->trabaja ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->tiempo_desempleo)
+                                                        <strong>TIEMPO DESEMPLEO:</strong> {{ strtoupper($progenitor->tiempo_desempleo) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->sueldo_fijo !== null)
+                                                        <strong>SUELDO FIJO:</strong> {{ $progenitor->sueldo_fijo ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->sueldo_variable !== null)
+                                                        <strong>SUELDO VARIABLE:</strong> {{ $progenitor->sueldo_variable ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->cargo)
+                                                        <strong>CARGO:</strong> {{ strtoupper($progenitor->cargo) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->anio_inicio_laboral)
+                                                        <strong>AÑO INICIO LABORAL:</strong> {{ $progenitor->anio_inicio_laboral }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->lugar_trabajo)
+                                                        <strong>LUGAR DE TRABAJO:</strong> {{ strtoupper($progenitor->lugar_trabajo) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->ingresos_mensuales)
+                                                        <strong>INGRESOS MENSUALES:</strong> S/. {{ number_format($progenitor->ingresos_mensuales, 2) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->recibe_bonos !== null)
+                                                        <strong>RECIBE BONOS:</strong> {{ $progenitor->recibe_bonos ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->monto_bonos)
+                                                        <strong>MONTO BONOS:</strong> {{ strtoupper($progenitor->monto_bonos) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->recibe_utilidades !== null)
+                                                        <strong>RECIBE UTILIDADES:</strong> {{ $progenitor->recibe_utilidades ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->monto_utilidades)
+                                                        <strong>MONTO UTILIDADES:</strong> {{ strtoupper($progenitor->monto_utilidades) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->titular_empresa !== null)
+                                                        <strong>TITULAR EMPRESA:</strong> {{ $progenitor->titular_empresa ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->porcentaje_acciones)
+                                                        <strong>PORCENTAJE ACCIONES:</strong> {{ $progenitor->porcentaje_acciones }}%<br>
+                                                    @endif
+
+                                                    @if ($progenitor->razon_social)
+                                                        <strong>RAZÓN SOCIAL:</strong> {{ strtoupper($progenitor->razon_social) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->numero_ruc)
+                                                        <strong>RUC:</strong> {{ $progenitor->numero_ruc }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->vivienda_tipo)
+                                                        <strong>TIPO DE VIVIENDA:</strong> {{ strtoupper($progenitor->vivienda_tipo) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->credito_hipotecario !== null)
+                                                        <strong>CRÉDITO HIPOTECARIO:</strong> {{ $progenitor->credito_hipotecario ? 'SÍ' : 'NO' }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->direccion_vivienda)
+                                                        <strong>DIRECCIÓN:</strong> {{ strtoupper($progenitor->direccion_vivienda) }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->m2_vivienda)
+                                                        <strong>M² VIVIENDA:</strong> {{ $progenitor->m2_vivienda }}<br>
+                                                    @endif
+
+                                                    @if ($progenitor->cantidad_inmuebles)
+                                                        <strong>CANTIDAD DE INMUEBLES:</strong> {{ $progenitor->cantidad_inmuebles }}<br>
+                                                    @endif
                                                 </li>
                                             @endforeach
                                         </ul>

@@ -1,6 +1,6 @@
 @extends('layouts_page.app')
 
-@section('title', 'Página Principal')
+@section('title', 'Colegio Áleph')
 
 @section('content')
 

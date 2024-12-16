@@ -12,7 +12,7 @@
                         <div class="mb-4 text-center">
                             <a href="../"><img width="180" src="{{ asset('images/Aleph-school.png') }}" alt="" /></a>
 
-                            <p class="mb-6 mt-4 ">{{ __('Login') }}</p>
+                            <p class="mb-6 mt-4 ">{{ __('Ingrese sus credenciales') }}</p>
                         </div>
                         <!-- Form -->
                         <form method="POST" action="{{ route('login') }}">

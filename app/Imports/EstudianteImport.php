@@ -16,12 +16,12 @@ class EstudianteImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Estudiante([
-            'codigo_sianet'     => $row['codigo_sianet'],
-            'apepaterno'        => $row['apepaterno'],
-            'apematerno'        => $row['apematerno'],
-            'nombres'           => $row['nombres'],
-            'tipo_documento'    => $row['tipo_documento'],
-            'nro_documento'     => $row['nro_documento'],
+            'codigo_sianet'     => strtoupper($row['codigo_sianet']),
+            'apepaterno'        => strtoupper($row['apepaterno']),
+            'apematerno'        => strtoupper($row['apematerno']),
+            'nombres'           => strtoupper($row['nombres']),
+            'tipo_documento'    => strtoupper($row['tipo_documento']),
+            'nro_documento'     => strtoupper($row['nro_documento']),
         ]);
     }
 }

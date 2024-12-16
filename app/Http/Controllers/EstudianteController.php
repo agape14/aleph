@@ -101,7 +101,7 @@ class EstudianteController extends Controller
             }
              */
             return redirect()->back()->with('success', 'Estudiantes eliminados exitosamente.');
-            return redirect()->back()->with('success', 'Datos transferidos exitosamente de Estudiantes a Progenitores.');
+            return redirect()->back()->with('success', 'Datos eliminados exitosamente de Estudiantes.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al transferir datos: ' . $e->getMessage());
         }
@@ -230,10 +230,10 @@ class EstudianteController extends Controller
             $progenitor1->tipo_documento = $request->tipoDocumento_Prog1;
             $progenitor1->tipo = 'progenitor1';
             $progenitor1->dni = $request->numeroDocumento_Prog1;
-            $progenitor1->nombres = $request->nombres_Prog1;
-            $progenitor1->apellidos = $request->apellidos_Prog1;
-            $progenitor1->correo_electronico = $request->correo_Prog1;
-            $progenitor1->codigo_sianet = $request->codigo_sianet;
+            $progenitor1->nombres = strtoupper($request->nombres_Prog1);
+            $progenitor1->apellidos = strtoupper($request->apellidos_Prog1);
+            $progenitor1->correo_electronico = strtoupper($request->correo_Prog1);
+            $progenitor1->codigo_sianet = strtoupper($request->codigo_sianet);
             $progenitor1->solicitud_id = $solicitudId;
             $progenitor1->estudiante_id = $estudianteId;
             $progenitor1->numero_hijos = $request->numeroHijos_Prog1;
@@ -241,9 +241,9 @@ class EstudianteController extends Controller
             $progenitor1->formacion_academica = $request->formacionAcademica_Prog1;
             $progenitor1->trabaja = $request->trabajoRemunerado_Prog1==='si'?1:0;
             $progenitor1->tiempo_desempleo = $request->tiempoDesempleo_Prog1;
-            $progenitor1->cargo = $request->cargo_Prog1;
+            $progenitor1->cargo = strtoupper($request->cargo_Prog1);
             $progenitor1->anio_inicio_laboral = $request->anioLaboral_Prog1;
-            $progenitor1->lugar_trabajo = $request->lugarTrabajo_Prog1;
+            $progenitor1->lugar_trabajo = strtoupper($request->lugarTrabajo_Prog1);
             $progenitor1->ingresos_mensuales = $request->ingresos_Prog1;
             $progenitor1->recibe_bonos = $request->bonos_Prog1==='si'?1:null;
             $progenitor1->monto_bonos = $request->montoBonos_Prog1;
@@ -251,11 +251,11 @@ class EstudianteController extends Controller
             $progenitor1->monto_utilidades = $request->montoUtilidades_Prog1;
             $progenitor1->titular_empresa = $request->titularEmpresa_Prog1==='si'?1:null;
             $progenitor1->porcentaje_acciones = $request->acciones_Prog1;
-            $progenitor1->razon_social = $request->razonSocial_Prog1;
+            $progenitor1->razon_social = strtoupper($request->razonSocial_Prog1);
             $progenitor1->numero_ruc = $request->nroRuc_Prog1;
-            $progenitor1->vivienda_tipo = $request->tipoVivienda_Prog1;
+            $progenitor1->vivienda_tipo = strtoupper($request->tipoVivienda_Prog1);
             $progenitor1->credito_hipotecario = $request->creditoHipotecario_Prog1==='si'?1:null;
-            $progenitor1->direccion_vivienda = $request->direccion_Prog1;
+            $progenitor1->direccion_vivienda = strtoupper($request->direccion_Prog1);
             $progenitor1->m2_vivienda = $request->metros_Prog1;
             $progenitor1->cantidad_inmuebles = $request->numInmuebles_Prog1;
 
@@ -271,10 +271,10 @@ class EstudianteController extends Controller
             $progenitor2->tipo_documento = $request->tipoDocumento_Prog2;
             $progenitor2->tipo = 'progenitor2';
             $progenitor2->dni = $request->numeroDocumento_Prog2;
-            $progenitor2->nombres = $request->nombres_Prog2;
-            $progenitor2->apellidos = $request->apellidos_Prog2;
-            $progenitor2->correo_electronico = $request->correo_Prog2;
-            $progenitor2->codigo_sianet = $request->codigo_sianet;
+            $progenitor2->nombres = strtoupper($request->nombres_Prog2);
+            $progenitor2->apellidos = strtoupper($request->apellidos_Prog2);
+            $progenitor2->correo_electronico = strtoupper($request->correo_Prog2);
+            $progenitor2->codigo_sianet = strtoupper($request->codigo_sianet);
             $progenitor2->solicitud_id = $solicitudId;
             $progenitor2->estudiante_id = $estudianteId;
             $progenitor2->numero_hijos = $request->numeroHijos_Prog2;
@@ -282,9 +282,9 @@ class EstudianteController extends Controller
             $progenitor2->formacion_academica = $request->formacionAcademica_Prog2;
             $progenitor2->trabaja = $request->trabajoRemunerado_Prog2==='si'?1:0;
             $progenitor2->tiempo_desempleo = $request->tiempoDesempleo_Prog2;
-            $progenitor2->cargo = $request->cargo_Prog2;
+            $progenitor2->cargo = strtoupper($request->cargo_Prog2);
             $progenitor2->anio_inicio_laboral = $request->anioLaboral_Prog2;
-            $progenitor2->lugar_trabajo = $request->lugarTrabajo_Prog2;
+            $progenitor2->lugar_trabajo = strtoupper($request->lugarTrabajo_Prog2);
             $progenitor2->ingresos_mensuales = $request->ingresos_Prog2;
             $progenitor2->recibe_bonos = $request->bonos_Prog2==='si'?1:null;
             $progenitor2->monto_bonos = $request->montoBonos_Prog2;
@@ -292,11 +292,11 @@ class EstudianteController extends Controller
             $progenitor2->monto_utilidades = $request->montoUtilidades_Prog2;
             $progenitor2->titular_empresa = $request->titularEmpresa_Prog2==='si'?1:null;
             $progenitor2->porcentaje_acciones = $request->acciones_Prog2;
-            $progenitor2->razon_social = $request->razonSocial_Prog2;
+            $progenitor2->razon_social = strtoupper($request->razonSocial_Prog2);
             $progenitor2->numero_ruc = $request->nroRuc_Prog2;
-            $progenitor2->vivienda_tipo = $request->tipoVivienda_Prog2;
+            $progenitor2->vivienda_tipo = strtoupper($request->tipoVivienda_Prog2);
             $progenitor2->credito_hipotecario = $request->creditoHipotecario_Prog2==='si'?1:null;
-            $progenitor2->direccion_vivienda = $request->direccion_Prog2;
+            $progenitor2->direccion_vivienda = strtoupper($request->direccion_Prog2);
             $progenitor2->m2_vivienda = $request->metros_Prog2;
             $progenitor2->cantidad_inmuebles = $request->numInmuebles_Prog2;
 

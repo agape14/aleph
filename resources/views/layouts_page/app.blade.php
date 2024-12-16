@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-ES">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Colegio Áleph')</title>
-    <meta name="description" content=" " />
-    <meta name="keywords" content="" />
-    <meta content="Themesdesign" name="Agapito De la cruz Carlos" />
+    <title>{{ $meta_title ?? 'Colegio Áleph' }}</title>
+    <meta name="description" content="Ofrecemos una educación que desafía al estudiante integralmente y que se caracteriza por ser bilingüe e interdisciplinaria.">
+    <meta name="keywords" content="Colegios Áleph, educación bilingüe, interdisciplinaria">
+    <meta content="Agapito De la Cruz Carlos" name="author">
     <link rel="shortcut icon" href="{{ asset('images/aleph-favicon.ico') }} ">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
