@@ -15,7 +15,7 @@
         <label class="form-label">
             <strong>
                 1. Confirmo haber revisado y leído a detalle el
-                <a href="{{ asset('files/Revisión Formulario Beca 2025.pdf') }}" target="_blank" class="text-primary">
+                <a href="{{ asset('files/REGLAMENTO DE BECAS 2025.pdf') }}" target="_blank" class="text-primary">
                     Reglamento de Becas 2025
                 </a>:
             </strong>

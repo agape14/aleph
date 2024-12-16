@@ -34,9 +34,10 @@
         </div>
     </div>
     <div class="row mb-3">
-        <label for="otrosIngresos" class="col-sm-6 col-form-label">Otros ingresos <span class="text-muted">(detallar)</span></label>
+        <label for="otrosIngresos" class="col-sm-6 col-form-label">Otros ingresos <span class="text-muted">(Ingresar monto y detallar debajo)</span></label>
         <div class="col-sm-6">
-            <input type="text" id="otrosIngresos" name="otrosIngresos" class="form-control" placeholder="Detalle otros ingresos" data-name="Otros ingresos" required>
+            <input type="number" id="otrosIngresos" name="otrosIngresos" class="form-control" placeholder="Ingrese el monto" data-name="Otros ingresos" step="1" min="0" required>
+            <textarea id="detalleOtrosIngresos" name="detalleOtrosIngresos" class="form-control mt-2" placeholder="Detalle otros ingresos" rows="2" required></textarea>
         </div>
     </div>
 
@@ -140,9 +141,10 @@
         </div>
     </div>
     <div class="row mb-3">
-        <label for="otrosGastos" class="col-sm-6 col-form-label">Otros gastos <span class="text-muted">(detallar)</span></label>
+        <label for="otrosGastos" class="col-sm-6 col-form-label">Otros gastos <span class="text-muted">(Ingresar monto y detallar debajo)</span></label>
         <div class="col-sm-6">
-            <input type="text" id="otrosGastos" name="otrosGastos" class="form-control" placeholder="Detalle otros gastos" required data-name="Otros Gastos">
+            <input type="number" id="otrosGastos" name="otrosGastos" class="form-control" placeholder="Ingrese el monto" data-name="Otros gastos" step="1" min="0" required>
+            <textarea id="detalleOtrosGastos" name="detalleOtrosGastos" class="form-control mt-2" placeholder="Detalle otros gastos" rows="2" required></textarea>
         </div>
     </div>
 

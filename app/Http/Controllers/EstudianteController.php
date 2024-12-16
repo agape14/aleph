@@ -261,7 +261,7 @@ class EstudianteController extends Controller
 
             // Guardar los cambios en la base de datos
             $progenitor1->save();
-            $this->handleDocuments($solicitudId,$progenitor1->id, $request);
+            $this->handleDocumentsProgenitor1($solicitudId,$progenitor1->id, $request);
             \Log::info("Progenitor1 actualizado exitosamente. ID: {$progenitor1->id}");
 
         }
@@ -302,25 +302,30 @@ class EstudianteController extends Controller
 
             // Guardar los cambios en la base de datos
             $progenitor2->save();
-            $this->handleDocuments($solicitudId,$progenitor2->id, $request);
+            $this->handleDocumentsProgenitor2($solicitudId,$progenitor2->id, $request);
             \Log::info("progenitor2 actualizado exitosamente. ID: {$progenitor2->id}");
         }
     }
 
-    private function handleDocuments($solicitudId,$progenitorId, Request $request)
+    private function handleDocumentsProgenitor1($solicitudId,$progenitorId, Request $request)
     {
         //documentos del progenitor 1
         if (!$request->has('noAplicaBoletasPagoProgenitor1')) {
             if ($request->hasFile('boletasPagoProgenitor1') && $request->file('boletasPagoProgenitor1')->isValid()) {
                 $rutaArchivo = $request->file('boletasPagoProgenitor1')->store('boletas_pago', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'boletas_pago',
-                    'ruta_archivo' => $rutaArchivo,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo boletasPagoProgenitor1 guardado exitosamente en: {$rutaArchivo}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'boletas_pago',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo boletasPagoProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo}");
             } else {
                 \Log::warning("No se subió el archivo boletasPagoProgenitor1 o no es válido.");
             }
@@ -329,14 +334,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaDeclaracionJuradaProgenitor1')) {
             if ($request->hasFile('declaracionJuradaProgenitor1') && $request->file('declaracionJuradaProgenitor1')->isValid()) {
                 $rutaArchivo2 = $request->file('declaracionJuradaProgenitor1')->store('declaracion_renta', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'declaracion_renta',
-                    'ruta_archivo' => $rutaArchivo2,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo declaracionJuradaProgenitor1 guardado exitosamente en: {$rutaArchivo2}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'declaracion_renta',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo2,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo declaracionJuradaProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo2}");
             } else {
                 \Log::warning("No se subió el archivo declaracionJuradaProgenitor1 o no es válido.");
             }
@@ -345,14 +355,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaCertificadoMovimientosProgenitor1')) {
             if ($request->hasFile('certificadoMovimientosProgenitor1') && $request->file('certificadoMovimientosProgenitor1')->isValid()) {
                 $rutaArchivo3 = $request->file('certificadoMovimientosProgenitor1')->store('movimientos_migratorios', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'movimientos_migratorios',
-                    'ruta_archivo' => $rutaArchivo3,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo certificadoMovimientosProgenitor1 guardado exitosamente en: {$rutaArchivo3}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'movimientos_migratorios',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo3,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo certificadoMovimientosProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo3}");
             } else {
                 \Log::warning("No se subió el archivo certificadoMovimientosProgenitor1 o no es válido.");
             }
@@ -361,14 +376,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaConstanciaBusquedaRegistrosProgenitor1')) {
             if ($request->hasFile('constanciaBusquedaRegistrosProgenitor1') && $request->file('constanciaBusquedaRegistrosProgenitor1')->isValid()) {
                 $rutaArchivo4 = $request->file('constanciaBusquedaRegistrosProgenitor1')->store('bienes_inmuebles', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'bienes_inmuebles',
-                    'ruta_archivo' => $rutaArchivo4,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo constanciaBusquedaRegistrosProgenitor1 guardado exitosamente en: {$rutaArchivo4}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'bienes_inmuebles',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo4,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo constanciaBusquedaRegistrosProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo4}");
             } else {
                 \Log::warning("No se subió el archivo constanciaBusquedaRegistrosProgenitor1 o no es válido.");
             }
@@ -377,31 +397,44 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaOtrosDocumentosProgenitor1')) {
             if ($request->hasFile('otrosDocumentosProgenitor1') && $request->file('otrosDocumentosProgenitor1')->isValid()) {
                 $rutaArchivo5 = $request->file('otrosDocumentosProgenitor1')->store('otros', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'otros',
-                    'ruta_archivo' => $rutaArchivo5,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo otrosDocumentosProgenitor1 guardado exitosamente en: {$rutaArchivo5}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'otros',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo5,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo otrosDocumentosProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo5}");
             } else {
                 \Log::warning("No se subió el archivo otrosDocumentosProgenitor1 o no es válido.");
             }
         }
+    }
 
+    private function handleDocumentsProgenitor2($solicitudId,$progenitorId, Request $request)
+    {
         //documentos del progenitor 2
         if (!$request->has('noAplicaBoletasPagoProgenitor2')) {
             if ($request->hasFile('boletasPagoProgenitor2') && $request->file('boletasPagoProgenitor2')->isValid()) {
                 $rutaArchivo6 = $request->file('boletasPagoProgenitor2')->store('boletas_pago', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'boletas_pago',
-                    'ruta_archivo' => $rutaArchivo6,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo boletasPagoProgenitor2 guardado exitosamente en: {$rutaArchivo6}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'boletas_pago',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo6,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo boletasPagoProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo6}");
             } else {
                 \Log::warning("No se subió el archivo boletasPagoProgenitor2 o no es válido.");
             }
@@ -410,14 +443,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaDeclaracionJuradaProgenitor2')) {
             if ($request->hasFile('declaracionJuradaProgenitor2') && $request->file('declaracionJuradaProgenitor2')->isValid()) {
                 $rutaArchivo7 = $request->file('declaracionJuradaProgenitor2')->store('declaracion_renta', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'declaracion_renta',
-                    'ruta_archivo' => $rutaArchivo7,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo declaracionJuradaProgenitor2 guardado exitosamente en: {$rutaArchivo7}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'declaracion_renta',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo7,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo declaracionJuradaProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo7}");
             } else {
                 \Log::warning("No se subió el archivo declaracionJuradaProgenitor2 o no es válido.");
             }
@@ -426,14 +464,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaCertificadoMovimientosProgenitor2')) {
             if ($request->hasFile('certificadoMovimientosProgenitor2') && $request->file('certificadoMovimientosProgenitor2')->isValid()) {
                 $rutaArchivo8 = $request->file('certificadoMovimientosProgenitor2')->store('movimientos_migratorios', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'movimientos_migratorios',
-                    'ruta_archivo' => $rutaArchivo8,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo certificadoMovimientosProgenitor2 guardado exitosamente en: {$rutaArchivo8}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'movimientos_migratorios',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo8,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo certificadoMovimientosProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo8}");
             } else {
                 \Log::warning("No se subió el archivo certificadoMovimientosProgenitor2 o no es válido.");
             }
@@ -442,14 +485,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaConstanciaBusquedaRegistrosProgenitor2')) {
             if ($request->hasFile('constanciaBusquedaRegistrosProgenitor2') && $request->file('constanciaBusquedaRegistrosProgenitor2')->isValid()) {
                 $rutaArchivo9 = $request->file('constanciaBusquedaRegistrosProgenitor2')->store('bienes_inmuebles', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'bienes_inmuebles',
-                    'ruta_archivo' => $rutaArchivo9,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo constanciaBusquedaRegistrosProgenitor2 guardado exitosamente en: {$rutaArchivo9}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'bienes_inmuebles',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo9,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo constanciaBusquedaRegistrosProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo9}");
             } else {
                 \Log::warning("No se subió el archivo constanciaBusquedaRegistrosProgenitor2 o no es válido.");
             }
@@ -458,14 +506,19 @@ class EstudianteController extends Controller
         if (!$request->has('noAplicaOtrosDocumentosProgenitor2')) {
             if ($request->hasFile('otrosDocumentosProgenitor2') && $request->file('otrosDocumentosProgenitor2')->isValid()) {
                 $rutaArchivo10 = $request->file('otrosDocumentosProgenitor2')->store('otros', 'public');
-                DocumentoAdjunto::create([
-                    'solicitud_id' => $solicitudId,
-                    'progenitor_id' => $progenitorId,
-                    'tipo_documento' => 'otros',
-                    'ruta_archivo' => $rutaArchivo10,
-                    'no_aplica' => '0',
-                ]);
-                \Log::info("Archivo otrosDocumentosProgenitor2 guardado exitosamente en: {$rutaArchivo10}");
+                DocumentoAdjunto::firstOrCreate(
+                    [
+                        'solicitud_id' => $solicitudId,
+                        'progenitor_id' => $progenitorId,
+                        'tipo_documento' => 'otros',
+                    ],
+                    [
+                        'ruta_archivo' => $rutaArchivo10,
+                        'no_aplica' => '0',
+                    ]
+                );
+
+                \Log::info("Archivo otrosDocumentosProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo10}");
             } else {
                 \Log::warning("No se subió el archivo otrosDocumentosProgenitor2 o no es válido.");
             }
@@ -481,11 +534,24 @@ class EstudianteController extends Controller
             'ingresos_alquiler' =>      $request->rentasInmuebles,
             'ingresos_vehiculos' =>     $request->rentasVehiculos,
             'otros_ingresos' =>         $request->otrosIngresos,
+            'detalle_otros_ingresos' =>         $request->detalleOtrosIngresos  ?? null,
             'total_ingresos' =>         $request->totalIngresos ?? 0,
             'gastos_colegios' =>        $request->pagoColegios,
             'gastos_talleres' =>        $request->pagoTalleres,
             'gastos_universidad' =>     $request->pagoUniversidad,
             'gastos_alimentacion' =>    $request->pagoAlimentacion,
+            'num_hijos' =>                      $request->numHijos  ?? 0,
+            'gastos_alquiler' =>                $request->pagoAlquiler ?? 0.00,
+            'gastos_credito_personal' =>        $request->pagoCreditoPersonal  ?? 0.00,
+            'gastos_credito_hipotecario' =>     $request->pagoCreditoHipotecario  ?? 0.00,
+            'gastos_credito_vehicular' =>       $request->pagoCreditoVehicular  ?? 0.00,
+            'gastos_servicios' =>               $request->pagoServicios  ?? 0.00,
+            'gastos_mantenimiento' =>           $request->pagoMantenimiento  ?? 0.00,
+            'gastos_apoyo_casa' =>              $request->pagoApoyoCasa  ?? 0.00,
+            'gastos_clubes' =>                  $request->pagoClubes  ?? 0.00,
+            'gastos_seguros' =>                 $request->pagoSeguros  ?? 0.00,
+            'gastos_apoyo_familiar' =>          $request->pagoApoyoFamiliar  ?? 0.00,
+            'detalle_otros_gastos' =>           $request->detalleOtrosGastos  ?? null,
             'otros_gastos' =>           $request->otrosGastos,
             'total_gastos' =>           $request->totalGastos ?? 0,
         ]);

@@ -41,7 +41,7 @@
                 <div class="col-lg-12">
                     <div class="title text-center mb-5">
                         <!--<h6 class="mb-0 fw-bold text-primary">Contact Us</h6>-->
-                        <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO 2025!</h2>
+                        <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO 2025</h2>
                     </div>
                 </div>
             </div>
@@ -214,6 +214,19 @@
     toggleVisibilityByPrefix('Prog2', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
     configureTipoDocumentoChange('Prog2');
 
+    document.getElementById('anioLaboral_Prog1').addEventListener('input', function (e) {
+        const value = e.target.value;
+        if (value.length > 4) {
+            e.target.value = value.slice(0, 4); // Limita a 4 caracteres
+        }
+    });
+
+    document.getElementById('anioLaboral_Prog2').addEventListener('input', function (e) {
+        const value = e.target.value;
+        if (value.length > 4) {
+            e.target.value = value.slice(0, 4); // Limita a 4 caracteres
+        }
+    });
 </script>
 
 <script>

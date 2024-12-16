@@ -128,7 +128,7 @@
         </div>
         <div class="mb-3">
             <label for="anioLaboral_Prog2" class="form-label"><strong>Desde qué año labora ahí</strong></label>
-            <input type="number" id="anioLaboral_Prog2" name="anioLaboral_Prog2" class="form-control" placeholder="Ingrese el año" min="1960" max="2099"  data-name="Año labora">
+            <input type="number" id="anioLaboral_Prog2" name="anioLaboral_Prog2" class="form-control" placeholder="Ingrese el año" min="1960" max="2099" data-name="Año labora">
         </div>
         <div class="mb-3">
             <label for="lugarTrabajo_Prog2" class="form-label"><strong>Lugar de trabajo</strong></label>
