@@ -547,6 +547,14 @@
                 updateSteps();
             }
 
+             // Verificar que el paso anterior exista antes de actualizar
+            if ($(`.form-step[data-step="${prevStep}"]`).length) {
+                $(`#validacionpaso${currentStep}`).addClass('d-none');
+                $(`#validacionpaso${prevStep}`).removeClass('d-none');
+                currentStep = prevStep;
+                updateSteps();
+            }
+
             // Habilitar/deshabilitar el botón de "anterior" según el paso actual
             if (currentStep === 1) {
                 $('#prev-btn').attr('disabled', true);
@@ -646,6 +654,7 @@
             '#pagoTalleres',
             '#pagoUniversidad',
             '#pagoAlimentacion',
+            '#pagoAlquiler',
             '#pagoCreditoPersonal',
             '#pagoCreditoHipotecario',
             '#pagoCreditoVehicular',

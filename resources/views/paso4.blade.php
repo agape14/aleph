@@ -1,7 +1,7 @@
 
 <div id="validacionpaso4">
     <!-- Información del progenitor -->
-    <h4 class="mt-4">Información del Progenitor 1</h4>
+    <h4 class="mt-4">Información del Progenitor 2</h4>
     <div class="row g-3 mb-3">
         <div class="col-lg-6 col-12">
             <label for="tipoDocumento_Prog2" class="form-label"><strong>Tipo de Documento</strong></label>
