@@ -98,12 +98,27 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
                 'INGRESOS HONORARIOS' => $solicitud->situacionEconomica->ingresos_honorarios ?? 0,
                 'INGRESOS PENSIÓN' => $solicitud->situacionEconomica->ingresos_pension ?? 0,
                 'INGRESOS ALQUILER' => $solicitud->situacionEconomica->ingresos_alquiler ?? 0,
+                'INGRESOS VEHÍCULOS' => $solicitud->situacionEconomica->ingresos_vehiculos ?? 0,
                 'OTROS INGRESOS' => $solicitud->situacionEconomica->otros_ingresos ?? 0,
+                'DETALLE OTROS INGRESOS' => $solicitud->situacionEconomica->detalle_otros_ingresos ?? '',
                 'TOTAL INGRESOS' => $solicitud->situacionEconomica->total_ingresos ?? 0,
+                'NÚMERO DE HIJOS' => $solicitud->situacionEconomica->num_hijos ?? 0,
                 'GASTOS COLEGIOS' => $solicitud->situacionEconomica->gastos_colegios ?? 0,
                 'GASTOS TALLERES' => $solicitud->situacionEconomica->gastos_talleres ?? 0,
                 'GASTOS UNIVERSIDAD' => $solicitud->situacionEconomica->gastos_universidad ?? 0,
+                'GASTOS ALIMENTACIÓN' => $solicitud->situacionEconomica->gastos_alimentacion ?? 0,
+                'GASTOS ALQUILER' => $solicitud->situacionEconomica->gastos_alquiler ?? 0,
+                'GASTOS CRÉDITO PERSONAL' => $solicitud->situacionEconomica->gastos_credito_personal ?? 0,
+                'GASTOS CRÉDITO HIPOTECARIO' => $solicitud->situacionEconomica->gastos_credito_hipotecario ?? 0,
+                'GASTOS CRÉDITO VEHICULAR' => $solicitud->situacionEconomica->gastos_credito_vehicular ?? 0,
+                'GASTOS SERVICIOS' => $solicitud->situacionEconomica->gastos_servicios ?? 0,
+                'GASTOS MANTENIMIENTO' => $solicitud->situacionEconomica->gastos_mantenimiento ?? 0,
+                'GASTOS APOYO CASA' => $solicitud->situacionEconomica->gastos_apoyo_casa ?? 0,
+                'GASTOS CLUBES' => $solicitud->situacionEconomica->gastos_clubes ?? 0,
+                'GASTOS SEGUROS' => $solicitud->situacionEconomica->gastos_seguros ?? 0,
+                'GASTOS APOYO FAMILIAR' => $solicitud->situacionEconomica->gastos_apoyo_familiar ?? 0,
                 'OTROS GASTOS' => $solicitud->situacionEconomica->otros_gastos ?? 0,
+                'DETALLE OTROS GASTOS' => $solicitud->situacionEconomica->detalle_otros_gastos ?? '',
                 'TOTAL GASTOS' => $solicitud->situacionEconomica->total_gastos ?? 0,
             ];
         });
@@ -189,12 +204,27 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
             'INGRESOS HONORARIOS',
             'INGRESOS PENSIÓN',
             'INGRESOS ALQUILER',
+            'INGRESOS VEHÍCULOS',
             'OTROS INGRESOS',
+            'DETALLE OTROS INGRESOS',
             'TOTAL INGRESOS',
+            'NÚMERO DE HIJOS',
             'GASTOS COLEGIOS',
             'GASTOS TALLERES',
             'GASTOS UNIVERSIDAD',
+            'GASTOS ALIMENTACIÓN',
+            'GASTOS ALQUILER',
+            'GASTOS CRÉDITO PERSONAL',
+            'GASTOS CRÉDITO HIPOTECARIO',
+            'GASTOS CRÉDITO VEHICULAR',
+            'GASTOS SERVICIOS',
+            'GASTOS MANTENIMIENTO',
+            'GASTOS APOYO CASA',
+            'GASTOS CLUBES',
+            'GASTOS SEGUROS',
+            'GASTOS APOYO FAMILIAR',
             'OTROS GASTOS',
+            'DETALLE OTROS GASTOS',
             'TOTAL GASTOS',
         ];
     }
@@ -210,13 +240,13 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
         $sheet->mergeCells('A1:G1')->setCellValue('A1', 'SOLICITUDES');
         $sheet->mergeCells('H1:M1')->setCellValue('H1', 'ALUMNOS');
         $sheet->mergeCells('N1:BQ1')->setCellValue('N1', 'PROGENITORES');
-        $sheet->mergeCells('BR1:CB1')->setCellValue('BR1', 'SITUACIÓN ECONÓMICA');
+        $sheet->mergeCells('BR1:CQ1')->setCellValue('BR1', 'SITUACIÓN ECONÓMICA');
 
         // Obtener el número total de filas con datos
         $totalRows = count($this->collection());
 
         // Aplicando bordes solo al rango de datos con registros
-        $sheet->getStyle("A1:CB" . ($totalRows + 2))->applyFromArray([
+        $sheet->getStyle("A1:CQ" . ($totalRows + 2))->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -225,7 +255,7 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
         ]);
 
         // Alineación y negrita para los títulos agrupados
-        $sheet->getStyle('A1:CB1')->applyFromArray([
+        $sheet->getStyle('A1:CQ1')->applyFromArray([
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
@@ -237,17 +267,17 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
         ]);
 
         // Negrita para las cabeceras
-        $sheet->getStyle('A2:CB2')->applyFromArray([
+        $sheet->getStyle('A2:CQ2')->applyFromArray([
             'font' => [
                 'bold' => true,
             ],
         ]);
 
-        // Ajustar el ancho de las columnas desde A2 hasta CB2 (cabeceras)
-        $lastColumn = 'CB2'; // Última columna para la cabecera
+        // Ajustar el ancho de las columnas desde A2 hasta CQ2 (cabeceras)
+        $lastColumn = 'CQ2'; // Última columna para la cabecera
         $lastRow = $totalRows + 2; // Si la fila 1 es de títulos agrupados y la fila 2 son las cabeceras
 
-        // Ajuste de tamaño automático de columnas solo para las cabeceras (A2:CB2)
+        // Ajuste de tamaño automático de columnas solo para las cabeceras (A2:CQ2)
         foreach (range('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }

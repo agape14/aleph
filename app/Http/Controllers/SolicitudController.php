@@ -121,6 +121,7 @@ class SolicitudController extends Controller
                 'INGRESOS ALQUILER' => $solicitud->situacionEconomica->ingresos_alquiler ?? 0,
                 'OTROS INGRESOS' => $solicitud->situacionEconomica->otros_ingresos ?? 0,
                 'TOTAL INGRESOS' => $solicitud->situacionEconomica->total_ingresos ?? 0,
+
                 'GASTOS COLEGIOS' => $solicitud->situacionEconomica->gastos_colegios ?? 0,
                 'GASTOS TALLERES' => $solicitud->situacionEconomica->gastos_talleres ?? 0,
                 'GASTOS UNIVERSIDAD' => $solicitud->situacionEconomica->gastos_universidad ?? 0,
