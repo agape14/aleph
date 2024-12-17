@@ -408,28 +408,30 @@
                 return;
             }
 
-            // Avanzar al siguiente paso si todo es válido
-            $(`#validacionpaso${currentStep}`).addClass('d-none');
-            $(`#validacionpaso${nextStep}`).removeClass('d-none');
+
             // Validaciones específicas para cada paso
             if (currentStep === 1) { // Validación para el paso 1
+                const $reglamentoGroup = $('input[name="reglamento"]');
 
-
-                /*const $reglamentoGroup = $('input[name="reglamento"]');
-                if ($reglamentoGroup.length && !$reglamentoGroup.filter(':checked').length) {
+                // Verificar si la opción "Sí" está seleccionada
+                if (!$reglamentoGroup.filter('#opcionSi:checked').length) {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Por favor confirma si has leído el Reglamento de Becas 2025.',
+                        text: 'Debes confirmar que has leído el Reglamento de Becas seleccionando "Sí".',
                         icon: 'error',
                         confirmButtonText: 'Entendido'
                     });
                     return;
-                }*/
+                }
+
+                // Bloquear el botón "Atrás"
                 $('#prev-btn').attr('disabled', true);
             }else {
                 $('#prev-btn').attr('disabled', false);
             }
-
+            // Avanzar al siguiente paso si todo es válido
+            $(`#validacionpaso${currentStep}`).addClass('d-none');
+            $(`#validacionpaso${nextStep}`).removeClass('d-none');
             if (currentStep === 2) { // Validación para el paso 2
                 const $idestudiante = $('#id_estudiante').val();
                 const selectedOption = $('input[name="viveConProgenitores"]:checked').val();
