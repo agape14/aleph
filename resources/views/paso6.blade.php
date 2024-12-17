@@ -77,7 +77,6 @@
                 <input type="file" id="boletasPagoProgenitor2" name="boletasPagoProgenitor2" class="form-control" accept=".pdf, image/jpeg" data-name="Boletas Pago Progenitor2">
                 <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
                 <div class="form-check mt-2">
-                    <small>Adjuntar archivo en formato PDF o JPG</small>
                     <input class="form-check-input" type="checkbox" id="noAplicaBoletasPagoProgenitor2" name="noAplicaBoletasPagoProgenitor2" >
                     <label class="form-check-label" for="noAplicaBoletasPagoProgenitor2">
                         No aplica
