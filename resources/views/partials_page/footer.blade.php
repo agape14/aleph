@@ -79,9 +79,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <p class="mb-0 text-center text-muted">©
-                    <script>document.write(new Date().getFullYear())</script> Aleph. Diseñado <i
-                        class="mdi mdi-heart text-danger"></i> por <a href="https://delacruzdev.tech/"
-                        target="_blank" class="text-muted">Delacruzdev.</a>
+                    <script>document.write(new Date().getFullYear())</script> Aleph. Todos los derechos reservados.
                 </p>
             </div>
         </div>
