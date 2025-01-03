@@ -57,7 +57,7 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="viveConProgenitores" id="tiempoCompartido" value="compartido">
+            <input class="form-check-input" type="radio" name="viveConProgenitores" id="tiempoCompartido" value="tiempo_compartido">
             <label class="form-check-label" for="tiempoCompartido">
                 Tiempo compartido con ambos progenitores
             </label>

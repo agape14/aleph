@@ -268,7 +268,7 @@
             const stepProgenitor2 = $('#step-progenitor-2');
             const documentosProgenitor2 = $('#documentosProgenitor2');
             const esInsertaProgenitor2 = $('#is_insert_progenitor2');
-            if (selectedValue === 'uno' || selectedValue === 'compartido') {
+            if (selectedValue === 'uno' || selectedValue === 'tiempo_compartido') {
                 stepProgenitor2.attr('data-skip', 'true');
                 documentosProgenitor2.addClass('d-none');
                 esInsertaProgenitor2.val("0");
@@ -471,6 +471,7 @@
             if (currentStep === 6) {
                 // Recolectar y enviar todos los formularios
                 let formData = new FormData($('#frmSolicitud')[0]);
+                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
                 $('#next-btn').prop('disabled', true); // Deshabilitar el botón para evitar múltiples envíos
                 $('#next-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrand Solicitud...'); // Cambiar el contenido del botón a un spinner
                 $.ajaxSetup({
