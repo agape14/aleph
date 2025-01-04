@@ -272,6 +272,9 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
                 'bold' => true,
             ],
         ]);
+        
+        \Log::debug('Last column: ' . $lastColumn);
+        \Log::debug('Last column (encoded): ' . mb_detect_encoding($lastColumn));
 
         // Ajustar el ancho de las columnas desde A2 hasta CQ2 (cabeceras)
         $lastColumn = 'CQ2'; // Última columna para la cabecera
