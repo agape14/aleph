@@ -273,13 +273,13 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
             ],
         ]);
         
-        \Log::debug('Last column: ' . $lastColumn);
-        \Log::debug('Last column (encoded): ' . mb_detect_encoding($lastColumn));
+       
 
         // Ajustar el ancho de las columnas desde A2 hasta CQ2 (cabeceras)
         $lastColumn = 'CQ2'; // Última columna para la cabecera
         $lastRow = $totalRows + 2; // Si la fila 1 es de títulos agrupados y la fila 2 son las cabeceras
-
+        \Log::debug('Last column: ' . $lastColumn);
+        \Log::debug('Last column (encoded): ' . mb_detect_encoding($lastColumn));
         // Ajuste de tamaño automático de columnas solo para las cabeceras (A2:CQ2)
         foreach (range('A', $lastColumn) as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
