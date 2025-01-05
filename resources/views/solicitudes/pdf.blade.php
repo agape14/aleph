@@ -124,7 +124,7 @@
             </tr>
         </thead>
         <tbody>
-            @dd('Agape',$solicitudes);
+            
             @foreach ($solicitudes as $index => $solicitud)
             <tr>
                 <td>{{ $index + 1 }}</td>
@@ -212,6 +212,7 @@
                 <td>{{ $solicitud['TOTAL GASTOS'] }}</td>
             </tr>
             @endforeach
+            @dd('Amen',$solicitudes);
         </tbody>
     </table>
 </body>
