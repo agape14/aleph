@@ -135,11 +135,11 @@ class SolicitudController extends Controller
 
         // Establecer un tamaño personalizado para el papel (Ejemplo: Ancho: 600 puntos, Alto: 1200 puntos)
         $customPaper = [0, 0, 600, 6000]; // Ancho y alto en puntos
-dd($customPaper);
+
         // Cargar la vista PDF con los datos y configurar el tamaño de papel personalizado
         $pdf = Pdf::loadView('solicitudes.pdf', ['solicitudes' => $data])
             ->setPaper($customPaper, 'landscape'); // Cambiar tamaño a personalizado y orientación horizontal
-
+    dd('Agape',$pdf);
         // Descargar el archivo PDF con el nombre que incluye la fecha y hora
         return $pdf->download("solicitudes_{$dateTime}.pdf");
     }
