@@ -132,7 +132,7 @@ class SolicitudController extends Controller
 
         // Obtener la fecha y hora actual en el formato deseado
         $dateTime = now()->format('Ymd_His'); // Año-Mes-Día_Hora-Minuto-Segundo
-
+dd($dateTime);
         // Establecer un tamaño personalizado para el papel (Ejemplo: Ancho: 600 puntos, Alto: 1200 puntos)
         $customPaper = [0, 0, 600, 6000]; // Ancho y alto en puntos
 
