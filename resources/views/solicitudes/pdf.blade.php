@@ -212,7 +212,6 @@
                 <td>{{ $solicitud['TOTAL GASTOS'] }}</td>
             </tr>
             @endforeach
-            @dd('Amen',$solicitudes);
         </tbody>
     </table>
 </body>
