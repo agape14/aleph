@@ -40,7 +40,7 @@ class SolicitudController extends Controller
     {
         // Obtener las solicitudes con las relaciones necesarias
         $solicitudes = Solicitud::with(['estudiante', 'progenitores', 'situacionEconomica'])->get();
-        dd('Impresio pdf'); // Imprime los datos que se están pasando a la vista
+        
         // Preparar los datos para el PDF con los mismos campos que en Excel
         $data = $solicitudes->map(function ($solicitud) {
             return [
