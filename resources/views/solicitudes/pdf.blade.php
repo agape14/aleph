@@ -124,6 +124,7 @@
             </tr>
         </thead>
         <tbody>
+            @dd('Agape',$solicitudes);
             @foreach ($solicitudes as $index => $solicitud)
             <tr>
                 <td>{{ $index + 1 }}</td>
