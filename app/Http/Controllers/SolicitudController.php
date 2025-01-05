@@ -139,7 +139,7 @@ class SolicitudController extends Controller
         // Cargar la vista PDF con los datos y configurar el tamaño de papel personalizado
         $pdf = Pdf::loadView('solicitudes.pdf', ['solicitudes' => $data])
             ->setPaper($customPaper, 'landscape'); // Cambiar tamaño a personalizado y orientación horizontal
-    dd('Agape',$pdf);
+  
         // Descargar el archivo PDF con el nombre que incluye la fecha y hora
         return $pdf->download("solicitudes_{$dateTime}.pdf");
     }
