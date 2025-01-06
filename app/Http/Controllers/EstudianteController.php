@@ -109,30 +109,35 @@ class EstudianteController extends Controller
 
     public function setdatos(Request $request)
     {
+        \Log::info($request->all());
         DB::beginTransaction();
 
         try {
             $this->validateRequest($request);
-
+            \Log::warning("Insert datos formulario: Se valido los parametros.");
             // Crear la solicitud principal
             $solicitud = $this->createSolicitud($request);
+            \Log::warning("Insert datos formulario: Se registro los datos la solicitud.");
             $estudiante = Estudiante::find($request->id_estudiante);
+            \Log::warning("Insert datos formulario: Estudiante encontrado");
             // Manejar datos de progenitores
             $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor1');
+            \Log::warning("Insert datos formulario: Progenitor 1 insertado");
 
             if($request->is_insert_progenitor2=="1"){
                 $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor2');
+                \Log::warning("Insert datos formulario: Progenitor 2 insertado");
             }
 
             // Manejar documentos adjuntos
             $this->handleSituacionEconomica($solicitud->id, $request);
-
+            \Log::warning("Insert datos formulario: Situacion economica insertado");
             DB::commit();
             $this->notificarPorCorreo($solicitud);
             return response()->json(['message' => 'Solicitud creada exitosamente.'], 201);
         } catch (Exception $e) {
             DB::rollBack();
-
+            Log::error('Error en setdatos:', ['error' => $e->getMessage()]);
             return response()->json([
                 'message' => 'Ocurrió un error al procesar la solicitud.',
                 'error' => $e->getMessage()
