@@ -109,7 +109,7 @@ class EstudianteController extends Controller
 
     public function setdatos(Request $request)
     {
-        \Log::info($request->all());
+        Log::info('Inicio del registro', ['FechaHora' => now()->toDateTimeString(),'Parametros' => $request->all()]);
         DB::beginTransaction();
 
         try {
