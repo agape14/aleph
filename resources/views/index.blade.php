@@ -48,6 +48,19 @@
 
             <div class="row align-items-center ">
                 <div class="col-md-12 mb-4">
+                    <div class="text-end mt-3">
+                        <label class="me-2">Tiempo restante para enviar el formulario:</label>
+                        <span id="tiempoRestante" class="badge bg-primary text-white fs-4"></span>
+                        <!-- Botón con Tooltip -->
+                        <button type="button" class="btn btn-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Por favor, asegúrate de tener todos los documentos listos antes de comenzar a llenar el formulario.">
+                            <i class="mdi mdi-alert text-danger fs-4"></i>
+                        </button>
+                    </div>
+                    <!-- Alerta no invasiva (Bootstrap) -->
+                    <div id="alertaTemporal" class="alert alert-warning mt-3 d-none" role="alert">
+                        El formulario está a punto de expirar. Por favor, envíalo pronto o refresca la página.
+                    </div>
                     <div class="container mt-5">
                         <div class="stepper-wrapper">
                             <div class="stepper-item active">
@@ -77,7 +90,7 @@
                         </div>
 
                         <div class="form mt-4">
-                            <form class="p-4 border rounded" id="frmSolicitud">
+                            <form  method="POST" action="/setdatos" enctype="multipart/form-data"  class="p-4 border rounded" id="frmSolicitud">
                              <!-- Paso 1: Inicio -->
                             <div class="form-step d-block" data-step="1">
                                 @include('paso1')
@@ -693,6 +706,55 @@
             // Actualiza el campo totalGastos
             $('#totalGastos').val(totalGastos.toFixed(2)); // Redondea a 2 decimales
         });
+
+
+
+
+        // Variables pasadas desde Blade
+        const formTimeout = {{ $formTimeout }}; // Tiempo total en segundos
+        const formAlertTime = {{ $formAlertTime }}; // Tiempo de alerta en segundos
+
+        // Almacena el tiempo inicial (timestamp en milisegundos)
+        const inicioTiempo = Date.now();
+        let tiempoRestante = formTimeout; // Inicializa el tiempo restante
+
+        // Actualiza el tiempo restante cada segundo
+        const actualizarTiempo = setInterval(() => {
+            // Calcula el tiempo transcurrido desde el inicio
+            const tiempoTranscurrido = Math.floor((Date.now() - inicioTiempo) / 1000);
+
+            // Calcula el tiempo restante
+            tiempoRestante = formTimeout - tiempoTranscurrido;
+
+            // Muestra el tiempo restante en formato hh:mm:ss
+            const horas = Math.floor(tiempoRestante / 3600); // Total de horas
+            const minutos = Math.floor((tiempoRestante % 3600) / 60); // Minutos restantes después de las horas
+            const segundos = tiempoRestante % 60; // Segundos restantes
+
+            $('#tiempoRestante').text(
+                `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`
+            );
+
+            // Si el tiempo alcanza el tiempo de alerta, muestra la alerta de Bootstrap
+            if (tiempoRestante === formAlertTime) {
+                $('#alertaTemporal').removeClass('d-none');
+            }
+
+            // Si el tiempo se agota, limpia el intervalo y muestra la alerta de SweetAlert2
+            if (tiempoRestante <= 0) {
+                clearInterval(actualizarTiempo);
+                Swal.fire({
+                    title: '¡Tiempo agotado!',
+                    text: 'El tiempo para enviar el formulario ha expirado. Por favor, refresca la página.',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                }).then(() => {
+                    location.reload(); // Recarga la página
+                });
+            }
+        }, 1000);
     });
 </script>
         <!-- end container -->

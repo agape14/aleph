@@ -20,7 +20,10 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name("login");
 Route::get('/', function () {
-    return view('index');
+    return view('index', [
+        'formTimeout' => env('FORM_TIMEOUT', 300),
+        'formAlertTime' => env('SESSION_LIFETIME', 240),
+    ]);
 });
 
 Auth::routes();
