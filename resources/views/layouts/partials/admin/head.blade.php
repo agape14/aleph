@@ -10,3 +10,5 @@
 <link href="{{ asset('admin_assets/vendor/@mdi/font/css/materialdesignicons.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('admin_assets/vendor/prismjs/themes/prism-okaidia.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('admin_assets/css/theme.css') }}">
+<!-- Incluir FontAwesome local -->
+<link rel="stylesheet" href="{{ asset('css/all.min.css') }}">

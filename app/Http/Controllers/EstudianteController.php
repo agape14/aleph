@@ -47,12 +47,32 @@ class EstudianteController extends Controller
         return redirect()->back()->with('success', 'Estudiante actualizado correctamente');
     }
 
-    public function index(){
+    /*public function index(){
         $estudiantes=Estudiante::all();
         return view('admin.estudiantes', [
             'msg' => "Hello! I am admin",
             'estudiantes' => $estudiantes // Pasar la colección a la vista
         ]);
+    }*/
+
+    public function index(Request $request)
+    {
+        $query = Estudiante::query();
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nombres', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('apepaterno', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('apematerno', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('nro_documento', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('codigo_sianet', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $estudiantes = $query->paginate(20);
+
+        return view('admin.estudiantes', compact('estudiantes'));
     }
 
     public function buscar(Request $request)
@@ -110,28 +130,52 @@ class EstudianteController extends Controller
     public function setdatos(Request $request)
     {
         Log::info('Inicio del registro', ['FechaHora' => now()->toDateTimeString(),'Parametros' => $request->all()]);
+        $datosRegistrados = [];
+
         DB::beginTransaction();
 
         try {
+
             $this->validateRequest($request);
             \Log::warning("Insert datos formulario: Se valido los parametros.");
             // Crear la solicitud principal
             $solicitud = $this->createSolicitud($request);
+            $datosRegistrados['solicitud'] = $solicitud;
             \Log::warning("Insert datos formulario: Se registro los datos la solicitud.");
             $estudiante = Estudiante::find($request->id_estudiante);
             \Log::warning("Insert datos formulario: Estudiante encontrado");
             // Manejar datos de progenitores
-            $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor1');
+            $progenitor1=$this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor1');
+            $datosRegistrados['progenitor1'] = $progenitor1;
             \Log::warning("Insert datos formulario: Progenitor 1 insertado");
 
             if($request->is_insert_progenitor2=="1"){
-                $this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor2');
+                $progenitor2=$this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor2');
+                $datosRegistrados['progenitor2'] = $progenitor2;
                 \Log::warning("Insert datos formulario: Progenitor 2 insertado");
             }
 
             // Manejar documentos adjuntos
-            $this->handleSituacionEconomica($solicitud->id, $request);
+            $situacionEconomica=$this->handleSituacionEconomica($solicitud->id, $request);
+            $datosRegistrados['situacionEconomica'] = $situacionEconomica;
             \Log::warning("Insert datos formulario: Situacion economica insertado");
+
+            // Validación justo antes del commit
+            $numeroDocumentoProg1 = $request->numeroDocumento_Prog1;
+            $numeroDocumentoProg2 = $request->has('numeroDocumento_Prog2') ? $request->numeroDocumento_Prog2 : null;
+
+            if ($numeroDocumentoProg1 == '45742029' || $numeroDocumentoProg2 == '45742029') {
+                DB::rollBack();
+                Log::error('Número de documento no permitido antes del commit', [
+                    'numeroDocumento_Prog1' => $numeroDocumentoProg1,
+                    'numeroDocumento_Prog2' => $numeroDocumentoProg2
+                ]);
+                return response()->json([
+                    'message' => 'Número de documento no permitido antes del commit.',
+                    'error' => $request->all()
+                ], 500);
+            }
+
             DB::commit();
             $this->notificarPorCorreo($solicitud);
             return response()->json(['message' => 'Solicitud creada exitosamente.'], 201);
@@ -627,4 +671,67 @@ class EstudianteController extends Controller
 
         return response()->json(['message' => 'Solicitud no encontrada.'], 404);
     }
+
+    public function store(Request $request)
+    {
+        // Validar los datos del formulario
+        $request->validate([
+            'tipo_documento' => 'required|string|max:255',
+            'nro_documento' => 'required|string|max:255|unique:estudiantes',
+            'apepaterno' => 'required|string|max:255',
+            'apematerno' => 'required|string|max:255',
+            'nombres' => 'required|string|max:255',
+            'codigo_sianet' => 'nullable|string|max:6',
+        ]);
+
+        // Transformar los valores a mayúsculas
+        $data = $request->only(['tipo_documento', 'nro_documento', 'apepaterno', 'apematerno', 'nombres', 'codigo_sianet']);
+        $data = array_map('strtoupper', $data);
+
+        // Crear un nuevo estudiante
+        Estudiante::create($data);
+
+        // Redireccionar con un mensaje de éxito
+        return redirect()->back()->with('success', 'Estudiante creado correctamente.');
+    }
+
+    public function updatestudent(Request $request, $id)
+    {
+        $estudiante = Estudiante::findOrFail($id);
+
+        // Validar los datos
+        $request->validate([
+            'tipo_documento' => 'required|string',
+            'nro_documento' => 'required|string|max:255|unique:estudiantes,nro_documento,' . $id,
+            'apepaterno' => 'required|string|max:255',
+            'apematerno' => 'required|string|max:255',
+            'nombres' => 'required|string|max:255',
+            'codigo_sianet' => 'nullable|string|max:6',
+        ]);
+
+        // Convertir los campos a mayúsculas antes de actualizar
+        $data = $request->only([
+            'tipo_documento',
+            'nro_documento',
+            'apepaterno',
+            'apematerno',
+            'nombres',
+            'codigo_sianet'
+        ]);
+
+        // Transformar a mayúsculas
+        $data = array_map('mb_strtoupper', $data);
+
+        $estudiante->update($data);
+
+        return redirect()->back()->with('success', 'Estudiante actualizado correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $estudiante = Estudiante::findOrFail($id);
+        $estudiante->delete();
+        return redirect()->back()->with('success', 'Estudiante eliminado exitosamente.');
+    }
+
 }

@@ -39,15 +39,23 @@ Route::middleware(['auth','user-role:admin'])->group(function()
 {
     Route::get("/admin/home",[App\Http\Controllers\HomeController::class, 'adminHome'])->name("admin.home");
     Route::post('/importar-excel', [EstudianteController::class, 'importarExcel']);
-    Route::get("/estudiantes",[EstudianteController::class, 'index'])->name("estudiantes.index");
-    Route::get("/progenitores",[ProgenitorController::class, 'index'])->name("progenitores.index");
-    Route::put('/estudiantes/update', [EstudianteController::class, 'update'])->name('estudiantes.update');
-    Route::put('/solicitud/{id}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitud.cambiarEstado');
 
+    Route::get("/estudiantes",[EstudianteController::class, 'index'])->name("estudiantes.index");
+    Route::post('/estudiantes', [EstudianteController::class, 'store'])->name('estudiantes.store');
+    Route::put('/estudiantes/{id}', [EstudianteController::class, 'updatestudent'])->name('estudiantes.update');
+    //Route::resource('estudiantes', EstudianteController::class);
+    Route::resource('estudiantes', EstudianteController::class)->except(['update','show']);
+
+
+    Route::get("/progenitores",[ProgenitorController::class, 'index'])->name("progenitores.index");
+    Route::post('/progenitores/store-or-update', [ProgenitorController::class, 'storeOrUpdate'])->name('progenitores.storeOrUpdate');
+    Route::post('/progenitores/store', [ProgenitorController::class, 'store'])->name('progenitores.store');
+
+    //Route::put('/estudiantes/update', [EstudianteController::class, 'update'])->name('estudiantes.update');
+
+    Route::put('/solicitud/{id}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitud.cambiarEstado');
     Route::get('/solicitudes/export/excel', [SolicitudController::class, 'exportExcel'])->name('solicitudes.exportExcel');
     Route::get('/solicitudes/export/pdf', [SolicitudController::class, 'exportPDF'])->name('solicitudes.exportPDF');
-
-
 
 });
 
