@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProgenitorController;
 use App\Http\Controllers\SolicitudController;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,3 +65,8 @@ Route::get('/estudiantes/buscar', [EstudianteController::class, 'buscar'])->name
 Route::get('/progenitores/buscar', [ProgenitorController::class, 'buscar'])->name('progenitores.buscar');
 Route::post('/setdatos', [EstudianteController::class, 'setdatos'])->name('set.datos');
 Route::get('/enviar-notificacion/{id}', [EstudianteController::class, 'notificarPorCorreoprueba']);
+
+Route::get('/subirarchivo', function () {
+    Storage::disk('google')->write('prueba.txt', 'probarsubida');
+    return "Archivo subido con éxito 🚀";
+});
