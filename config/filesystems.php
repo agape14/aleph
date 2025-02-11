@@ -55,11 +55,6 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
-        'google' => [
-            'driver' => 'google',
-            'client' => json_decode(file_get_contents(env('GOOGLE_DRIVE_CREDENTIALS_PATH')), true),
-            'folderId' => env('GOOGLE_DRIVE_FOLDER_ID'),
-        ],
     ],
 
     /*
