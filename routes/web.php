@@ -5,7 +5,8 @@ use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProgenitorController;
 use App\Http\Controllers\SolicitudController;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Backup;
+use Carbon\Carbon;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -72,17 +73,45 @@ Route::middleware(['auth','user-role:admin'])->group(function()
             return redirect()->back()->with('error', 'No tienes permisos para realizar esta acción. Tu rol es: ' . Auth::user()->role);
         }
 
+        // Verificar si ya se hizo un backup hoy
+        $lastBackup = Backup::whereDate('created_at', Carbon::today())->first();
+        if ($lastBackup) {
+            return back()->with('error', 'Ya se realizó un backup hoy. Solo se permite uno por día.');
+        }
+
         try {
-            // Ejecutar el comando y capturar la salida
+            // Ejecutar el comando de backup
             $exitCode = Artisan::call('database:backup');
 
-            // Verificar si el comando se ejecutó correctamente
+            // Verificar si se ejecutó correctamente
             if ($exitCode !== 0) {
+                Backup::create([
+                    'user_id' => Auth::id(),
+                    'file_path' => 'drive', // Se almacena en Drive
+                    'status' => 'failed',
+                    'error_message' => 'Error al realizar el backup'
+                ]);
                 return back()->with('error', 'Error al realizar el backup. Inténtalo nuevamente.');
             }
 
-            return back()->with('success', 'Backup realizado correctamente.');
+            // Guardar el backup exitoso en la base de datos
+            Backup::create([
+                'user_id' => Auth::id(),
+                'file_path' => 'drive', // El archivo se subió a Google Drive
+                'status' => 'success'
+            ]);
+
+            return back()->with('success', 'Backup realizado correctamente y guardado en Drive.');
+
         } catch (\Exception $e) {
+            // Registrar el error en la base de datos
+            Backup::create([
+                'user_id' => Auth::id(),
+                'file_path' => 'drive',
+                'status' => 'failed',
+                'error_message' => $e->getMessage()
+            ]);
+
             return back()->with('error', 'Ocurrió un error inesperado: ' . $e->getMessage());
         }
     })->name('backup')->middleware('auth');
