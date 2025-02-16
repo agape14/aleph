@@ -26,29 +26,42 @@ class HomeController extends Controller
      */
     public function adminHome(Request $request)
     {
-        // Obtener las solicitudes con relación a los progenitores, estudiantes y documentos adjuntos
-        $solicitudesQuery = Solicitud::with(['progenitores', 'estudiante','documentosAdjuntos']);
+        // Obtener las solicitudes con sus relaciones
+        $solicitudesQuery = Solicitud::with(['progenitores', 'estudiante', 'documentosAdjuntos']);
 
-        // Filtrar por DNI del estudiante
-        if ($request->has('dni') && $request->dni != '') {
-            $solicitudesQuery->whereHas('estudiante', function($query) use ($request) {
-                $query->where('nro_documento', 'like', '%' . $request->dni . '%');
+        // Filtrar por nombres, apellidos, código SIANET o DNI
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $solicitudesQuery->where(function ($query) use ($search) {
+                $query->whereHas('estudiante', function ($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                    ->orWhere('apepaterno', 'like', "%{$search}%")
+                    ->orWhere('apematerno', 'like', "%{$search}%")
+                    ->orWhere('nro_documento', 'like', "%{$search}%")
+                    ->orWhere('codigo_sianet', 'like', "%{$search}%");
+                })
+                ->orWhereHas('progenitores', function ($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                    ->orWhere('apellidos', 'like', "%{$search}%")
+                    ->orWhere('dni', 'like', "%{$search}%")
+                    ->orWhere('codigo_sianet', 'like', "%{$search}%");
+                });
             });
         }
 
         // Filtrar por rango de fechas
-        if ($request->has('fecha_inicio') && $request->fecha_inicio != '') {
+        if ($request->filled('fecha_inicio')) {
             $solicitudesQuery->whereDate('created_at', '>=', $request->fecha_inicio);
         }
-
-        if ($request->has('fecha_fin') && $request->fecha_fin != '') {
+        if ($request->filled('fecha_fin')) {
             $solicitudesQuery->whereDate('created_at', '<=', $request->fecha_fin);
         }
 
-        // Obtener todas las solicitudes filtradas
-        $solicitudes = $solicitudesQuery->get();
+        // Aplicar paginación (20 por página)
+        $solicitudes = $solicitudesQuery->paginate(20);
 
-        // Obtener fechas actuales para mostrar estadísticas
+        // Obtener fechas actuales para estadísticas
         $hoy = Carbon::today();
         $inicioSemana = Carbon::now()->startOfWeek();
         $inicioMes = Carbon::now()->startOfMonth();

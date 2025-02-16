@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Solicitud;
+use App\Models\SituacionEconomica;
+use App\Models\DocumentoAdjunto;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SolicitudesExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+
 
 class SolicitudController extends Controller
 {
@@ -40,7 +44,7 @@ class SolicitudController extends Controller
     {
         // Obtener las solicitudes con las relaciones necesarias
         $solicitudes = Solicitud::with(['estudiante', 'progenitores', 'situacionEconomica'])->get();
-        
+
         // Preparar los datos para el PDF con los mismos campos que en Excel
         $data = $solicitudes->map(function ($solicitud) {
             return [
@@ -139,9 +143,85 @@ class SolicitudController extends Controller
         // Cargar la vista PDF con los datos y configurar el tamaño de papel personalizado
         $pdf = Pdf::loadView('solicitudes.pdf', ['solicitudes' => $data])
             ->setPaper($customPaper, 'landscape'); // Cambiar tamaño a personalizado y orientación horizontal
-  
+
         // Descargar el archivo PDF con el nombre que incluye la fecha y hora
         return $pdf->download("solicitudes_{$dateTime}.pdf");
+    }
+
+    public function updateSituacionEconomica(Request $request, $id)
+    {
+        $situacion = SituacionEconomica::findOrFail($id);
+
+        // Calcular la suma de ingresos
+        $totalIngresos =
+            ($request->ingresos_planilla ?? 0) +
+            ($request->ingresos_honorarios ?? 0) +
+            ($request->ingresos_pension ?? 0) +
+            ($request->ingresos_alquiler ?? 0) +
+            ($request->ingresos_vehiculos ?? 0) +
+            ($request->otros_ingresos ?? 0);
+
+        // Calcular la suma de gastos
+        $totalGastos =
+            ($request->gastos_colegios ?? 0) +
+            ($request->gastos_talleres ?? 0) +
+            ($request->gastos_universidad ?? 0) +
+            ($request->gastos_alimentacion ?? 0) +
+            ($request->gastos_alquiler ?? 0) +
+            ($request->gastos_credito_personal ?? 0) +
+            ($request->gastos_credito_hipotecario ?? 0) +
+            ($request->gastos_credito_vehicular ?? 0) +
+            ($request->gastos_servicios ?? 0) +
+            ($request->gastos_mantenimiento ?? 0) +
+            ($request->gastos_apoyo_casa ?? 0) +
+            ($request->gastos_clubes ?? 0) +
+            ($request->gastos_seguros ?? 0) +
+            ($request->gastos_apoyo_familiar ?? 0) +
+            ($request->otros_gastos ?? 0);
+
+        // Actualizar la situación económica con los nuevos valores
+        $situacion->update(array_merge(
+            $request->except(['total_ingresos', 'total_gastos']),
+            [
+                'total_ingresos' => $totalIngresos,
+                'total_gastos' => $totalGastos
+            ]
+        ));
+
+        return redirect()->back()->with('success', 'Situación económica actualizada correctamente.');
+    }
+
+    public function updateDocumentosAdjuntos(Request $request, $id)
+    {
+        // Verificar si el tipo de documento existe para la solicitud dada
+        $existe = DocumentoAdjunto::where('solicitud_id', $id)
+        ->where('tipo_documento', $request->tipo_documento)
+        ->exists();
+
+        if (!$existe) {
+            return redirect()->back()->with('error', 'El tipo de documento no existe en la base de datos.');
+        }
+
+        // Buscar el documento a actualizar
+        $documento = DocumentoAdjunto::where('solicitud_id', $id)
+            ->where('tipo_documento', $request->tipo_documento)
+            ->firstOrFail();
+
+        // Si hay un archivo nuevo, lo subimos y actualizamos la ruta
+        if ($request->hasFile('ruta_archivo') && $request->file('ruta_archivo')->isValid()) {
+            // Eliminar archivo anterior si existe
+            //if ($documento->ruta_archivo) {Storage::disk('public')->delete($documento->ruta_archivo);}
+
+            // Guardar nuevo archivo
+            $rutaArchivo = $request->file('ruta_archivo')->store($request->tipo_documento, 'public');
+            $documento->ruta_archivo = $rutaArchivo;
+        }
+
+        // Actualizar el tipo de documento
+        $documento->tipo_documento = $request->tipo_documento;
+        $documento->save();
+
+        return redirect()->back()->with('success', 'Documento actualizado correctamente.');
     }
 
 

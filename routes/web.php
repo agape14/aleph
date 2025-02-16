@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProgenitorController;
@@ -57,6 +57,35 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::put('/solicitud/{id}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitud.cambiarEstado');
     Route::get('/solicitudes/export/excel', [SolicitudController::class, 'exportExcel'])->name('solicitudes.exportExcel');
     Route::get('/solicitudes/export/pdf', [SolicitudController::class, 'exportPDF'])->name('solicitudes.exportPDF');
+
+    Route::put('/situacion-economica/{id}', [SolicitudController::class, 'updateSituacionEconomica'])->name('situacionEconomica.update');
+    Route::put('/documentos-adjuntos/{id}', [SolicitudController::class, 'updateDocumentosAdjuntos'])->name('documentosAdjuntos.update');
+
+    Route::post('/backup', function () {
+        Artisan::call('database:backup');
+        return back()->with('success', 'Backup realizado correctamente.');
+    })->name('backup')->middleware('auth');
+
+    Route::post('/backup', function () {
+        // Verificar si el usuario tiene rol de administrador (role == 1)
+        if (Auth::user()->role != 'admin') {
+            return redirect()->back()->with('error', 'No tienes permisos para realizar esta acción. Tu rol es: ' . Auth::user()->role);
+        }
+
+        try {
+            // Ejecutar el comando y capturar la salida
+            $exitCode = Artisan::call('database:backup');
+
+            // Verificar si el comando se ejecutó correctamente
+            if ($exitCode !== 0) {
+                return back()->with('error', 'Error al realizar el backup. Inténtalo nuevamente.');
+            }
+
+            return back()->with('success', 'Backup realizado correctamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ocurrió un error inesperado: ' . $e->getMessage());
+        }
+    })->name('backup')->middleware('auth');
 
 });
 

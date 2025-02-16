@@ -6,14 +6,17 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12">
                 <!-- Page header -->
-                <div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="mb-2 mb-lg-0">
-                            <h3 class="mb-0  text-white">Bienvenido {{ ucfirst(Auth::user()->name) }}</h3>
-                        </div>
-                        <div>
-                            {{-- <a href="#" class="btn btn-white">Nueno proyecto</a>--}}
-                        </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="mb-2 mb-lg-0">
+                        <h3 class="mb-0 text-white">Bienvenido {{ ucfirst(Auth::user()->name) }}</h3>
+                    </div>
+                    <div>
+                        <form action="{{ route('backup') }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres realizar un backup?');">
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-database"></i> Realizar Backup
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -119,7 +122,8 @@
                             <!-- Formulario de búsqueda -->
                             <form action="{{ route('admin.home') }}" method="GET" class="d-flex flex-column flex-md-row w-100 me-3">
                                 <div class="input-group mb-2 mb-md-0 flex-fill me-3">
-                                    <input type="text" class="form-control" name="dni" placeholder="Buscar por DNI" value="{{ request('dni') }}">
+                                    {{-- <input type="text" class="form-control" name="dni" placeholder="Buscar por DNI" value="{{ request('dni') }}">--}}
+                                    <input type="text" class="form-control" name="search" placeholder="Buscar por DNI, Nombre, Apellidos o Código SIANET" value="{{ request('search') }}">
                                 </div>
                                 <div class="input-group mb-2 mb-md-0 flex-fill me-3">
                                     <input type="date" class="form-control" name="fecha_inicio" value="{{ request('fecha_inicio') }}">
@@ -146,6 +150,7 @@
                         <table class="table text-nowrap mb-0">
                             <thead class="table-light">
                                 <tr>
+                                    <th></th>
                                     <th>#</th>
                                     <th>DNI <br> Estudiante</th>
                                     <th>Nombres <br> Estudiante</th>
@@ -158,6 +163,14 @@
                             <tbody>
                                 @foreach ($solicitudes as $solicitud)
                                 <tr>
+                                    <td>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalSituacionEconomica{{ $solicitud->id }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarDocumentos{{ $solicitud->id }}">
+                                            <i class="fas fa-file-upload"></i>
+                                        </button>
+                                    </td>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $solicitud->estudiante->nro_documento }}</td>
                                     <td>{{ $solicitud->estudiante->nombres }}</td>
@@ -202,9 +215,130 @@
                                         </form>
                                     </td>
                                 </tr>
+
+                                <!-- Modal Situación Económica -->
+                                <div class="modal fade" id="modalSituacionEconomica{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalSituacionEconomicaLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalSituacionEconomicaLabel">Editar Situación Económica</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('situacionEconomica.update', $solicitud->situacionEconomica->id ?? '') }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+
+                                                    <h5 class="text-primary">Ingresos</h5>
+                                                    @foreach ([
+                                                        'ingresos_planilla' => 'Ingresos por Planilla',
+                                                        'ingresos_honorarios' => 'Ingresos por Honorarios',
+                                                        'ingresos_pension' => 'Ingresos por Pensión',
+                                                        'ingresos_alquiler' => 'Ingresos por Alquiler',
+                                                        'ingresos_vehiculos' => 'Ingresos por Vehículos',
+                                                        'otros_ingresos' => 'Otros Ingresos'
+                                                    ] as $campo => $label)
+                                                        <div class="mb-3">
+                                                            <label class="form-label">{{ $label }}</label>
+                                                            <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="1">
+                                                        </div>
+                                                    @endforeach
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Detalle de Otros Ingresos</label>
+                                                        <textarea class="form-control" name="detalle_otros_ingresos">{{ $solicitud->situacionEconomica->detalle_otros_ingresos ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <h5 class="text-danger">Gastos</h5>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Número de Hijos</label>
+                                                        <input type="number" class="form-control" name="num_hijos" value="{{ $solicitud->situacionEconomica->num_hijos ?? '0' }}">
+                                                    </div>
+
+                                                    @foreach ([
+                                                        'gastos_colegios' => 'Gastos en Colegios',
+                                                        'gastos_talleres' => 'Gastos en Talleres',
+                                                        'gastos_universidad' => 'Gastos en Universidad',
+                                                        'gastos_alimentacion' => 'Gastos en Alimentación',
+                                                        'gastos_alquiler' => 'Gastos en Alquiler',
+                                                        'gastos_credito_personal' => 'Gastos en Crédito Personal',
+                                                        'gastos_credito_hipotecario' => 'Gastos en Crédito Hipotecario',
+                                                        'gastos_credito_vehicular' => 'Gastos en Crédito Vehicular',
+                                                        'gastos_servicios' => 'Gastos en Servicios',
+                                                        'gastos_mantenimiento' => 'Gastos en Mantenimiento',
+                                                        'gastos_apoyo_casa' => 'Gastos en Apoyo al Hogar',
+                                                        'gastos_clubes' => 'Gastos en Clubes',
+                                                        'gastos_seguros' => 'Gastos en Seguros',
+                                                        'gastos_apoyo_familiar' => 'Gastos en Apoyo Familiar',
+                                                        'otros_gastos' => 'Otros Gastos'
+                                                    ] as $campo => $label)
+                                                        <div class="mb-3">
+                                                            <label class="form-label">{{ $label }}</label>
+                                                            <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="1">
+                                                        </div>
+                                                    @endforeach
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Detalle de Otros Gastos</label>
+                                                        <textarea class="form-control" name="detalle_otros_gastos">{{ $solicitud->situacionEconomica->detalle_otros_gastos ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <h5 class="text-success">Totales</h5>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Total Ingresos</label>
+                                                        <input type="number" class="form-control" name="total_ingresos" value="{{ $solicitud->situacionEconomica->total_ingresos ?? '0.00' }}" step="1" >
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Total Gastos</label>
+                                                        <input type="number" class="form-control" name="total_gastos" value="{{ $solicitud->situacionEconomica->total_gastos ?? '0.00' }}" step="1">
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- Modal Editar Documentos -->
+                                <div class="modal fade" id="modalEditarDocumentos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalEditarDocumentosLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalEditarDocumentosLabel">Editar Documentos Adjuntos</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('documentosAdjuntos.update', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="mb-3">
+                                                        <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                                                        <select class="form-control" name="tipo_documento">
+                                                            <option value="boletas_pago">Boletas de Pago</option>
+                                                            <option value="declaracion_renta">Declaración de Renta</option>
+                                                            <option value="movimientos_migratorios">Movimientos Migratorios</option>
+                                                            <option value="bienes_inmuebles">Bienes Inmuebles</option>
+                                                            <option value="otros">Otros</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="ruta_archivo" class="form-label">Subir Archivo</label>
+                                                        <input type="file" class="form-control" name="ruta_archivo">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="d-flex justify-content-center">
+                            {{ $solicitudes->appends(request()->query())->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
 
                     @foreach ($solicitudes as $solicitud)
@@ -382,5 +516,31 @@
         </div>
     </div>
 @endsection
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function calcularTotales() {
+        let totalIngresos = 0;
+        let totalGastos = 0;
 
+        $('.ingresos').each(function () {
+            totalIngresos += parseFloat($(this).val()) || 0;
+        });
 
+        $('.gastos').each(function () {
+            totalGastos += parseFloat($(this).val()) || 0;
+        });
+
+        $('#total_ingresos').val(totalIngresos.toFixed(2));
+        $('#total_gastos').val(totalGastos.toFixed(2));
+    }
+
+    // Calcular totales cuando cambia un input de ingresos o gastos
+    $(document).on('input', '.ingresos, .gastos', function () {
+        calcularTotales();
+    });
+
+    // Calcular totales cuando se carga la página
+    $(document).ready(function () {
+        calcularTotales();
+    });
+</script>
