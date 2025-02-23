@@ -214,7 +214,7 @@
                                           <!-- Información Laboral y Económica -->
                                           <div class="tab-pane fade" id="info-laboraledit" role="tabpanel" aria-labelledby="info-laboral-tabedit">
                                             <div class="mb-3">
-                                                <label for="tiempo_desempleo" class="form-label">Tiempo Desempleo</label>
+                                                <label for="tiempo_desempleo" class="form-label">Tiempo Desempleo (en meses)</label>
                                                 <input type="number" class="form-control" id="tiempo_desempleo" name="tiempo_desempleo" value="{{ old('tiempo_desempleo') }}">
                                             </div>
                                             <div class="mb-3">
@@ -411,7 +411,7 @@
                                       <!-- Información Laboral y Económica -->
                                       <div class="tab-pane fade" id="info-laboral" role="tabpanel" aria-labelledby="info-laboral-tab">
                                         <div class="mb-3">
-                                            <label for="tiempo_desempleo" class="form-label">Tiempo Desempleo</label>
+                                            <label for="tiempo_desempleo" class="form-label">Tiempo Desempleo (en meses)</label>
                                             <input type="number" class="form-control" id="tiempo_desempleo" name="tiempo_desempleo">
                                         </div>
                                         <div class="mb-3">

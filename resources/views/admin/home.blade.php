@@ -353,124 +353,356 @@
                                     @if ($solicitud->progenitores->count() === 0)
                                         <p>No hay progenitores registrados.</p>
                                     @else
-                                        <ul>
-                                            @foreach ($solicitud->progenitores as $progenitor)
-                                                <li>
-                                                    @if ($progenitor->nombres || $progenitor->apellidos)
-                                                        <strong>NOMBRE:</strong> {{ strtoupper($progenitor->nombres) }} {{ strtoupper($progenitor->apellidos) }}<br>
-                                                    @endif
+                                    <ul>
+                                        @foreach ($solicitud->progenitores as $progenitor)
+                                            <li>
+                                                <form action="{{ route('progenitores.update', $progenitor->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
 
-                                                    @if ($progenitor->dni)
-                                                        <strong>DNI:</strong> {{ strtoupper($progenitor->dni) }}<br>
-                                                    @endif
+                                                    <!-- Campo oculto para el tipo de progenitor -->
+                                                    <input type="hidden" name="tipo" value="{{ $progenitor->tipo }}">
 
-                                                    @if ($progenitor->tipo)
-                                                        <strong>TIPO:</strong> {{ strtoupper($progenitor->tipo) }}<br>
-                                                    @endif
+                                                    <!-- Título del progenitor -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <h4>{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</h4>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->codigo_sianet)
-                                                        <strong>CÓDIGO SIANET:</strong> {{ strtoupper($progenitor->codigo_sianet) }}<br>
-                                                    @endif
+                                                    <!-- Nombre -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="nombres{{ $progenitor->id }}" class="form-label">NOMBRE:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="nombres{{ $progenitor->id }}" name="nombres" value="{{ strtoupper($progenitor->nombres) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->numero_hijos)
-                                                        <strong>NRO. HIJOS:</strong> {{ $progenitor->numero_hijos }}<br>
-                                                    @endif
+                                                    <!-- Apellidos -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="apellidos{{ $progenitor->id }}" class="form-label">APELLIDOS:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="apellidos{{ $progenitor->id }}" name="apellidos" value="{{ strtoupper($progenitor->apellidos) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->hijos_matriculados)
-                                                        <strong>HIJOS MATRICULADOS:</strong> {{ $progenitor->hijos_matriculados }}<br>
-                                                    @endif
+                                                    <!-- DNI -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="dni{{ $progenitor->id }}" class="form-label">DNI:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="dni{{ $progenitor->id }}" name="dni" value="{{ strtoupper($progenitor->dni) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->formacion_academica)
-                                                        <strong>FORMACIÓN ACADÉMICA:</strong> {{ strtoupper($progenitor->formacion_academica) }}<br>
-                                                    @endif
+                                                    <!-- Código SIANET -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="codigo_sianet{{ $progenitor->id }}" class="form-label">CÓDIGO SIANET:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="codigo_sianet{{ $progenitor->id }}" name="codigo_sianet" value="{{ strtoupper($progenitor->codigo_sianet) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->trabaja !== null)
-                                                        <strong>TRABAJA:</strong> {{ $progenitor->trabaja ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Número de hijos -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="numero_hijos{{ $progenitor->id }}" class="form-label">NRO. HIJOS:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" class="form-control" id="numero_hijos{{ $progenitor->id }}" name="numero_hijos" value="{{ $progenitor->numero_hijos }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->tiempo_desempleo)
-                                                        <strong>TIEMPO DESEMPLEO:</strong> {{ strtoupper($progenitor->tiempo_desempleo) }}<br>
-                                                    @endif
+                                                    <!-- Hijos matriculados -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="hijos_matriculados{{ $progenitor->id }}" class="form-label">HIJOS MATRICULADOS:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" class="form-control" id="hijos_matriculados{{ $progenitor->id }}" name="hijos_matriculados" value="{{ $progenitor->hijos_matriculados }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->sueldo_fijo !== null)
-                                                        <strong>SUELDO FIJO:</strong> {{ $progenitor->sueldo_fijo ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Formación académica -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="formacion_academica{{ $progenitor->id }}" class="form-label">FORMACIÓN ACADÉMICA:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="formacion_academica{{ $progenitor->id }}" name="formacion_academica">
+                                                                <option value="tecnica" {{ $progenitor->formacion_academica == 'tecnica' ? 'selected' : '' }}>Técnica</option>
+                                                                <option value="universitaria" {{ $progenitor->formacion_academica == 'universitaria' ? 'selected' : '' }}>Universitaria</option>
+                                                                <option value="bachillerato" {{ $progenitor->formacion_academica == 'bachillerato' ? 'selected' : '' }}>Bachillerato</option>
+                                                                <option value="titulado" {{ $progenitor->formacion_academica == 'titulado' ? 'selected' : '' }}>Titulado</option>
+                                                                <option value="maestria" {{ $progenitor->formacion_academica == 'maestria' ? 'selected' : '' }}>Maestría</option>
+                                                                <option value="doctorado" {{ $progenitor->formacion_academica == 'doctorado' ? 'selected' : '' }}>Doctorado</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->sueldo_variable !== null)
-                                                        <strong>SUELDO VARIABLE:</strong> {{ $progenitor->sueldo_variable ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Trabaja -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="trabaja{{ $progenitor->id }}" class="form-label">TRABAJA:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="trabaja{{ $progenitor->id }}" name="trabaja">
+                                                                <option value="1" {{ $progenitor->trabaja ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->trabaja ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->cargo)
-                                                        <strong>CARGO:</strong> {{ strtoupper($progenitor->cargo) }}<br>
-                                                    @endif
+                                                    <!-- Tiempo de desempleo -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">TIEMPO DESEMPLEO:</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <input type="text" class="form-control" id="tiempo_desempleo{{ $progenitor->id }}" name="tiempo_desempleo" value="{{ strtoupper($progenitor->tiempo_desempleo) }}">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">(en meses)</label>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->anio_inicio_laboral)
-                                                        <strong>AÑO INICIO LABORAL:</strong> {{ $progenitor->anio_inicio_laboral }}<br>
-                                                    @endif
+                                                    <!-- Sueldo fijo -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="sueldo_fijo{{ $progenitor->id }}" class="form-label">SUELDO FIJO:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="sueldo_fijo{{ $progenitor->id }}" name="sueldo_fijo">
+                                                                <option value="1" {{ $progenitor->sueldo_fijo ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->sueldo_fijo ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->lugar_trabajo)
-                                                        <strong>LUGAR DE TRABAJO:</strong> {{ strtoupper($progenitor->lugar_trabajo) }}<br>
-                                                    @endif
+                                                    <!-- Sueldo variable -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="sueldo_variable{{ $progenitor->id }}" class="form-label">SUELDO VARIABLE:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="sueldo_variable{{ $progenitor->id }}" name="sueldo_variable">
+                                                                <option value="1" {{ $progenitor->sueldo_variable ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->sueldo_variable ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->ingresos_mensuales)
-                                                        <strong>INGRESOS MENSUALES:</strong> S/. {{ number_format($progenitor->ingresos_mensuales, 2) }}<br>
-                                                    @endif
+                                                    <!-- Cargo -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="cargo{{ $progenitor->id }}" class="form-label">CARGO:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="cargo{{ $progenitor->id }}" name="cargo" value="{{ strtoupper($progenitor->cargo) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->recibe_bonos !== null)
-                                                        <strong>RECIBE BONOS:</strong> {{ $progenitor->recibe_bonos ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Año inicio laboral -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="anio_inicio_laboral{{ $progenitor->id }}" class="form-label">AÑO INICIO LABORAL:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="anio_inicio_laboral{{ $progenitor->id }}" name="anio_inicio_laboral" value="{{ $progenitor->anio_inicio_laboral }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->monto_bonos)
-                                                        <strong>MONTO BONOS:</strong> {{ strtoupper($progenitor->monto_bonos) }}<br>
-                                                    @endif
+                                                    <!-- Lugar de trabajo -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="lugar_trabajo{{ $progenitor->id }}" class="form-label">LUGAR DE TRABAJO:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="lugar_trabajo{{ $progenitor->id }}" name="lugar_trabajo" value="{{ strtoupper($progenitor->lugar_trabajo) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->recibe_utilidades !== null)
-                                                        <strong>RECIBE UTILIDADES:</strong> {{ $progenitor->recibe_utilidades ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Ingresos mensuales -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="ingresos_mensuales{{ $progenitor->id }}" class="form-label">INGRESOS MENSUALES:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" step="0.01" class="form-control" id="ingresos_mensuales{{ $progenitor->id }}" name="ingresos_mensuales" value="{{ $progenitor->ingresos_mensuales }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->monto_utilidades)
-                                                        <strong>MONTO UTILIDADES:</strong> {{ strtoupper($progenitor->monto_utilidades) }}<br>
-                                                    @endif
+                                                    <!-- Recibe bonos -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="recibe_bonos{{ $progenitor->id }}" class="form-label">RECIBE BONOS:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="recibe_bonos{{ $progenitor->id }}" name="recibe_bonos">
+                                                                <option value="1" {{ $progenitor->recibe_bonos ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->recibe_bonos ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->titular_empresa !== null)
-                                                        <strong>TITULAR EMPRESA:</strong> {{ $progenitor->titular_empresa ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Monto bonos -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="monto_bonos{{ $progenitor->id }}" class="form-label">MONTO BONOS:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="monto_bonos{{ $progenitor->id }}" name="monto_bonos">
+                                                                <option value="5000-10000" {{ $progenitor->monto_bonos == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
+                                                                <option value="10000-15000" {{ $progenitor->monto_bonos == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
+                                                                <option value="15000-mas" {{ $progenitor->monto_bonos == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->porcentaje_acciones)
-                                                        <strong>PORCENTAJE ACCIONES:</strong> {{ $progenitor->porcentaje_acciones }}%<br>
-                                                    @endif
+                                                    <!-- Recibe utilidades -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="recibe_utilidades{{ $progenitor->id }}" class="form-label">RECIBE UTILIDADES:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="recibe_utilidades{{ $progenitor->id }}" name="recibe_utilidades">
+                                                                <option value="1" {{ $progenitor->recibe_utilidades ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->recibe_utilidades ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->razon_social)
-                                                        <strong>RAZÓN SOCIAL:</strong> {{ strtoupper($progenitor->razon_social) }}<br>
-                                                    @endif
+                                                    <!-- Monto utilidades -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="monto_utilidades{{ $progenitor->id }}" class="form-label">MONTO UTILIDADES:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="monto_utilidades{{ $progenitor->id }}" name="monto_utilidades">
+                                                                <option value="5000-10000" {{ $progenitor->monto_utilidades == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
+                                                                <option value="10000-15000" {{ $progenitor->monto_utilidades == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
+                                                                <option value="15000-mas" {{ $progenitor->monto_utilidades == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->numero_ruc)
-                                                        <strong>RUC:</strong> {{ $progenitor->numero_ruc }}<br>
-                                                    @endif
+                                                    <!-- Titular empresa -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="titular_empresa{{ $progenitor->id }}" class="form-label">TITULAR EMPRESA:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="titular_empresa{{ $progenitor->id }}" name="titular_empresa">
+                                                                <option value="1" {{ $progenitor->titular_empresa ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->titular_empresa ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->vivienda_tipo)
-                                                        <strong>TIPO DE VIVIENDA:</strong> {{ strtoupper($progenitor->vivienda_tipo) }}<br>
-                                                    @endif
+                                                    <!-- Porcentaje acciones -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="porcentaje_acciones{{ $progenitor->id }}" class="form-label">PORCENTAJE ACCIONES:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" step="0.01" class="form-control" id="porcentaje_acciones{{ $progenitor->id }}" name="porcentaje_acciones" value="{{ $progenitor->porcentaje_acciones }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->credito_hipotecario !== null)
-                                                        <strong>CRÉDITO HIPOTECARIO:</strong> {{ $progenitor->credito_hipotecario ? 'SÍ' : 'NO' }}<br>
-                                                    @endif
+                                                    <!-- Razón social -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="razon_social{{ $progenitor->id }}" class="form-label">RAZÓN SOCIAL:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="razon_social{{ $progenitor->id }}" name="razon_social" value="{{ strtoupper($progenitor->razon_social) }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->direccion_vivienda)
-                                                        <strong>DIRECCIÓN:</strong> {{ strtoupper($progenitor->direccion_vivienda) }}<br>
-                                                    @endif
+                                                    <!-- RUC -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="numero_ruc{{ $progenitor->id }}" class="form-label">RUC:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="text" class="form-control" id="numero_ruc{{ $progenitor->id }}" name="numero_ruc" value="{{ $progenitor->numero_ruc }}">
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->m2_vivienda)
-                                                        <strong>M² VIVIENDA:</strong> {{ $progenitor->m2_vivienda }}<br>
-                                                    @endif
+                                                    <!-- Tipo de vivienda -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="vivienda_tipo{{ $progenitor->id }}" class="form-label">TIPO DE VIVIENDA:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="vivienda_tipo{{ $progenitor->id }}" name="vivienda_tipo">
+                                                                <option value="propia" {{ $progenitor->vivienda_tipo == 'propia' ? 'selected' : '' }}>Propia</option>
+                                                                <option value="alquilada" {{ $progenitor->vivienda_tipo == 'alquilada' ? 'selected' : '' }}>Alquilada</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
 
-                                                    @if ($progenitor->cantidad_inmuebles)
-                                                        <strong>CANTIDAD DE INMUEBLES:</strong> {{ $progenitor->cantidad_inmuebles }}<br>
-                                                    @endif
-                                                </li>
-                                                <hr>
-                                            @endforeach
-                                        </ul>
+                                                    <!-- Crédito hipotecario -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="credito_hipotecario{{ $progenitor->id }}" class="form-label">CRÉDITO HIPOTECARIO:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <select class="form-select" id="credito_hipotecario{{ $progenitor->id }}" name="credito_hipotecario">
+                                                                <option value="1" {{ $progenitor->credito_hipotecario ? 'selected' : '' }}>SÍ</option>
+                                                                <option value="0" {{ !$progenitor->credito_hipotecario ? 'selected' : '' }}>NO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Dirección de vivienda -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="direccion_vivienda{{ $progenitor->id }}" class="form-label">DIRECCIÓN:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <textarea class="form-control" id="direccion_vivienda{{ $progenitor->id }}" name="direccion_vivienda">{{ strtoupper($progenitor->direccion_vivienda) }}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- M² vivienda -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="m2_vivienda{{ $progenitor->id }}" class="form-label">M² VIVIENDA:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" step="0.01" class="form-control" id="m2_vivienda{{ $progenitor->id }}" name="m2_vivienda" value="{{ $progenitor->m2_vivienda }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Cantidad de inmuebles -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-3">
+                                                            <label for="cantidad_inmuebles{{ $progenitor->id }}" class="form-label">CANTIDAD DE INMUEBLES:</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input type="number" class="form-control" id="cantidad_inmuebles{{ $progenitor->id }}" name="cantidad_inmuebles" value="{{ $progenitor->cantidad_inmuebles }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Botón de guardar -->
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12 text-end">
+                                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </li>
+                                            <hr>
+                                        @endforeach
+                                    </ul>
                                     @endif
                                 </div>
                             </div>

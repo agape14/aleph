@@ -107,4 +107,54 @@ class ProgenitorController extends Controller
     }
 
 
+    public function updateProgenitor(Request $request, Progenitor $progenitor)
+    {
+        //dd($request->all(), $progenitor);
+        try {
+            $validatedData = $request->validate([
+                'nombres' => 'required|string|max:255',
+                'apellidos' => 'required|string|max:255',
+                'dni' => 'required|string|max:15',
+                'tipo' => 'required|in:progenitor1,progenitor2',
+                'codigo_sianet' => 'nullable|string|max:255',
+                'numero_hijos' => 'required|integer|min:0',
+                'hijos_matriculados' => 'required|integer|min:0',
+                'formacion_academica' => 'required|in:tecnica,universitaria,bachillerato,titulado,maestria,doctorado',
+                'trabaja' => 'required|boolean',
+                'tiempo_desempleo' => 'nullable|string|max:255',
+                'sueldo_fijo' => 'nullable|boolean',
+                'sueldo_variable' => 'nullable|boolean',
+                'cargo' => 'nullable|string|max:255',
+                'anio_inicio_laboral' => 'nullable|integer|min:1900|max:' . date('Y'),
+                'lugar_trabajo' => 'nullable|string|max:255',
+                'ingresos_mensuales' => 'nullable|numeric|min:0',
+                'recibe_bonos' => 'nullable|boolean',
+                'monto_bonos' => 'nullable|in:5000-10000,10000-15000,15000-mas',
+                'recibe_utilidades' => 'nullable|boolean',
+                'monto_utilidades' => 'nullable|in:5000-10000,10000-15000,15000-mas',
+                'titular_empresa' => 'nullable|boolean',
+                'porcentaje_acciones' => 'nullable|numeric|min:0',
+                'razon_social' => 'nullable|string|max:255',
+                'numero_ruc' => 'nullable|string|max:15',
+                'vivienda_tipo' => 'nullable|in:propia,alquilada',
+                'credito_hipotecario' => 'nullable|boolean',
+                'direccion_vivienda' => 'nullable|string',
+                'm2_vivienda' => 'nullable|numeric|min:0',
+                'cantidad_inmuebles' => 'nullable|integer|min:0',
+            ]);
+
+            // Actualizar los campos del progenitor
+            $resultado = $progenitor->update($validatedData);
+
+            // Ver qué devuelve update() y cómo quedó el modelo después
+            //dd(['Resultado de update()' => $resultado,'Datos después de actualizar' => $progenitor->refresh()]);
+
+            // Redireccionar con un mensaje de éxito
+            return redirect()->back()->with('success', 'Progenitor actualizado correctamente.');
+        } catch (\Exception $e) {
+            // Si hay un error, redirigir con el mensaje de error
+            return redirect()->back()->with('error', 'Error al actualizar el progenitor: ' . $e->getMessage());
+        }
+    }
+
 }
