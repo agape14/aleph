@@ -23,6 +23,11 @@
                     <i data-feather="user" class="nav-icon icon-xs me-2"></i>Progenitores
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link has-arrow " href="{{ route('configuracion.index') }}">
+                    <i data-feather="corner-left-down" class="nav-icon icon-xs me-2"></i>Configuracion
+                </a>
+            </li>
              {{--
 
              <!-- Nav item -->

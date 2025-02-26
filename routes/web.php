@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProgenitorController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ConfiguracionController;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Backup;
 use Carbon\Carbon;
@@ -21,13 +22,8 @@ use Carbon\Carbon;
 Route::get('/login', function () {
     return view('auth.login');
 })->name("login");
-Route::get('/', function () {
-    return view('index', [
-        'formTimeout' => env('FORM_TIMEOUT', 300),
-        'formAlertTime' => env('SESSION_LIFETIME', 240),
-    ]);
-});
-
+//Route::get('/', function () {return view('index', ['formTimeout' => env('FORM_TIMEOUT', 300),'formAlertTime' => env('SESSION_LIFETIME', 240),]);});
+  Route::get('/', [ConfiguracionController::class, 'verificarFormulario'])->name("inicio");
 Auth::routes();
 
 //User Routes
@@ -116,6 +112,9 @@ Route::middleware(['auth','user-role:admin'])->group(function()
         }
     })->name('backup')->middleware('auth');
 
+
+    Route::get('/admin/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
+    Route::post('/admin/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
 });
 
 Route::post('/progenitores/transfer', [EstudianteController::class, 'transferToProgenitores'])->name('progenitores.transfer');

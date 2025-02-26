@@ -35,98 +35,116 @@
 
     <!-- contact section -->
     <section class="section contact overflow-hidden" id="contact">
-        <!-- start container -->
-        <div class="container">
+        @if (!$mostrarFormulario)
+        <div class="container mt-5">
             <div class="row justify-content-center">
-                <div class="col-lg-12">
-                    <div class="title text-center mb-5">
-                        <!--<h6 class="mb-0 fw-bold text-primary">Contact Us</h6>-->
-                        <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO 2025</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row align-items-center ">
-                <div class="col-md-12 mb-4">
-                    <div class="text-end mt-3">
-                        <label class="me-2">Tiempo restante para enviar el formulario:</label>
-                        <span id="tiempoRestante" class="badge bg-primary text-white fs-4"></span>
-                        <!-- Botón con Tooltip -->
-                        <button type="button" class="btn btn-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="Por favor, asegúrate de tener todos los documentos listos antes de comenzar a llenar el formulario.">
-                            <i class="mdi mdi-alert text-danger fs-4"></i>
-                        </button>
-                    </div>
-                    <!-- Alerta no invasiva (Bootstrap) -->
-                    <div id="alertaTemporal" class="alert alert-warning mt-3 d-none" role="alert">
-                        El formulario está a punto de expirar. Por favor, envíalo pronto o refresca la página.
-                    </div>
-                    <div class="container mt-5">
-                        <div class="stepper-wrapper">
-                            <div class="stepper-item active">
-                                <div class="step-counter">1</div>
-                                <div class="step-label">Inicio</div>
-                            </div>
-                            <div class="stepper-item">
-                                <div class="step-counter">2</div>
-                                <div class="step-label">Estudiante</div>
-                            </div>
-                            <div class="stepper-item">
-                                <div class="step-counter">3</div>
-                                <div class="step-label">Progenitor 1</div>
-                            </div>
-                            <div class="stepper-item">
-                                <div class="step-counter">4</div>
-                                <div class="step-label">Progenitor 2</div>
-                            </div>
-                            <div class="stepper-item">
-                                <div class="step-counter">5</div>
-                                <div class="step-label">Situación Económica</div>
-                            </div>
-                            <div class="stepper-item">
-                                <div class="step-counter">6</div>
-                                <div class="step-label">General</div>
-                            </div>
-                        </div>
-
-                        <div class="form mt-4">
-                            <form  method="POST" action="/setdatos" enctype="multipart/form-data"  class="p-4 border rounded" id="frmSolicitud">
-                             <!-- Paso 1: Inicio -->
-                            <div class="form-step d-block" data-step="1">
-                                @include('paso1')
-                            </div>
-                            <!-- Paso 2: Estudiante -->
-                            <div class="form-step d-none" data-step="2">
-                                @include('paso2')
-                            </div>
-                            <!-- Paso 3: Progenitor 1 -->
-                            <div class="form-step d-none" data-step="3">
-                                @include('paso3')
-                            </div>
-                            <!-- Paso 4: Progenitor 2 -->
-                            <div class="form-step d-none" data-step="4" id="step-progenitor-2">
-                                <input type="hidden" id="is_insert_progenitor2" name="is_insert_progenitor2" value="0"/>
-                                @include('paso4')
-                            </div>
-                            <!-- Paso 5: Situación Económica -->
-                            <div class="form-step d-none" data-step="5">
-                                @include('paso5')
-                            </div>
-                            <!-- Paso 6: General -->
-                            <div class="form-step d-none" data-step="6">
-                                @include('paso6')
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <button id="prev-btn" class="btn btn-primary" type="button" disabled>← Anterior</button>
-                                <button id="next-btn" class="btn btn-primary" type="button">Siguiente →</button>
-                            </div>
-                            </form>
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-1">
+                        <div class="card-body text-center p-4">
+                            <h4 class="text-danger fw-bold">ATENCIÓN</h4>
+                            <hr>
+                            <p class="mt-3 text-muted">{!! $mensaje !!}</p>
+                            <hr>
+                            <p class="small text-secondary">Si tienes alguna duda, comunícate con la administración.</p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+        @else
+            <!-- start container -->
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <div class="title text-center mb-5">
+                            <!--<h6 class="mb-0 fw-bold text-primary">Contact Us</h6>-->
+                            <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO 2025</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center ">
+                    <div class="col-md-12 mb-4">
+                        <div class="text-end mt-3">
+                            <label class="me-2">Tiempo restante para enviar el formulario:</label>
+                            <span id="tiempoRestante" class="badge bg-primary text-white fs-4"></span>
+                            <!-- Botón con Tooltip -->
+                            <button type="button" class="btn btn-light btn-sm ms-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="Por favor, asegúrate de tener todos los documentos listos antes de comenzar a llenar el formulario.">
+                                <i class="mdi mdi-alert text-danger fs-4"></i>
+                            </button>
+                        </div>
+                        <!-- Alerta no invasiva (Bootstrap) -->
+                        <div id="alertaTemporal" class="alert alert-warning mt-3 d-none" role="alert">
+                            El formulario está a punto de expirar. Por favor, envíalo pronto o refresca la página.
+                        </div>
+                        <div class="container mt-5">
+                            <div class="stepper-wrapper">
+                                <div class="stepper-item active">
+                                    <div class="step-counter">1</div>
+                                    <div class="step-label">Inicio</div>
+                                </div>
+                                <div class="stepper-item">
+                                    <div class="step-counter">2</div>
+                                    <div class="step-label">Estudiante</div>
+                                </div>
+                                <div class="stepper-item">
+                                    <div class="step-counter">3</div>
+                                    <div class="step-label">Progenitor 1</div>
+                                </div>
+                                <div class="stepper-item">
+                                    <div class="step-counter">4</div>
+                                    <div class="step-label">Progenitor 2</div>
+                                </div>
+                                <div class="stepper-item">
+                                    <div class="step-counter">5</div>
+                                    <div class="step-label">Situación Económica</div>
+                                </div>
+                                <div class="stepper-item">
+                                    <div class="step-counter">6</div>
+                                    <div class="step-label">General</div>
+                                </div>
+                            </div>
+
+                            <div class="form mt-4">
+                                <form  method="POST" action="/setdatos" enctype="multipart/form-data"  class="p-4 border rounded" id="frmSolicitud">
+                                <!-- Paso 1: Inicio -->
+                                <div class="form-step d-block" data-step="1">
+                                    @include('paso1')
+                                </div>
+                                <!-- Paso 2: Estudiante -->
+                                <div class="form-step d-none" data-step="2">
+                                    @include('paso2')
+                                </div>
+                                <!-- Paso 3: Progenitor 1 -->
+                                <div class="form-step d-none" data-step="3">
+                                    @include('paso3')
+                                </div>
+                                <!-- Paso 4: Progenitor 2 -->
+                                <div class="form-step d-none" data-step="4" id="step-progenitor-2">
+                                    <input type="hidden" id="is_insert_progenitor2" name="is_insert_progenitor2" value="0"/>
+                                    @include('paso4')
+                                </div>
+                                <!-- Paso 5: Situación Económica -->
+                                <div class="form-step d-none" data-step="5">
+                                    @include('paso5')
+                                </div>
+                                <!-- Paso 6: General -->
+                                <div class="form-step d-none" data-step="6">
+                                    @include('paso6')
+                                </div>
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button id="prev-btn" class="btn btn-primary" type="button" disabled>← Anterior</button>
+                                    <button id="next-btn" class="btn btn-primary" type="button">Siguiente →</button>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        @endif
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
