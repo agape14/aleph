@@ -36,6 +36,8 @@ class ConfiguracionController extends Controller
             'formAlertTime' => env('SESSION_LIFETIME', 240),
             'mostrarFormulario' => $mostrarFormulario,
             'mensaje' => $mensaje,
+            'titulo_mensaje' => $config->titulo_mensaje,
+            'pie_mensaje' => $config->pie_mensaje,
         ]);
     }
 
@@ -60,6 +62,8 @@ class ConfiguracionController extends Controller
                 'mensaje' => $request->mensaje,
                 'fecha_inicio' => $request->fecha_inicio,
                 'fecha_fin' => $request->fecha_fin,
+                'titulo_mensaje' => $request->titulo_mensaje,
+                'pie_mensaje' => $request->pie_mensaje,
             ]
         );
 

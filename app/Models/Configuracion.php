@@ -11,6 +11,6 @@ class Configuracion extends Model
     protected $table = 'configuraciones';
 
     protected $fillable = [
-        'nombre', 'valor', 'fecha_inicio', 'fecha_fin','mensaje'
+        'nombre', 'valor', 'fecha_inicio', 'fecha_fin','mensaje', 'titulo_mensaje','pie_mensaje'
     ];
 }
