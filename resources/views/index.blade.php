@@ -41,7 +41,7 @@
                 <div class="col-lg-8">
                     <div class="card shadow-lg border-1">
                         <div class="card-body text-center p-4">
-                            <h4 class="text-primary fw-bold">{{ $titulo_mensaje }}</h4>
+                            <p class="mt-3 text-muted">{!! $titulo_mensaje !!}</p>
                             <hr>
                             <p class="mt-3 text-muted">{!! $mensaje !!}</p>
                             <hr>

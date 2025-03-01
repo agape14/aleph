@@ -49,28 +49,55 @@
         <div class="mb-3">
             <label class="form-label fw-bold">Título del Mensaje</label>
             <input type="text" name="titulo_mensaje" class="form-control" value="{{ $config->titulo_mensaje }}">
+            {{-- <textarea id="titulomensaje" name="titulo_mensaje" class="form-control">{!! $config->titulo_mensaje !!}</textarea>--}}
+            <small class="text-muted">Puedes usar guión (-) para que no se visualice <strong>Titulo</strong> en el formulario.</small>
         </div>
 
         {{-- Mensaje con CKEditor --}}
         <div class="mb-3">
             <label class="form-label fw-bold">Mensaje</label>
             <textarea id="editor" name="mensaje" class="form-control">{!! $config->mensaje !!}</textarea>
-            <small class="text-muted">Puedes usar HTML, por ejemplo: &lt;br&gt; para saltos de línea.</small>
+            <small class="text-muted">ingrese datos que se mostraran en la parte central del mensaje</small>
         </div>
 
         {{-- Pie del Mensaje --}}
         <div class="mb-3">
             <label class="form-label fw-bold">Pie del Mensaje</label>
             <input type="text" name="pie_mensaje" class="form-control" value="{{ $config->pie_mensaje }}">
+            <small class="text-muted">Puedes usar guión (-) para que no se visualice <strong>Pie del Mensaje</strong> en el formulario.</small>
         </div>
 
         <script>
             // Inicializar CKEditor
-            ClassicEditor.create(document.querySelector('#editor'))
-                .catch(error => {
-                    console.error(error);
-                });
+            const elementos = ['#editor', '#titulomensaje'];
 
+            elementos.forEach(selector => {
+                ClassicEditor.create(document.querySelector(selector), {
+                    toolbar: [
+                        'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'fontColor', 'fontBackgroundColor', '|',
+                        'bulletedList', 'numberedList', '|', 'link', 'blockQuote', 'undo', 'redo'
+                    ],
+                    fontColor: {
+                        colors: [
+                            { color: 'black', label: 'Negro' },
+                            { color: 'red', label: 'Rojo' },
+                            { color: 'blue', label: 'Azul' },
+                            { color: 'green', label: 'Verde' },
+                            { color: 'yellow', label: 'Amarillo' }
+                        ]
+                    },
+                    fontBackgroundColor: {
+                        colors: [
+                            { color: 'white', label: 'Blanco' },
+                            { color: 'lightgray', label: 'Gris claro' },
+                            { color: 'yellow', label: 'Amarillo' },
+                            { color: 'pink', label: 'Rosa' },
+                            { color: 'lightblue', label: 'Celeste' }
+                        ]
+                    }
+                }).catch(error => console.error(error));
+            });
             // Control del Switch de Estado
             document.getElementById('estadoSwitch').addEventListener('change', function() {
                 let estadoLabel = document.getElementById('estadoLabel');
