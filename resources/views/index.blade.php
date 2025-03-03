@@ -40,12 +40,12 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="card shadow-lg border-1">
-                        <div class="card-body text-center p-4">
-                            <p class="mt-3 text-muted">{!! $titulo_mensaje !!}</p>
+                        <div class="card-body text-center text-primary p-4">
+                            <p class="mt-3 text-primary text-muted">{!! $titulo_mensaje !!}</p>
                             <hr>
-                            <p class="mt-3 text-muted">{!! $mensaje !!}</p>
+                            <p class="mt-3 ">{!! $mensaje !!}</p>
                             <hr>
-                            <p class="small text-secondary">{{ $pie_mensaje }}</p>
+                            <p class="small text-primary">{{ $pie_mensaje }}</p>
                         </div>
                     </div>
                 </div>
