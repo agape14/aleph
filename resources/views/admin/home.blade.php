@@ -158,6 +158,7 @@
                                     <th>Progenitores</th>
                                     <th>Adjuntos</th>
                                     <th>Estado</th>
+                                    <th>Registro</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -214,6 +215,11 @@
                                             </button>
                                         </form>
                                     </td>
+                                    <td>
+                                        {{ $solicitud->created_at->timezone('America/Lima')->format('d/m/Y') }} <br>
+                                        {{ $solicitud->created_at->timezone('America/Lima')->format('H:i:s') }}
+                                    </td>
+
                                 </tr>
 
                                 <!-- Modal Situación Económica -->
