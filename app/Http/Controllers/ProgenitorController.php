@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Progenitor;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+use App\Models\DocumentoAdjunto;
+use App\Models\Solicitud;
+
 
 class ProgenitorController extends Controller
 {
@@ -155,6 +160,39 @@ class ProgenitorController extends Controller
             // Si hay un error, redirigir con el mensaje de error
             return redirect()->back()->with('error', 'Error al actualizar el progenitor: ' . $e->getMessage());
         }
+    }
+
+    public function descargarDocumentos($solicitud_id)
+    {
+        // Obtener la solicitud y el estudiante
+        $solicitud = Solicitud::with('estudiante', 'documentosAdjuntos')->find($solicitud_id);
+
+        if (!$solicitud || $solicitud->documentosAdjuntos->isEmpty()) {
+            return back()->with('error', 'No hay documentos para esta solicitud.');
+        }
+
+        $estudianteNombre = str_replace(' ', '_', $solicitud->estudiante->apepaterno.' '.$solicitud->estudiante->apematerno.' '.$solicitud->estudiante->nombres); // Reemplaza espacios por guiones bajos
+        $zipFileName = "documentos_{$estudianteNombre}.zip";
+        $zipPath = storage_path("app/public/temp/{$zipFileName}");
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($solicitud->documentosAdjuntos as $doc) {
+                $filePath = storage_path("app/public/{$doc->ruta_archivo}");
+
+                if (file_exists($filePath)) {
+                    // Organizar por progenitor si es posible
+                    $folder = $doc->progenitor_id ? "Progenitor_{$doc->progenitor_id}" : "Estudiante";
+                    $zip->addFile($filePath, "{$folder}/" . basename($doc->ruta_archivo));
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'No se pudo crear el archivo ZIP.');
+        }
+
+        // Descargar y eliminar después de enviar
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
 }

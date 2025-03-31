@@ -50,6 +50,7 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::post('/progenitores/store', [ProgenitorController::class, 'store'])->name('progenitores.store');
     Route::put('/progenitores/{progenitor}', [ProgenitorController::class, 'updateProgenitor'])->name('progenitores.update');
     //Route::put('/estudiantes/update', [EstudianteController::class, 'update'])->name('estudiantes.update');
+    Route::get('/descargar-documentos/{solicitud_id}', [ProgenitorController::class, 'descargarDocumentos'])->name('descargar.documentos');
 
     Route::put('/solicitud/{id}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitud.cambiarEstado');
     Route::get('/solicitudes/export/excel', [SolicitudController::class, 'exportExcel'])->name('solicitudes.exportExcel');

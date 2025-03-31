@@ -171,6 +171,9 @@
                                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarDocumentos{{ $solicitud->id }}">
                                             <i class="fas fa-file-upload"></i>
                                         </button>
+                                        <a href="{{ route('descargar.documentos', $solicitud->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-file-archive"></i>
+                                        </a>
                                     </td>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $solicitud->estudiante->nro_documento }}</td>
