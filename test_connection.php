@@ -90,16 +90,13 @@ echo "\n2. Probando conexiones con diferentes configuraciones SSL...\n\n";
 $ssl_configs = [
     'Laravel Actual (database.php)' => [
         'dsn' => "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}",
-        'options' => array_filter([
+        'options' => [
             PDO::ATTR_TIMEOUT => 600,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_STRINGIFY_FETCHES => false,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            // Configuración SSL que funciona (según test_connection.php)
+            // Configuración SSL exacta que funciona (según test_connection.php)
             PDO::MYSQL_ATTR_SSL_CA => $config['ssl_cert'],
             PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-        ])
+        ]
     ],
     'Sin SSL' => [
         'dsn' => "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}",
