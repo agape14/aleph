@@ -128,3 +128,25 @@ Route::get('/subirarchivo', function () {
     Storage::disk('google')->write('prueba.txt', 'probarsubida');
     return "Archivo subido con éxito 🚀";
 });
+
+// Rutas de prueba para el modo de mantenimiento
+Route::get('/test-maintenance', function () {
+    return response()->json([
+        'maintenance_mode' => env('MAINTENANCE_MODE', false),
+        'message' => env('MAINTENANCE_MESSAGE', 'Mensaje por defecto'),
+        'estimated_time' => env('MAINTENANCE_ESTIMATED_TIME', '2-4 horas'),
+        'contact_email' => env('MAINTENANCE_CONTACT_EMAIL', 'soporte@aleph.edu'),
+        'contact_phone' => env('MAINTENANCE_CONTACT_PHONE', '+1 (555) 123-4567')
+    ]);
+});
+
+Route::get('/test-maintenance-activate', function () {
+    // Esta ruta solo funciona en desarrollo
+    if (app()->environment('local')) {
+        return response()->json([
+            'message' => 'Para activar el modo de mantenimiento, agrega MAINTENANCE_MODE=true a tu archivo .env',
+            'current_status' => env('MAINTENANCE_MODE', false)
+        ]);
+    }
+    return response()->json(['message' => 'Esta ruta solo está disponible en modo local']);
+});
