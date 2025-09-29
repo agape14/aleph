@@ -164,19 +164,32 @@ class ProgenitorController extends Controller
 
     public function descargarDocumentos($solicitud_id)
     {
-        // Obtener la solicitud y el estudiante
-        $solicitud = Solicitud::with('estudiante', 'documentosAdjuntos')->find($solicitud_id);
+        try {
+            // Obtener la solicitud y el estudiante
+            $solicitud = Solicitud::with('estudiante', 'documentosAdjuntos')->find($solicitud_id);
 
-        if (!$solicitud || $solicitud->documentosAdjuntos->isEmpty()) {
-            return back()->with('error', 'No hay documentos para esta solicitud.');
-        }
+            if (!$solicitud || $solicitud->documentosAdjuntos->isEmpty()) {
+                return back()->with('error', 'No hay documentos para esta solicitud.');
+            }
 
-        $estudianteNombre = str_replace(' ', '_', $solicitud->estudiante->apepaterno.' '.$solicitud->estudiante->apematerno.' '.$solicitud->estudiante->nombres); // Reemplaza espacios por guiones bajos
-        $zipFileName = "documentos_{$estudianteNombre}.zip";
-        $zipPath = storage_path("app/public/temp/{$zipFileName}");
+            $estudianteNombre = str_replace(' ', '_', $solicitud->estudiante->apepaterno.' '.$solicitud->estudiante->apematerno.' '.$solicitud->estudiante->nombres);
+            $zipFileName = "documentos_{$estudianteNombre}.zip";
 
-        $zip = new ZipArchive;
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            // Crear directorio temp si no existe
+            $tempDir = storage_path("app/public/temp");
+            if (!file_exists($tempDir)) {
+                mkdir($tempDir, 0755, true);
+            }
+
+            $zipPath = "{$tempDir}/{$zipFileName}";
+
+            $zip = new ZipArchive;
+            $result = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+            if ($result !== TRUE) {
+                return back()->with('error', "No se pudo crear el archivo ZIP. Error: {$result}");
+            }
+
             foreach ($solicitud->documentosAdjuntos as $doc) {
                 $filePath = storage_path("app/public/{$doc->ruta_archivo}");
 
@@ -186,13 +199,20 @@ class ProgenitorController extends Controller
                     $zip->addFile($filePath, "{$folder}/" . basename($doc->ruta_archivo));
                 }
             }
-            $zip->close();
-        } else {
-            return back()->with('error', 'No se pudo crear el archivo ZIP.');
-        }
 
-        // Descargar y eliminar después de enviar
-        return response()->download($zipPath)->deleteFileAfterSend(true);
+            $zip->close();
+
+            // Verificar que el archivo ZIP se creó correctamente
+            if (!file_exists($zipPath)) {
+                return back()->with('error', 'No se pudo crear el archivo ZIP.');
+            }
+
+            // Descargar y eliminar después de enviar
+            return response()->download($zipPath)->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al generar el archivo ZIP: ' . $e->getMessage());
+        }
     }
 
 }
