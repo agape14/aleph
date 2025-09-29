@@ -1,27 +1,62 @@
 <?php
 /**
- * Script de prueba de conexión SSL para Azure MySQL
+ * Script de prueba de conexión SSL para Azure MySQL usando variables de entorno de Laravel
  * Ejecutar desde la línea de comandos: php test_connection.php
  */
 
-echo "=== PRUEBA DE CONEXIÓN SSL A AZURE MYSQL ===\n\n";
+// Cargar variables de entorno como lo hace Laravel
+function loadEnv($path) {
+    if (!file_exists($path)) {
+        return [];
+    }
 
-// Configuración de base de datos
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $env = [];
+
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+
+        list($name, $value) = explode('=', $line, 2);
+        $env[trim($name)] = trim($value);
+    }
+
+    return $env;
+}
+
+// Cargar variables de entorno
+$env = loadEnv('.env');
+
+echo "=== PRUEBA DE CONEXIÓN SSL A AZURE MYSQL (CONFIGURACIÓN LARAVEL) ===\n\n";
+
+// Configuración de base de datos usando variables de entorno
 $config = [
-    'host' => 'sql-prod-001-eximio.mysql.database.azure.com',
-    'port' => 3306,
-    'database' => 'aleph',
-    'username' => 'aleph',
-    'password' => '3ximio@2024$',
-    'ssl_cert' => '/var/www/certificado/DigiCertGlobalRootCA.crt.pem',
+    'host' => $env['DB_HOST'] ?? 'sql-prod-001-eximio.mysql.database.azure.com',
+    'port' => $env['DB_PORT'] ?? 3306,
+    'database' => $env['DB_DATABASE'] ?? 'aleph',
+    'username' => $env['DB_USERNAME'] ?? 'aleph',
+    'password' => $env['DB_PASSWORD'] ?? '3ximio@2024$',
+    'ssl_cert' => $env['DB_SSL_CERT'] ?? '/var/www/certificado/DigiCertGlobalRootCA.crt.pem',
+    'ssl_mode' => $env['DB_SSL_MODE'] ?? 'true',
 ];
 
-echo "Configuración:\n";
+echo "Configuración desde .env:\n";
 echo "- Host: {$config['host']}\n";
 echo "- Puerto: {$config['port']}\n";
 echo "- Base de datos: {$config['database']}\n";
 echo "- Usuario: {$config['username']}\n";
-echo "- Certificado SSL: {$config['ssl_cert']}\n\n";
+echo "- Certificado SSL: {$config['ssl_cert']}\n";
+echo "- Modo SSL: {$config['ssl_mode']}\n\n";
+
+// Mostrar variables de entorno cargadas
+echo "Variables de entorno DB_* encontradas:\n";
+foreach ($env as $key => $value) {
+    if (strpos($key, 'DB_') === 0) {
+        echo "- {$key}: " . (strpos($key, 'PASSWORD') !== false ? '***' : $value) . "\n";
+    }
+}
+echo "\n";
 
 // Verificar si el certificado existe
 echo "1. Verificando certificado SSL...\n";
@@ -51,8 +86,21 @@ if (file_exists($config['ssl_cert'])) {
 
 echo "\n2. Probando conexiones con diferentes configuraciones SSL...\n\n";
 
-// Configuraciones SSL a probar
+// Configuraciones SSL a probar - INCLUYENDO LA CONFIGURACIÓN EXACTA DE LARAVEL
 $ssl_configs = [
+    'Laravel Actual (database.php)' => [
+        'dsn' => "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}",
+        'options' => array_filter([
+            PDO::ATTR_TIMEOUT => 600,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_STRINGIFY_FETCHES => false,
+            PDO::ATTR_EMULATE_PREPARES => false,
+            // Configuración SSL que funciona (según test_connection.php)
+            PDO::MYSQL_ATTR_SSL_CA => $config['ssl_cert'],
+            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+        ])
+    ],
     'Sin SSL' => [
         'dsn' => "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}",
         'options' => [
@@ -143,6 +191,14 @@ if ($successful_config) {
     echo "\nPara usar esta configuración en Laravel, actualiza tu config/database.php:\n\n";
 
     switch ($successful_config) {
+        case 'Laravel Actual (database.php)':
+            echo "✅ La configuración actual de Laravel FUNCIONA correctamente!\n";
+            echo "Tu config/database.php está bien configurado.\n";
+            echo "El problema puede estar en:\n";
+            echo "- Caché de configuración (ejecutar: php artisan config:clear)\n";
+            echo "- Variables de entorno no cargadas correctamente\n";
+            echo "- Otro problema en la aplicación\n";
+            break;
         case 'Sin SSL':
             echo "DB_SSL_MODE=false\n";
             break;

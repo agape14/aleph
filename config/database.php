@@ -61,8 +61,12 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::ATTR_TIMEOUT => 600,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::MYSQL_ATTR_SSL_CA => env('DB_SSL_MODE') ? env('DB_SSL_CERT') : null,
-                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_MODE') ? false : true,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_STRINGIFY_FETCHES => false,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                // Configuración SSL que funciona (según test_connection.php)
+                PDO::MYSQL_ATTR_SSL_CA => env('DB_SSL_CERT'),
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
             ]) : [],
         ],
 
