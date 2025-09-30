@@ -173,13 +173,16 @@
                                 @foreach ($solicitudes as $solicitud)
                                 <tr>
                                     <td>
-                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalSituacionEconomica{{ $solicitud->id }}">
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalSituacionEconomica{{ $solicitud->id }}"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Situación Económica">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarDocumentos{{ $solicitud->id }}">
+                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarDocumentos{{ $solicitud->id }}"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Documentos Adjuntos">
                                             <i class="fas fa-file-upload"></i>
                                         </button>
-                                        <a href="{{ route('descargar.documentos', $solicitud->id) }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ route('descargar.documentos', $solicitud->id) }}" class="btn btn-primary btn-sm"
+                                           data-bs-toggle="tooltip" data-bs-placement="top" title="Descargar Documentos">
                                             <i class="fas fa-file-archive"></i>
                                         </a>
                                     </td>
@@ -232,124 +235,6 @@
                                     </td>
 
                                 </tr>
-
-                                <!-- Modal Situación Económica -->
-                                <div class="modal fade" id="modalSituacionEconomica{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalSituacionEconomicaLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="modalSituacionEconomicaLabel">Editar Situación Económica</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('situacionEconomica.update', $solicitud->situacionEconomica->id ?? '') }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-
-                                                    <h5 class="text-primary">Ingresos</h5>
-                                                    @foreach ([
-                                                        'ingresos_planilla' => 'Ingresos por Planilla',
-                                                        'ingresos_honorarios' => 'Ingresos por Honorarios',
-                                                        'ingresos_pension' => 'Ingresos por Pensión',
-                                                        'ingresos_alquiler' => 'Ingresos por Alquiler',
-                                                        'ingresos_vehiculos' => 'Ingresos por Vehículos',
-                                                        'otros_ingresos' => 'Otros Ingresos'
-                                                    ] as $campo => $label)
-                                                        <div class="mb-3">
-                                                            <label class="form-label">{{ $label }}</label>
-                                                            <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="1">
-                                                        </div>
-                                                    @endforeach
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Detalle de Otros Ingresos</label>
-                                                        <textarea class="form-control" name="detalle_otros_ingresos">{{ $solicitud->situacionEconomica->detalle_otros_ingresos ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <h5 class="text-danger">Gastos</h5>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Número de Hijos</label>
-                                                        <input type="number" class="form-control" name="num_hijos" value="{{ $solicitud->situacionEconomica->num_hijos ?? '0' }}">
-                                                    </div>
-
-                                                    @foreach ([
-                                                        'gastos_colegios' => 'Gastos en Colegios',
-                                                        'gastos_talleres' => 'Gastos en Talleres',
-                                                        'gastos_universidad' => 'Gastos en Universidad',
-                                                        'gastos_alimentacion' => 'Gastos en Alimentación',
-                                                        'gastos_alquiler' => 'Gastos en Alquiler',
-                                                        'gastos_credito_personal' => 'Gastos en Crédito Personal',
-                                                        'gastos_credito_hipotecario' => 'Gastos en Crédito Hipotecario',
-                                                        'gastos_credito_vehicular' => 'Gastos en Crédito Vehicular',
-                                                        'gastos_servicios' => 'Gastos en Servicios',
-                                                        'gastos_mantenimiento' => 'Gastos en Mantenimiento',
-                                                        'gastos_apoyo_casa' => 'Gastos en Apoyo al Hogar',
-                                                        'gastos_clubes' => 'Gastos en Clubes',
-                                                        'gastos_seguros' => 'Gastos en Seguros',
-                                                        'gastos_apoyo_familiar' => 'Gastos en Apoyo Familiar',
-                                                        'otros_gastos' => 'Otros Gastos'
-                                                    ] as $campo => $label)
-                                                        <div class="mb-3">
-                                                            <label class="form-label">{{ $label }}</label>
-                                                            <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="1">
-                                                        </div>
-                                                    @endforeach
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Detalle de Otros Gastos</label>
-                                                        <textarea class="form-control" name="detalle_otros_gastos">{{ $solicitud->situacionEconomica->detalle_otros_gastos ?? '' }}</textarea>
-                                                    </div>
-
-                                                    <h5 class="text-success">Totales</h5>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Total Ingresos</label>
-                                                        <input type="number" class="form-control" name="total_ingresos" value="{{ $solicitud->situacionEconomica->total_ingresos ?? '0.00' }}" step="1" >
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Total Gastos</label>
-                                                        <input type="number" class="form-control" name="total_gastos" value="{{ $solicitud->situacionEconomica->total_gastos ?? '0.00' }}" step="1">
-                                                    </div>
-
-                                                    <button type="submit" class="btn btn-primary">Guardar</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <!-- Modal Editar Documentos -->
-                                <div class="modal fade" id="modalEditarDocumentos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalEditarDocumentosLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="modalEditarDocumentosLabel">Editar Documentos Adjuntos</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('documentosAdjuntos.update', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="mb-3">
-                                                        <label for="tipo_documento" class="form-label">Tipo de Documento</label>
-                                                        <select class="form-control" name="tipo_documento">
-                                                            <option value="boletas_pago">Boletas de Pago</option>
-                                                            <option value="declaracion_renta">Declaración de Renta</option>
-                                                            <option value="movimientos_migratorios">Movimientos Migratorios</option>
-                                                            <option value="bienes_inmuebles">Bienes Inmuebles</option>
-                                                            <option value="otros">Otros</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="ruta_archivo" class="form-label">Subir Archivo</label>
-                                                        <input type="file" class="form-control" name="ruta_archivo">
-                                                    </div>
-                                                    <button type="submit" class="btn btn-primary">Guardar</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -358,403 +243,9 @@
                         </div>
                     </div>
 
-                    @foreach ($solicitudes as $solicitud)
-                    <div class="modal fade" id="modalProgenitor{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalProgenitorLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Progenitores de {{ $solicitud->estudiante->nombres }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    @if ($solicitud->progenitores->count() === 0)
-                                        <p>No hay progenitores registrados.</p>
-                                    @else
-                                    <ul>
-                                        @foreach ($solicitud->progenitores as $progenitor)
-                                            <li>
-                                                <form action="{{ route('progenitores.update', $progenitor->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
+                    <!-- Modales movidos fuera del grid -->
 
-                                                    <!-- Campo oculto para el tipo de progenitor -->
-                                                    <input type="hidden" name="tipo" value="{{ $progenitor->tipo }}">
-
-                                                    <!-- Título del progenitor -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-12">
-                                                            <h4>{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</h4>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Nombre -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="nombres{{ $progenitor->id }}" class="form-label">NOMBRE:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="nombres{{ $progenitor->id }}" name="nombres" value="{{ strtoupper($progenitor->nombres) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Apellidos -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="apellidos{{ $progenitor->id }}" class="form-label">APELLIDOS:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="apellidos{{ $progenitor->id }}" name="apellidos" value="{{ strtoupper($progenitor->apellidos) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- DNI -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="dni{{ $progenitor->id }}" class="form-label">DNI:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="dni{{ $progenitor->id }}" name="dni" value="{{ strtoupper($progenitor->dni) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Código SIANET -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="codigo_sianet{{ $progenitor->id }}" class="form-label">CÓDIGO SIANET:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="codigo_sianet{{ $progenitor->id }}" name="codigo_sianet" value="{{ strtoupper($progenitor->codigo_sianet) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Número de hijos -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="numero_hijos{{ $progenitor->id }}" class="form-label">NRO. HIJOS:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" class="form-control" id="numero_hijos{{ $progenitor->id }}" name="numero_hijos" value="{{ $progenitor->numero_hijos }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Hijos matriculados -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="hijos_matriculados{{ $progenitor->id }}" class="form-label">HIJOS MATRICULADOS:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" class="form-control" id="hijos_matriculados{{ $progenitor->id }}" name="hijos_matriculados" value="{{ $progenitor->hijos_matriculados }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Formación académica -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="formacion_academica{{ $progenitor->id }}" class="form-label">FORMACIÓN ACADÉMICA:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="formacion_academica{{ $progenitor->id }}" name="formacion_academica">
-                                                                <option value="tecnica" {{ $progenitor->formacion_academica == 'tecnica' ? 'selected' : '' }}>Técnica</option>
-                                                                <option value="universitaria" {{ $progenitor->formacion_academica == 'universitaria' ? 'selected' : '' }}>Universitaria</option>
-                                                                <option value="bachillerato" {{ $progenitor->formacion_academica == 'bachillerato' ? 'selected' : '' }}>Bachillerato</option>
-                                                                <option value="titulado" {{ $progenitor->formacion_academica == 'titulado' ? 'selected' : '' }}>Titulado</option>
-                                                                <option value="maestria" {{ $progenitor->formacion_academica == 'maestria' ? 'selected' : '' }}>Maestría</option>
-                                                                <option value="doctorado" {{ $progenitor->formacion_academica == 'doctorado' ? 'selected' : '' }}>Doctorado</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Trabaja -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="trabaja{{ $progenitor->id }}" class="form-label">TRABAJA:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="trabaja{{ $progenitor->id }}" name="trabaja">
-                                                                <option value="1" {{ $progenitor->trabaja ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->trabaja ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Tiempo de desempleo -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">TIEMPO DESEMPLEO:</label>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <input type="text" class="form-control" id="tiempo_desempleo{{ $progenitor->id }}" name="tiempo_desempleo" value="{{ strtoupper($progenitor->tiempo_desempleo) }}">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">(en meses)</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Sueldo fijo -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="sueldo_fijo{{ $progenitor->id }}" class="form-label">SUELDO FIJO:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="sueldo_fijo{{ $progenitor->id }}" name="sueldo_fijo">
-                                                                <option value="1" {{ $progenitor->sueldo_fijo ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->sueldo_fijo ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Sueldo variable -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="sueldo_variable{{ $progenitor->id }}" class="form-label">SUELDO VARIABLE:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="sueldo_variable{{ $progenitor->id }}" name="sueldo_variable">
-                                                                <option value="1" {{ $progenitor->sueldo_variable ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->sueldo_variable ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Cargo -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="cargo{{ $progenitor->id }}" class="form-label">CARGO:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="cargo{{ $progenitor->id }}" name="cargo" value="{{ strtoupper($progenitor->cargo) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Año inicio laboral -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="anio_inicio_laboral{{ $progenitor->id }}" class="form-label">AÑO INICIO LABORAL:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="anio_inicio_laboral{{ $progenitor->id }}" name="anio_inicio_laboral" value="{{ $progenitor->anio_inicio_laboral }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Lugar de trabajo -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="lugar_trabajo{{ $progenitor->id }}" class="form-label">LUGAR DE TRABAJO:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="lugar_trabajo{{ $progenitor->id }}" name="lugar_trabajo" value="{{ strtoupper($progenitor->lugar_trabajo) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Ingresos mensuales -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="ingresos_mensuales{{ $progenitor->id }}" class="form-label">INGRESOS MENSUALES:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" step="0.01" class="form-control" id="ingresos_mensuales{{ $progenitor->id }}" name="ingresos_mensuales" value="{{ $progenitor->ingresos_mensuales }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Recibe bonos -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="recibe_bonos{{ $progenitor->id }}" class="form-label">RECIBE BONOS:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="recibe_bonos{{ $progenitor->id }}" name="recibe_bonos">
-                                                                <option value="1" {{ $progenitor->recibe_bonos ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->recibe_bonos ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Monto bonos -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="monto_bonos{{ $progenitor->id }}" class="form-label">MONTO BONOS:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="monto_bonos{{ $progenitor->id }}" name="monto_bonos">
-                                                                <option value="5000-10000" {{ $progenitor->monto_bonos == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
-                                                                <option value="10000-15000" {{ $progenitor->monto_bonos == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
-                                                                <option value="15000-mas" {{ $progenitor->monto_bonos == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Recibe utilidades -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="recibe_utilidades{{ $progenitor->id }}" class="form-label">RECIBE UTILIDADES:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="recibe_utilidades{{ $progenitor->id }}" name="recibe_utilidades">
-                                                                <option value="1" {{ $progenitor->recibe_utilidades ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->recibe_utilidades ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Monto utilidades -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="monto_utilidades{{ $progenitor->id }}" class="form-label">MONTO UTILIDADES:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="monto_utilidades{{ $progenitor->id }}" name="monto_utilidades">
-                                                                <option value="5000-10000" {{ $progenitor->monto_utilidades == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
-                                                                <option value="10000-15000" {{ $progenitor->monto_utilidades == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
-                                                                <option value="15000-mas" {{ $progenitor->monto_utilidades == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Titular empresa -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="titular_empresa{{ $progenitor->id }}" class="form-label">TITULAR EMPRESA:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="titular_empresa{{ $progenitor->id }}" name="titular_empresa">
-                                                                <option value="1" {{ $progenitor->titular_empresa ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->titular_empresa ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Porcentaje acciones -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="porcentaje_acciones{{ $progenitor->id }}" class="form-label">PORCENTAJE ACCIONES:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" step="0.01" class="form-control" id="porcentaje_acciones{{ $progenitor->id }}" name="porcentaje_acciones" value="{{ $progenitor->porcentaje_acciones }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Razón social -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="razon_social{{ $progenitor->id }}" class="form-label">RAZÓN SOCIAL:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="razon_social{{ $progenitor->id }}" name="razon_social" value="{{ strtoupper($progenitor->razon_social) }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- RUC -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="numero_ruc{{ $progenitor->id }}" class="form-label">RUC:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="text" class="form-control" id="numero_ruc{{ $progenitor->id }}" name="numero_ruc" value="{{ $progenitor->numero_ruc }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Tipo de vivienda -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="vivienda_tipo{{ $progenitor->id }}" class="form-label">TIPO DE VIVIENDA:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="vivienda_tipo{{ $progenitor->id }}" name="vivienda_tipo">
-                                                                <option value="propia" {{ $progenitor->vivienda_tipo == 'propia' ? 'selected' : '' }}>Propia</option>
-                                                                <option value="alquilada" {{ $progenitor->vivienda_tipo == 'alquilada' ? 'selected' : '' }}>Alquilada</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Crédito hipotecario -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="credito_hipotecario{{ $progenitor->id }}" class="form-label">CRÉDITO HIPOTECARIO:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <select class="form-select" id="credito_hipotecario{{ $progenitor->id }}" name="credito_hipotecario">
-                                                                <option value="1" {{ $progenitor->credito_hipotecario ? 'selected' : '' }}>SÍ</option>
-                                                                <option value="0" {{ !$progenitor->credito_hipotecario ? 'selected' : '' }}>NO</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Dirección de vivienda -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="direccion_vivienda{{ $progenitor->id }}" class="form-label">DIRECCIÓN:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <textarea class="form-control" id="direccion_vivienda{{ $progenitor->id }}" name="direccion_vivienda">{{ strtoupper($progenitor->direccion_vivienda) }}</textarea>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- M² vivienda -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="m2_vivienda{{ $progenitor->id }}" class="form-label">M² VIVIENDA:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" step="0.01" class="form-control" id="m2_vivienda{{ $progenitor->id }}" name="m2_vivienda" value="{{ $progenitor->m2_vivienda }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Cantidad de inmuebles -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-3">
-                                                            <label for="cantidad_inmuebles{{ $progenitor->id }}" class="form-label">CANTIDAD DE INMUEBLES:</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input type="number" class="form-control" id="cantidad_inmuebles{{ $progenitor->id }}" name="cantidad_inmuebles" value="{{ $progenitor->cantidad_inmuebles }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Botón de guardar -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-12 text-end">
-                                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </li>
-                                            <hr>
-                                        @endforeach
-                                    </ul>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-
-
-                    @foreach ($solicitudes as $solicitud)
-                    <div class="modal fade" id="modalAdjuntos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalAdjuntosLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Documentos Adjuntos</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    @if ($solicitud->documentosAdjuntos->count() === 0)
-                                        <p>No hay documentos adjuntos.</p>
-                                    @else
-                                        <ul>
-                                            @foreach ($solicitud->documentosAdjuntos as $documento)
-                                                <li>
-                                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" target="_blank">
-                                                        Ver PDF {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
+                    <!-- Modales de progenitores y adjuntos movidos fuera del grid -->
 
                     <!-- card footer  -->
                     <div class="card-footer bg-white text-center">
@@ -764,6 +255,532 @@
             </div>
         </div>
     </div>
+
+    <!-- MODALES DEL GRID MOVIDOS FUERA PARA EVITAR PARPADEO -->
+    @foreach ($solicitudes as $solicitud)
+    <!-- Modal Situación Económica -->
+    <div class="modal fade" id="modalSituacionEconomica{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalSituacionEconomicaLabel{{ $solicitud->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSituacionEconomicaLabel{{ $solicitud->id }}">Editar Situación Económica - {{ $solicitud->estudiante->nombres }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('situacionEconomica.update', $solicitud->situacionEconomica->id ?? '') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <h5 class="text-primary">Ingresos</h5>
+                        @foreach ([
+                            'ingresos_planilla' => 'Ingresos por Planilla',
+                            'ingresos_honorarios' => 'Ingresos por Honorarios',
+                            'ingresos_pension' => 'Ingresos por Pensión',
+                            'ingresos_alquiler' => 'Ingresos por Alquiler',
+                            'ingresos_vehiculos' => 'Ingresos por Vehículos',
+                            'otros_ingresos' => 'Otros Ingresos'
+                        ] as $campo => $label)
+                            <div class="mb-3">
+                                <label class="form-label">{{ $label }}</label>
+                                <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="0.01">
+                            </div>
+                        @endforeach
+
+                        <div class="mb-3">
+                            <label class="form-label">Detalle de Otros Ingresos</label>
+                            <textarea class="form-control" name="detalle_otros_ingresos">{{ $solicitud->situacionEconomica->detalle_otros_ingresos ?? '' }}</textarea>
+                        </div>
+
+                        <h5 class="text-danger">Gastos</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Número de Hijos</label>
+                            <input type="number" class="form-control" name="num_hijos" value="{{ $solicitud->situacionEconomica->num_hijos ?? '0' }}">
+                        </div>
+
+                        @foreach ([
+                            'gastos_colegios' => 'Gastos en Colegios',
+                            'gastos_talleres' => 'Gastos en Talleres',
+                            'gastos_universidad' => 'Gastos en Universidad',
+                            'gastos_alimentacion' => 'Gastos en Alimentación',
+                            'gastos_alquiler' => 'Gastos en Alquiler',
+                            'gastos_credito_personal' => 'Gastos en Crédito Personal',
+                            'gastos_credito_hipotecario' => 'Gastos en Crédito Hipotecario',
+                            'gastos_credito_vehicular' => 'Gastos en Crédito Vehicular',
+                            'gastos_servicios' => 'Gastos en Servicios',
+                            'gastos_mantenimiento' => 'Gastos en Mantenimiento',
+                            'gastos_apoyo_casa' => 'Gastos en Apoyo al Hogar',
+                            'gastos_clubes' => 'Gastos en Clubes',
+                            'gastos_seguros' => 'Gastos en Seguros',
+                            'gastos_apoyo_familiar' => 'Gastos en Apoyo Familiar',
+                            'otros_gastos' => 'Otros Gastos'
+                        ] as $campo => $label)
+                            <div class="mb-3">
+                                <label class="form-label">{{ $label }}</label>
+                                <input type="number" class="form-control" name="{{ $campo }}" value="{{ $solicitud->situacionEconomica->$campo ?? '0.00' }}" step="0.01">
+                            </div>
+                        @endforeach
+
+                        <div class="mb-3">
+                            <label class="form-label">Detalle de Otros Gastos</label>
+                            <textarea class="form-control" name="detalle_otros_gastos">{{ $solicitud->situacionEconomica->detalle_otros_gastos ?? '' }}</textarea>
+                        </div>
+
+                        <h5 class="text-success">Totales</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Total Ingresos</label>
+                            <input type="number" class="form-control" name="total_ingresos" value="{{ $solicitud->situacionEconomica->total_ingresos ?? '0.00' }}" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Total Gastos</label>
+                            <input type="number" class="form-control" name="total_gastos" value="{{ $solicitud->situacionEconomica->total_gastos ?? '0.00' }}" step="0.01">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Documentos -->
+    <div class="modal fade" id="modalEditarDocumentos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalEditarDocumentosLabel{{ $solicitud->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarDocumentosLabel{{ $solicitud->id }}">Editar Documentos Adjuntos - {{ $solicitud->estudiante->nombres }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('documentosAdjuntos.update', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="mb-3">
+                            <label for="tipo_documento" class="form-label">Tipo de Documento</label>
+                            <select class="form-control" name="tipo_documento" required>
+                                <option value="">Seleccione un tipo</option>
+                                <option value="boletas_pago">Boletas de Pago</option>
+                                <option value="declaracion_renta">Declaración de Renta</option>
+                                <option value="movimientos_migratorios">Movimientos Migratorios</option>
+                                <option value="bienes_inmuebles">Bienes Inmuebles</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ruta_archivo" class="form-label">Subir Archivo</label>
+                            <input type="file" class="form-control" name="ruta_archivo" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <div class="form-text">Formatos permitidos: PDF, JPG, JPEG, PNG. Tamaño máximo: 5MB</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Documento</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    <!-- MODALES DE PROGENITORES Y ADJUNTOS MOVIDOS FUERA DEL GRID -->
+    @foreach ($solicitudes as $solicitud)
+    <!-- Modal Progenitores -->
+    <div class="modal fade" id="modalProgenitor{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalProgenitorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Progenitores de {{ $solicitud->estudiante->nombres }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if ($solicitud->progenitores->count() === 0)
+                        <p>No hay progenitores registrados.</p>
+                    @else
+                    <ul>
+                        @foreach ($solicitud->progenitores as $progenitor)
+                            <li>
+                                <form action="{{ route('progenitores.update', $progenitor->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <!-- Campo oculto para el tipo de progenitor -->
+                                    <input type="hidden" name="tipo" value="{{ $progenitor->tipo }}">
+
+                                    <!-- Título del progenitor -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <h4>{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</h4>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nombre -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="nombres{{ $progenitor->id }}" class="form-label">NOMBRE:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="nombres{{ $progenitor->id }}" name="nombres" value="{{ strtoupper($progenitor->nombres) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Apellidos -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="apellidos{{ $progenitor->id }}" class="form-label">APELLIDOS:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="apellidos{{ $progenitor->id }}" name="apellidos" value="{{ strtoupper($progenitor->apellidos) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- DNI -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="dni{{ $progenitor->id }}" class="form-label">DNI:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="dni{{ $progenitor->id }}" name="dni" value="{{ strtoupper($progenitor->dni) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Código SIANET -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="codigo_sianet{{ $progenitor->id }}" class="form-label">CÓDIGO SIANET:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="codigo_sianet{{ $progenitor->id }}" name="codigo_sianet" value="{{ strtoupper($progenitor->codigo_sianet) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Número de hijos -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="numero_hijos{{ $progenitor->id }}" class="form-label">NRO. HIJOS:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" class="form-control" id="numero_hijos{{ $progenitor->id }}" name="numero_hijos" value="{{ $progenitor->numero_hijos }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Hijos matriculados -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="hijos_matriculados{{ $progenitor->id }}" class="form-label">HIJOS MATRICULADOS:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" class="form-control" id="hijos_matriculados{{ $progenitor->id }}" name="hijos_matriculados" value="{{ $progenitor->hijos_matriculados }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Formación académica -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="formacion_academica{{ $progenitor->id }}" class="form-label">FORMACIÓN ACADÉMICA:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="formacion_academica{{ $progenitor->id }}" name="formacion_academica">
+                                                <option value="tecnica" {{ $progenitor->formacion_academica == 'tecnica' ? 'selected' : '' }}>Técnica</option>
+                                                <option value="universitaria" {{ $progenitor->formacion_academica == 'universitaria' ? 'selected' : '' }}>Universitaria</option>
+                                                <option value="bachillerato" {{ $progenitor->formacion_academica == 'bachillerato' ? 'selected' : '' }}>Bachillerato</option>
+                                                <option value="titulado" {{ $progenitor->formacion_academica == 'titulado' ? 'selected' : '' }}>Titulado</option>
+                                                <option value="maestria" {{ $progenitor->formacion_academica == 'maestria' ? 'selected' : '' }}>Maestría</option>
+                                                <option value="doctorado" {{ $progenitor->formacion_academica == 'doctorado' ? 'selected' : '' }}>Doctorado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Trabaja -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="trabaja{{ $progenitor->id }}" class="form-label">TRABAJA:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="trabaja{{ $progenitor->id }}" name="trabaja">
+                                                <option value="1" {{ $progenitor->trabaja ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->trabaja ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tiempo de desempleo -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">TIEMPO DESEMPLEO:</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control" id="tiempo_desempleo{{ $progenitor->id }}" name="tiempo_desempleo" value="{{ strtoupper($progenitor->tiempo_desempleo) }}">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="tiempo_desempleo{{ $progenitor->id }}" class="form-label">(en meses)</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sueldo fijo -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="sueldo_fijo{{ $progenitor->id }}" class="form-label">SUELDO FIJO:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="sueldo_fijo{{ $progenitor->id }}" name="sueldo_fijo">
+                                                <option value="1" {{ $progenitor->sueldo_fijo ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->sueldo_fijo ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Sueldo variable -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="sueldo_variable{{ $progenitor->id }}" class="form-label">SUELDO VARIABLE:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="sueldo_variable{{ $progenitor->id }}" name="sueldo_variable">
+                                                <option value="1" {{ $progenitor->sueldo_variable ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->sueldo_variable ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cargo -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="cargo{{ $progenitor->id }}" class="form-label">CARGO:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="cargo{{ $progenitor->id }}" name="cargo" value="{{ strtoupper($progenitor->cargo) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Año inicio laboral -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="anio_inicio_laboral{{ $progenitor->id }}" class="form-label">AÑO INICIO LABORAL:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="anio_inicio_laboral{{ $progenitor->id }}" name="anio_inicio_laboral" value="{{ $progenitor->anio_inicio_laboral }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Lugar de trabajo -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="lugar_trabajo{{ $progenitor->id }}" class="form-label">LUGAR DE TRABAJO:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="lugar_trabajo{{ $progenitor->id }}" name="lugar_trabajo" value="{{ strtoupper($progenitor->lugar_trabajo) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Ingresos mensuales -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="ingresos_mensuales{{ $progenitor->id }}" class="form-label">INGRESOS MENSUALES:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" step="0.01" class="form-control" id="ingresos_mensuales{{ $progenitor->id }}" name="ingresos_mensuales" value="{{ $progenitor->ingresos_mensuales }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Recibe bonos -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="recibe_bonos{{ $progenitor->id }}" class="form-label">RECIBE BONOS:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="recibe_bonos{{ $progenitor->id }}" name="recibe_bonos">
+                                                <option value="1" {{ $progenitor->recibe_bonos ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->recibe_bonos ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Monto bonos -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="monto_bonos{{ $progenitor->id }}" class="form-label">MONTO BONOS:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="monto_bonos{{ $progenitor->id }}" name="monto_bonos">
+                                                <option value="5000-10000" {{ $progenitor->monto_bonos == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
+                                                <option value="10000-15000" {{ $progenitor->monto_bonos == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
+                                                <option value="15000-mas" {{ $progenitor->monto_bonos == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Recibe utilidades -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="recibe_utilidades{{ $progenitor->id }}" class="form-label">RECIBE UTILIDADES:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="recibe_utilidades{{ $progenitor->id }}" name="recibe_utilidades">
+                                                <option value="1" {{ $progenitor->recibe_utilidades ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->recibe_utilidades ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Monto utilidades -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="monto_utilidades{{ $progenitor->id }}" class="form-label">MONTO UTILIDADES:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="monto_utilidades{{ $progenitor->id }}" name="monto_utilidades">
+                                                <option value="5000-10000" {{ $progenitor->monto_utilidades == '5000-10000' ? 'selected' : '' }}>5000-10000</option>
+                                                <option value="10000-15000" {{ $progenitor->monto_utilidades == '10000-15000' ? 'selected' : '' }}>10000-15000</option>
+                                                <option value="15000-mas" {{ $progenitor->monto_utilidades == '15000-mas' ? 'selected' : '' }}>15000-mas</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Titular empresa -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="titular_empresa{{ $progenitor->id }}" class="form-label">TITULAR EMPRESA:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="titular_empresa{{ $progenitor->id }}" name="titular_empresa">
+                                                <option value="1" {{ $progenitor->titular_empresa ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->titular_empresa ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Porcentaje acciones -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="porcentaje_acciones{{ $progenitor->id }}" class="form-label">PORCENTAJE ACCIONES:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" step="0.01" class="form-control" id="porcentaje_acciones{{ $progenitor->id }}" name="porcentaje_acciones" value="{{ $progenitor->porcentaje_acciones }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Razón social -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="razon_social{{ $progenitor->id }}" class="form-label">RAZÓN SOCIAL:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="razon_social{{ $progenitor->id }}" name="razon_social" value="{{ strtoupper($progenitor->razon_social) }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- RUC -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="numero_ruc{{ $progenitor->id }}" class="form-label">RUC:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="numero_ruc{{ $progenitor->id }}" name="numero_ruc" value="{{ $progenitor->numero_ruc }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Tipo de vivienda -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="vivienda_tipo{{ $progenitor->id }}" class="form-label">TIPO DE VIVIENDA:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="vivienda_tipo{{ $progenitor->id }}" name="vivienda_tipo">
+                                                <option value="propia" {{ $progenitor->vivienda_tipo == 'propia' ? 'selected' : '' }}>Propia</option>
+                                                <option value="alquilada" {{ $progenitor->vivienda_tipo == 'alquilada' ? 'selected' : '' }}>Alquilada</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Crédito hipotecario -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="credito_hipotecario{{ $progenitor->id }}" class="form-label">CRÉDITO HIPOTECARIO:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="credito_hipotecario{{ $progenitor->id }}" name="credito_hipotecario">
+                                                <option value="1" {{ $progenitor->credito_hipotecario ? 'selected' : '' }}>SÍ</option>
+                                                <option value="0" {{ !$progenitor->credito_hipotecario ? 'selected' : '' }}>NO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dirección de vivienda -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="direccion_vivienda{{ $progenitor->id }}" class="form-label">DIRECCIÓN:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <textarea class="form-control" id="direccion_vivienda{{ $progenitor->id }}" name="direccion_vivienda">{{ strtoupper($progenitor->direccion_vivienda) }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- M² vivienda -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="m2_vivienda{{ $progenitor->id }}" class="form-label">M² VIVIENDA:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" step="0.01" class="form-control" id="m2_vivienda{{ $progenitor->id }}" name="m2_vivienda" value="{{ $progenitor->m2_vivienda }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Cantidad de inmuebles -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label for="cantidad_inmuebles{{ $progenitor->id }}" class="form-label">CANTIDAD DE INMUEBLES:</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="number" class="form-control" id="cantidad_inmuebles{{ $progenitor->id }}" name="cantidad_inmuebles" value="{{ $progenitor->cantidad_inmuebles }}">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón de guardar -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 text-end">
+                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adjuntos -->
+    <div class="modal fade" id="modalAdjuntos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalAdjuntosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Documentos Adjuntos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if ($solicitud->documentosAdjuntos->count() === 0)
+                        <p>No hay documentos adjuntos.</p>
+                    @else
+                        <ul>
+                            @foreach ($solicitud->documentosAdjuntos as $documento)
+                                <li>
+                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" target="_blank">
+                                        Ver PDF {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 
     <!-- Modal de Estadísticas -->
     <div class="modal fade" id="modalEstadisticas" tabindex="-1" aria-labelledby="modalEstadisticasLabel" aria-hidden="true">
@@ -885,17 +902,17 @@
     }
 
     .btn-outline-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,123,255,0.2) !important;
     }
 
     .card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
 
     .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     #contadoresAdicionales {
@@ -931,6 +948,99 @@
 
     .gap-2 {
         gap: 0.5rem !important;
+    }
+
+    /* Prevenir parpadeo de modales */
+    .modal {
+        pointer-events: auto !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        pointer-events: auto !important;
+    }
+
+    .modal-backdrop {
+        pointer-events: auto !important;
+    }
+
+    /* Efectos hover deshabilitados en modales para prevenir parpadeo */
+    .modal .card:hover,
+    .modal .btn:hover,
+    .modal .form-control:hover,
+    .modal input:hover,
+    .modal select:hover,
+    .modal textarea:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Estabilizar modales */
+    .modal.fade {
+        transition: opacity 0.15s linear;
+    }
+
+    .modal.fade .modal-dialog {
+        transition: transform 0.15s ease-out;
+    }
+
+    /* Prevenir parpadeo específico */
+    .modal.show {
+        opacity: 1 !important;
+        display: block !important;
+        pointer-events: auto !important;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.5 !important;
+        pointer-events: auto !important;
+    }
+
+    /* Prevenir parpadeo cuando el cursor está sobre el modal */
+    .modal.show .modal-dialog {
+        pointer-events: auto !important;
+        position: relative !important;
+        z-index: 1055 !important;
+    }
+
+    .modal.show .modal-content {
+        pointer-events: auto !important;
+        position: relative !important;
+    }
+
+    /* Deshabilitar efectos de focus que puedan causar parpadeo */
+    .modal .form-control:focus,
+    .modal .btn:focus,
+    .modal input:focus,
+    .modal select:focus,
+    .modal textarea:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+        border-color: #80bdff !important;
+        outline: 0 !important;
+    }
+
+    /* Estilos para tooltips */
+    .tooltip {
+        font-size: 0.875rem;
+    }
+
+    .tooltip-inner {
+        background-color: #333;
+        color: #fff;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* CSS MÍNIMO PARA MODALES DEL GRID */
+    .modal[id*="modalSituacionEconomica"],
+    .modal[id*="modalEditarDocumentos"] {
+        pointer-events: auto !important;
+    }
+
+    .modal[id*="modalSituacionEconomica"].show,
+    .modal[id*="modalEditarDocumentos"].show {
+        opacity: 1 !important;
+        display: block !important;
     }
 </style>
 
@@ -1151,7 +1261,7 @@
         }
     }
 
-    // Esperar a que el DOM esté completamente cargado
+    // Script consolidado para manejar todos los eventos
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM cargado, inicializando eventos...');
 
@@ -1183,5 +1293,58 @@
         } else {
             console.error('Modal modalEstadisticas no encontrado');
         }
+
+        // SOLUCIÓN SIMPLE PARA MODALES DEL GRID - SIN INTERFERENCIAS
+        const modalesGrid = document.querySelectorAll('.modal[id*="modalSituacionEconomica"], .modal[id*="modalEditarDocumentos"]');
+        modalesGrid.forEach(modal => {
+            modal.addEventListener('show.bs.modal', function (event) {
+                // Solo cerrar otros modales del grid
+                const otrosModalesGrid = document.querySelectorAll('.modal[id*="modalSituacionEconomica"].show, .modal[id*="modalEditarDocumentos"].show');
+                otrosModalesGrid.forEach(modalAbierto => {
+                    if (modalAbierto !== modal) {
+                        const bsModal = bootstrap.Modal.getInstance(modalAbierto);
+                        if (bsModal) {
+                            bsModal.hide();
+                        }
+                    }
+                });
+            });
+        });
+
+        // Manejar el cierre de modales
+        const botonesCerrar = document.querySelectorAll('[data-bs-dismiss="modal"]');
+        botonesCerrar.forEach(boton => {
+            boton.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                if (modal) {
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    if (bsModal) {
+                        bsModal.hide();
+                    }
+                }
+            });
+        });
+
+        // Prevenir múltiples envíos de formularios
+        const formularios = document.querySelectorAll('form');
+        formularios.forEach(formulario => {
+            formulario.addEventListener('submit', function(e) {
+                const botonSubmit = this.querySelector('button[type="submit"]');
+                if (botonSubmit) {
+                    botonSubmit.disabled = true;
+                    botonSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+                }
+            });
+        });
+
+        // Scripts eliminados para prevenir conflictos
+
+        // Inicializar tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // SCRIPTS PROBLEMÁTICOS ELIMINADOS COMPLETAMENTE
     });
 </script>

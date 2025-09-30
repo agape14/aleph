@@ -18,6 +18,13 @@ class UserRoleMiddleware
         if(Auth::check() && Auth::user()->role == $role){
             return $next($request);
         }
-        return response()->json(['You do not have permission to access for this page']);
+
+        // Si es una petición AJAX, devolver JSON
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'You do not have permission to access for this page'], 403);
+        }
+
+        // Para peticiones normales del navegador, redirigir con mensaje de error
+        return redirect()->back()->with('error', 'No tienes permisos para acceder a esta página.');
     }
 }
