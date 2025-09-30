@@ -63,29 +63,151 @@ class HomeController extends Controller
 
         // Obtener fechas actuales para estadísticas
         $hoy = Carbon::today();
-        $inicioSemana = Carbon::now()->startOfWeek();
+        $inicioSemana = Carbon::now()->startOfWeek(); // Lunes de la semana actual
+        $finSemana = Carbon::now()->endOfWeek(); // Domingo de la semana actual
         $inicioMes = Carbon::now()->startOfMonth();
         $inicioAnio = Carbon::now()->startOfYear();
 
-        // Contar las solicitudes según el rango de tiempo
-        $contadorDiario = Solicitud::whereDate('created_at', $hoy)->count();
-        $contadorSemanal = Solicitud::whereBetween('created_at', [$inicioSemana, Carbon::now()])->count();
-        $contadorMensual = Solicitud::whereBetween('created_at', [$inicioMes, Carbon::now()])->count();
-        $contadorAnual = Solicitud::whereBetween('created_at', [$inicioAnio, Carbon::now()])->count();
+        // Optimización: Obtener todos los contadores en una sola consulta usando agregación
+        $estadisticas = Solicitud::selectRaw('
+            COUNT(*) as total_solicitudes,
+            SUM(CASE WHEN DATE(created_at) = ? THEN 1 ELSE 0 END) as diario,
+            SUM(CASE WHEN created_at >= ? AND created_at <= ? THEN 1 ELSE 0 END) as semanal,
+            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as mensual,
+            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as anual,
+            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as pendientes,
+            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as en_revision,
+            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as aprobadas,
+            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as rechazadas
+        ', [
+            $hoy->format('Y-m-d'),
+            $inicioSemana,
+            $finSemana,
+            $inicioMes,
+            $inicioAnio,
+            'pendiente',
+            'en_revision',
+            'aprobada',
+            'rechazada'
+        ])->first();
+
+        // Contadores de tiempo
+        $contadores = [
+            'diario' => $estadisticas->diario,
+            'semanal' => $estadisticas->semanal,
+            'mensual' => $estadisticas->mensual,
+            'anual' => $estadisticas->anual,
+        ];
+
+        // Contadores por estado
+        $contadoresEstado = [
+            'pendientes' => $estadisticas->pendientes,
+            'en_revision' => $estadisticas->en_revision,
+            'aprobadas' => $estadisticas->aprobadas,
+            'rechazadas' => $estadisticas->rechazadas,
+        ];
+
+        // Contadores adicionales (optimizados)
+        $contadoresAdicionales = [
+            'total_estudiantes' => Estudiante::count(),
+            'total_solicitudes' => $estadisticas->total_solicitudes,
+            'con_documentos' => Solicitud::whereHas('documentosAdjuntos')->count(),
+            'sin_documentos' => Solicitud::whereDoesntHave('documentosAdjuntos')->count(),
+        ];
+
+        // Datos para gráficos estadísticos
+        $datosGraficos = [
+            // Gráfico de estado de solicitudes
+            'estados_solicitudes' => [
+                'labels' => ['Pendientes', 'En Revisión', 'Aprobadas', 'Rechazadas'],
+                'data' => [
+                    $estadisticas->pendientes,
+                    $estadisticas->en_revision,
+                    $estadisticas->aprobadas,
+                    $estadisticas->rechazadas
+                ],
+                'colors' => ['#ffc107', '#0d6efd', '#198754', '#dc3545']
+            ],
+
+            // Gráfico de solicitudes por mes (últimos 6 meses)
+            'solicitudes_mensuales' => $this->obtenerSolicitudesMensuales(),
+
+            // Gráfico de documentos
+            'documentos' => [
+                'labels' => ['Con Documentos', 'Sin Documentos'],
+                'data' => [
+                    $contadoresAdicionales['con_documentos'],
+                    $contadoresAdicionales['sin_documentos']
+                ],
+                'colors' => ['#6c757d', '#343a40']
+            ],
+
+            // Gráfico de tendencia semanal (últimas 4 semanas)
+            'tendencia_semanal' => $this->obtenerTendenciaSemanal()
+        ];
 
         // Pasar los datos a la vista
         return view('admin.home', [
             'msg' => "Hello! I am admin",
             'solicitudes' => $solicitudes,
-            'contadorDiario' => $contadorDiario,
-            'contadorSemanal' => $contadorSemanal,
-            'contadorMensual' => $contadorMensual,
-            'contadorAnual' => $contadorAnual,
+            'contadorDiario' => $contadores['diario'],
+            'contadorSemanal' => $contadores['semanal'],
+            'contadorMensual' => $contadores['mensual'],
+            'contadorAnual' => $contadores['anual'],
+            'contadoresEstado' => $contadoresEstado,
+            'contadoresAdicionales' => $contadoresAdicionales,
+            'datosGraficos' => $datosGraficos,
         ]);
     }
 
     public function userHome()
     {
         return view('user.home',["msg"=>"Hello! I am user"]);
+    }
+
+    /**
+     * Obtener solicitudes por mes (últimos 6 meses)
+     */
+    private function obtenerSolicitudesMensuales()
+    {
+        $meses = [];
+        $datos = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $fecha = Carbon::now()->subMonths($i);
+            $meses[] = $fecha->format('M Y');
+            $datos[] = Solicitud::whereYear('created_at', $fecha->year)
+                ->whereMonth('created_at', $fecha->month)
+                ->count();
+        }
+
+        return [
+            'labels' => $meses,
+            'data' => $datos,
+            'color' => '#0d6efd'
+        ];
+    }
+
+    /**
+     * Obtener tendencia semanal (últimas 4 semanas)
+     */
+    private function obtenerTendenciaSemanal()
+    {
+        $semanas = [];
+        $datos = [];
+
+        for ($i = 3; $i >= 0; $i--) {
+            $inicioSemana = Carbon::now()->subWeeks($i)->startOfWeek();
+            $finSemana = Carbon::now()->subWeeks($i)->endOfWeek();
+
+            $semanas[] = 'Sem ' . $inicioSemana->format('d/m');
+            $datos[] = Solicitud::whereBetween('created_at', [$inicioSemana, $finSemana])->count();
+        }
+
+        return [
+            'labels' => $semanas,
+            'data' => $datos,
+            'color' => '#198754'
+        ];
     }
 }

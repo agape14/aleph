@@ -10,10 +10,17 @@
                     <div class="mb-2 mb-lg-0">
                         <h3 class="mb-0 text-white">Bienvenido {{ ucfirst(Auth::user()->name) }}</h3>
                     </div>
-                    <div>
-                        <form action="{{ route('backup') }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres realizar un backup?');">
+                    <div class="d-flex gap-2">
+                        <!-- Botón de Reportes y Estadísticas -->
+                        <button class="btn btn-outline-light btn-lg shadow-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalEstadisticas" style="transition: all 0.3s ease;">
+                            <i class="bi bi-graph-up" style="transition: transform 0.3s ease;"></i>
+                            <span>Ver Reportes y Estadísticas</span>
+                        </button>
+
+                        <!-- Botón de Backup con SweetAlert -->
+                        <form action="{{ route('backup') }}" method="POST" id="backupForm">
                             @csrf
-                            <button type="submit" class="btn btn-success">
+                            <button type="button" class="btn btn-success btn-lg" onclick="confirmarBackup()">
                                 <i class="fas fa-database"></i> Realizar Backup
                             </button>
                         </form>
@@ -110,6 +117,7 @@
                 </div>
             </div>
         </div>
+
         <!-- row  -->
         <div class="row mt-6">
             <div class="col-md-12 col-12">
@@ -756,9 +764,229 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Estadísticas -->
+    <div class="modal fade" id="modalEstadisticas" tabindex="-1" aria-labelledby="modalEstadisticasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalEstadisticasLabel">
+                        <i class="bi bi-graph-up me-2"></i>Reportes y Estadísticas del Sistema
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Resumen de contadores -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-light-warning text-center">
+                                <div class="card-body">
+                                    <h3 class="text-warning">{{ $contadoresEstado['pendientes'] }}</h3>
+                                    <p class="mb-0">Pendientes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-primary text-center">
+                                <div class="card-body">
+                                    <h3 class="text-primary">{{ $contadoresEstado['en_revision'] }}</h3>
+                                    <p class="mb-0">En Revisión</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-success text-center">
+                                <div class="card-body">
+                                    <h3 class="text-success">{{ $contadoresEstado['aprobadas'] }}</h3>
+                                    <p class="mb-0">Aprobadas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-danger text-center">
+                                <div class="card-body">
+                                    <h3 class="text-danger">{{ $contadoresEstado['rechazadas'] }}</h3>
+                                    <p class="mb-0">Rechazadas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos -->
+                    <div class="row">
+                        <!-- Gráfico de Estados (Dona) -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Estado de Solicitudes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chartEstados"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Documentos (Dona) -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Estado de Documentos</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chartDocumentos"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Tendencia Mensual (Línea) -->
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Tendencia Mensual de Solicitudes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chartMensual"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico de Tendencia Semanal (Barras) -->
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Tendencia Semanal de Solicitudes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="chartSemanal"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+<style>
+    .collapse {
+        transition: height 0.35s ease;
+    }
+
+    .btn-outline-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    #contadoresAdicionales {
+        border-top: 1px solid #e9ecef;
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+
+    /* Estilos para los gráficos */
+    .modal-body canvas {
+        max-height: 300px !important;
+        width: 100% !important;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    /* Estilos para botones superiores */
+    .btn-outline-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255,255,255,0.3) !important;
+        background-color: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.5) !important;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(25,135,84,0.3) !important;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+</style>
+
+<!-- Scripts al final del documento -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Fallback para Chart.js si no se carga desde el primer CDN
+    if (typeof Chart === 'undefined') {
+        console.log('Cargando Chart.js desde CDN alternativo...');
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+        script.onload = function() {
+            console.log('Chart.js cargado desde CDN alternativo');
+        };
+        document.head.appendChild(script);
+    }
+</script>
+<script>
+    // Variables globales para los gráficos
+    let chartEstados, chartDocumentos, chartMensual, chartSemanal;
+
+    // Función para confirmar backup con SweetAlert
+    function confirmarBackup() {
+        Swal.fire({
+            title: '¿Realizar Backup?',
+            text: '¿Estás seguro de que quieres realizar un backup de la base de datos?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#dc3545',
+            confirmButtonText: 'Sí, realizar backup',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Procesando...',
+                    text: 'Realizando backup de la base de datos',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Enviar formulario
+                document.getElementById('backupForm').submit();
+            }
+        });
+    }
+
+    // Función para calcular totales
     function calcularTotales() {
         let totalIngresos = 0;
         let totalGastos = 0;
@@ -775,13 +1003,185 @@
         $('#total_gastos').val(totalGastos.toFixed(2));
     }
 
-    // Calcular totales cuando cambia un input de ingresos o gastos
-    $(document).on('input', '.ingresos, .gastos', function () {
-        calcularTotales();
-    });
+    // Función para inicializar gráficos
+    function inicializarGraficos() {
+        try {
+            // Verificar que Chart.js esté disponible
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js no está cargado');
+                return;
+            }
 
-    // Calcular totales cuando se carga la página
-    $(document).ready(function () {
+            // Datos para los gráficos
+            const datosEstados = @json($datosGraficos['estados_solicitudes']);
+            const datosDocumentos = @json($datosGraficos['documentos']);
+            const datosMensual = @json($datosGraficos['solicitudes_mensuales']);
+            const datosSemanal = @json($datosGraficos['tendencia_semanal']);
+
+            console.log('Datos de gráficos:', {
+                estados: datosEstados,
+                documentos: datosDocumentos,
+                mensual: datosMensual,
+                semanal: datosSemanal
+            });
+
+            // Gráfico de Estados (Dona)
+            const ctxEstados = document.getElementById('chartEstados');
+            if (ctxEstados) {
+                chartEstados = new Chart(ctxEstados, {
+                    type: 'doughnut',
+                    data: {
+                        labels: datosEstados.labels,
+                        datasets: [{
+                            data: datosEstados.data,
+                            backgroundColor: datosEstados.colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                console.log('Gráfico de Estados creado');
+            }
+
+            // Gráfico de Documentos (Dona)
+            const ctxDocumentos = document.getElementById('chartDocumentos');
+            if (ctxDocumentos) {
+                chartDocumentos = new Chart(ctxDocumentos, {
+                    type: 'doughnut',
+                    data: {
+                        labels: datosDocumentos.labels,
+                        datasets: [{
+                            data: datosDocumentos.data,
+                            backgroundColor: datosDocumentos.colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                console.log('Gráfico de Documentos creado');
+            }
+
+            // Gráfico Mensual (Línea)
+            const ctxMensual = document.getElementById('chartMensual');
+            if (ctxMensual) {
+                chartMensual = new Chart(ctxMensual, {
+                    type: 'line',
+                    data: {
+                        labels: datosMensual.labels,
+                        datasets: [{
+                            label: 'Solicitudes',
+                            data: datosMensual.data,
+                            borderColor: datosMensual.color,
+                            backgroundColor: datosMensual.color + '20',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                console.log('Gráfico Mensual creado');
+            }
+
+            // Gráfico Semanal (Barras)
+            const ctxSemanal = document.getElementById('chartSemanal');
+            if (ctxSemanal) {
+                chartSemanal = new Chart(ctxSemanal, {
+                    type: 'bar',
+                    data: {
+                        labels: datosSemanal.labels,
+                        datasets: [{
+                            label: 'Solicitudes',
+                            data: datosSemanal.data,
+                            backgroundColor: datosSemanal.color + '80',
+                            borderColor: datosSemanal.color,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                console.log('Gráfico Semanal creado');
+            }
+        } catch (error) {
+            console.error('Error al inicializar gráficos:', error);
+        }
+    }
+
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM cargado, inicializando eventos...');
+
+        // Calcular totales cuando se carga la página
         calcularTotales();
+
+        // Calcular totales cuando cambia un input de ingresos o gastos
+        $(document).on('input', '.ingresos, .gastos', function () {
+            calcularTotales();
+        });
+
+        // Inicializar gráficos cuando se abre el modal
+        const modalEstadisticas = document.getElementById('modalEstadisticas');
+        if (modalEstadisticas) {
+            modalEstadisticas.addEventListener('shown.bs.modal', function () {
+                console.log('Modal abierto, inicializando gráficos...');
+
+                // Destruir gráficos existentes si existen
+                if (chartEstados) chartEstados.destroy();
+                if (chartDocumentos) chartDocumentos.destroy();
+                if (chartMensual) chartMensual.destroy();
+                if (chartSemanal) chartSemanal.destroy();
+
+                // Pequeño delay para asegurar que el modal esté completamente visible
+                setTimeout(() => {
+                    inicializarGraficos();
+                }, 100);
+            });
+        } else {
+            console.error('Modal modalEstadisticas no encontrado');
+        }
     });
 </script>
