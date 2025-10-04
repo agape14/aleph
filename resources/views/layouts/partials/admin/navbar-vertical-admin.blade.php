@@ -28,6 +28,47 @@
                     <i data-feather="corner-left-down" class="nav-icon icon-xs me-2"></i>Configuracion
                 </a>
             </li>
+
+            <!-- Gestor de Contenido -->
+            @if(\App\Helpers\MenuActivacionHelper::isMenuActivo('gestor_contenido'))
+            <li class="nav-item">
+                <a class="nav-link has-arrow " href="#!"
+                    data-bs-toggle="collapse" data-bs-target="#navGestorContenido" aria-expanded="false"
+                    aria-controls="navGestorContenido">
+                    <i data-feather="edit" class="nav-icon icon-xs me-2"></i>Gestor de Contenido
+                </a>
+                <div id="navGestorContenido" class="collapse" data-bs-parent="#sideNavbar">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.gestor-contenido.index') }}">
+                                <i data-feather="home" class="nav-icon icon-xs me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        @if(\App\Helpers\MenuActivacionHelper::isSubmenuActivo('gestor_contenido', 'textos'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.textos.index') }}">
+                                <i data-feather="file-text" class="nav-icon icon-xs me-2"></i>Textos Dinámicos
+                            </a>
+                        </li>
+                        @endif
+                        @if(\App\Helpers\MenuActivacionHelper::isSubmenuActivo('gestor_contenido', 'documentos'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.documentos.index') }}">
+                                <i data-feather="file" class="nav-icon icon-xs me-2"></i>Documentos del Sistema
+                            </a>
+                        </li>
+                        @endif
+                        @if(\App\Helpers\MenuActivacionHelper::isSubmenuActivo('gestor_contenido', 'logs'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.gestor-contenido.logs') }}">
+                                <i data-feather="activity" class="nav-icon icon-xs me-2"></i>Logs de Cambios
+                            </a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
+            </li>
+            @endif
              {{--
 
              <!-- Nav item -->

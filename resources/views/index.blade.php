@@ -58,7 +58,7 @@
                     <div class="col-lg-12">
                         <div class="title text-center mb-5">
                             <!--<h6 class="mb-0 fw-bold text-primary">Contact Us</h6>-->
-                            <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO 2025</h2>
+                            <h2 class="f-40">SOLICITUD DE BECA PARA EL PERÍODO ACADÉMICO {{ date('Y') + 1 }}</h2>
                         </div>
                     </div>
                 </div>
@@ -79,28 +79,33 @@
                             El formulario está a punto de expirar. Por favor, envíalo pronto o refresca la página.
                         </div>
                         <div class="container mt-5">
+                            <!-- Indicador de progreso -->
+                            <div class="progress mb-4" style="height: 8px;">
+                                <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 16.66%" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
                             <div class="stepper-wrapper">
-                                <div class="stepper-item active">
+                                <div class="stepper-item active" data-step="1">
                                     <div class="step-counter">1</div>
                                     <div class="step-label">Inicio</div>
                                 </div>
-                                <div class="stepper-item">
+                                <div class="stepper-item" data-step="2">
                                     <div class="step-counter">2</div>
                                     <div class="step-label">Estudiante</div>
                                 </div>
-                                <div class="stepper-item">
+                                <div class="stepper-item" data-step="3">
                                     <div class="step-counter">3</div>
                                     <div class="step-label">Progenitor 1</div>
                                 </div>
-                                <div class="stepper-item">
+                                <div class="stepper-item" data-step="4">
                                     <div class="step-counter">4</div>
                                     <div class="step-label">Progenitor 2</div>
                                 </div>
-                                <div class="stepper-item">
+                                <div class="stepper-item" data-step="5">
                                     <div class="step-counter">5</div>
                                     <div class="step-label">Situación Económica</div>
                                 </div>
-                                <div class="stepper-item">
+                                <div class="stepper-item" data-step="6">
                                     <div class="step-counter">6</div>
                                     <div class="step-label">General</div>
                                 </div>
@@ -145,9 +150,46 @@
                 </div>
             </div>
 
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
+
+        <style>
+            .stepper-item.completed .step-counter {
+                background-color: #28a745 !important;
+                color: white !important;
+            }
+            .stepper-item.completed .step-label {
+                color: #28a745 !important;
+                font-weight: 500;
+            }
+            .form-step {
+                transition: all 0.3s ease-in-out;
+            }
+            .progress {
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .progress-bar {
+                transition: width 0.6s ease;
+            }
+            .is-invalid {
+                border-color: #dc3545 !important;
+                box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+            }
+            .stepper-item {
+                transition: all 0.3s ease;
+            }
+            .stepper-item:hover .step-counter {
+                transform: scale(1.1);
+            }
+            .stepper-item.completed {
+                cursor: pointer;
+            }
+            .stepper-item.completed:hover {
+                opacity: 0.8;
+            }
+        </style>
         <script>
             $('input[type="text"]').on('input', function () {
                 $(this).val($(this).val().toUpperCase());
@@ -267,30 +309,70 @@
 
 
                 function updateSteps() {
+                    // Ocultar todos los pasos y divs de validación
                     $('.form-step').addClass('d-none').removeClass('d-block');
+                    $('[id^="validacionpaso"]').addClass('d-none').removeClass('d-block');
+
+                    // Mostrar el paso actual y su div de validación
                     $(`.form-step[data-step="${currentStep}"]`).removeClass('d-none').addClass('d-block');
+                    $(`#validacionpaso${currentStep}`).removeClass('d-none').addClass('d-block');
 
                     // Actualizar estado de botones
                     $('#prev-btn').prop('disabled', currentStep === 1);
                     $('#next-btn').text(currentStep === $('.stepper-item').length ? "Solicitar Beca" : "Siguiente →");
+
+                    // Actualizar la barra de progreso
+                    const progressPercentage = (currentStep / $('.stepper-item').length) * 100;
+                    $('#progress-bar').css('width', progressPercentage + '%').attr('aria-valuenow', progressPercentage);
 
                     // Actualizar el estado del stepper
                     $('.stepper-item').each(function (index) {
                         const $item = $(this);
                         const $counter = $item.find(".step-counter");
                         const $label = $item.find(".step-label");
+                        const stepNumber = index + 1;
 
-                        if (index + 1 === currentStep) {
+                        if (stepNumber === currentStep) {
                             $item.addClass("active");
                             $counter.addClass("bg-primary text-white").removeClass("bg-secondary text-dark");
                             $label.addClass("text-primary");
+                        } else if (stepNumber < currentStep) {
+                            // Pasos completados
+                            $item.removeClass("active").addClass("completed");
+                            $counter.addClass("bg-success text-white").removeClass("bg-secondary text-dark bg-primary");
+                            $label.addClass("text-success").removeClass("text-primary");
                         } else {
-                            $item.removeClass("active");
-                            $counter.removeClass("bg-primary text-white").addClass("bg-secondary text-dark");
-                            $label.removeClass("text-primary");
+                            // Pasos pendientes
+                            $item.removeClass("active completed");
+                            $counter.removeClass("bg-primary text-white bg-success").addClass("bg-secondary text-dark");
+                            $label.removeClass("text-primary text-success");
                         }
                     });
+
+                    // Auto-enfoque en el primer campo del paso actual
+                    setTimeout(() => {
+                        focusFirstField(currentStep);
+                    }, 100);
+
                     console.log('currentSteppp',currentStep);
+                }
+
+                // Función para enfocar el primer campo del paso actual
+                function focusFirstField(step) {
+                    const currentStepDiv = $(`.form-step[data-step="${step}"]`);
+                    const firstField = currentStepDiv.find('input:not([readonly]):not([type="hidden"]), select, textarea').first();
+
+                    if (firstField.length > 0) {
+                        firstField.focus();
+
+                        // Si es un campo de archivo, no hacer focus automático
+                        if (firstField.attr('type') === 'file') {
+                            const nextField = currentStepDiv.find('input:not([readonly]):not([type="hidden"]):not([type="file"]), select, textarea').first();
+                            if (nextField.length > 0) {
+                                nextField.focus();
+                            }
+                        }
+                    }
                 }
 
                 // Escuchar cambio en los radios de la pregunta 2
@@ -372,15 +454,26 @@
                     });
 
                     // Continuamos con la validación de los archivos dentro de currentDiv
+                    // Solo validar archivos si no estamos en el paso 6 o si el progenitor correspondiente está visible
+                    const isPaso6 = currentDiv.attr('id') === 'validacionpaso6';
 
                     currentDiv.find('input[type="file"]').each(function () {
                         const $fileInput = $(this);
                         const files = $fileInput[0].files;
 
-                        // Verificar si el div contenedor tiene la clase d-none
-                        const parentDiv = $fileInput.closest('div[id^="documentosProgenitor"]'); // Encuentra el div padre
-                        if (parentDiv.hasClass('d-none')) {
-                            // Si el div está oculto (tiene la clase d-none), no validamos los archivos y pasamos al siguiente input
+                        // Verificar si el campo o su div contenedor tiene la clase d-none
+                        const parentDiv = $fileInput.closest('div.row');
+                        const progenitorDiv = $fileInput.closest('div[id^="documentosProgenitor"]');
+
+                        // Si estamos en el paso 6, verificar específicamente si el Progenitor 2 está oculto
+                        if (isPaso6 && progenitorDiv.attr('id') === 'documentosProgenitor2' && progenitorDiv.hasClass('d-none')) {
+                            console.log('Progenitor 2 oculto en paso 6, saltando validación:', $fileInput.attr('id'));
+                            return true;
+                        }
+
+                        if (parentDiv.hasClass('d-none') || $fileInput.closest('div').hasClass('d-none') || progenitorDiv.hasClass('d-none')) {
+                            // Si el campo está oculto (tiene la clase d-none), no validamos los archivos y pasamos al siguiente input
+                            console.log('Campo oculto detectado, saltando validación:', $fileInput.attr('id'), 'ProgenitorDiv oculto:', progenitorDiv.hasClass('d-none'));
                             return true;
                         }
 
@@ -414,6 +507,8 @@
                             const checkboxId = fileInputId.replace('boletasPago', 'noAplicaBoletasPago') // Reemplaza "boletasPago" por "noAplicaBoletasPago"
                                                         .replace('declaracionJurada', 'noAplicaDeclaracionJurada') // Reemplaza "declaracionJurada" por "noAplicaDeclaracionJurada"
                                                         .replace('certificadoMovimientos', 'noAplicaCertificadoMovimientos') // Reemplaza "certificadoMovimientos" por "noAplicaCertificadoMovimientos"
+                                                        .replace('certificadoMovimientoAnioActual', 'noAplicaCertificadoMovimientoAnioActual') // Reemplaza "certificadoMovimientoAnioActual" por "noAplicaCertificadoMovimientoAnioActual"
+                                                        .replace('certificadoMovimientoAnioAnterior', 'noAplicaCertificadoMovimientoAnioAnterior') // Reemplaza "certificadoMovimientoAnioAnterior" por "noAplicaCertificadoMovimientoAnioAnterior"
                                                         .replace('constanciaBusquedaRegistros', 'noAplicaConstanciaBusquedaRegistros') // Reemplaza "constanciaBusquedaRegistros" por "noAplicaConstanciaBusquedaRegistros"
                                                         .replace('otrosDocumentos', 'noAplicaOtrosDocumentos'); // Reemplaza "otrosDocumentos" por "noAplicaOtrosDocumentos"
                             const relatedCheckbox = $(`#${checkboxId}`);
@@ -431,13 +526,38 @@
 
                     // Mostrar errores con Toastr si hay errores
                     if (!isValid) {
+                        // Limpiar clases de error previas
+                        currentDiv.find('.is-invalid').removeClass('is-invalid');
+
+                        // Agregar clase de error a los campos problemáticos
+                        currentDiv.find('input[required], select[required], textarea[required]').each(function () {
+                            const $field = $(this);
+                            const value = $field.val();
+
+                            if (!value || (typeof value === 'string' && !value.trim())) {
+                                $field.addClass('is-invalid');
+                            }
+                        });
+
+                        // Scroll suave hacia el primer campo con error
+                        const firstErrorField = currentDiv.find('.is-invalid').first();
+                        if (firstErrorField.length > 0) {
+                            $('html, body').animate({
+                                scrollTop: firstErrorField.offset().top - 100
+                            }, 500);
+                            firstErrorField.focus();
+                        }
+
                         toastr.error(errorMessages.join('<br>'), 'Faltan datos obligatorios', {
                             positionClass: 'toast-bottom-right',
                             closeButton: true,
-                            timeOut: 5000,
+                            timeOut: 8000,
                         });
                         return;
                     }
+
+                    // Limpiar clases de error si la validación es exitosa
+                    currentDiv.find('.is-invalid').removeClass('is-invalid');
 
 
                     // Validaciones específicas para cada paso
@@ -461,8 +581,11 @@
                         $('#prev-btn').attr('disabled', false);
                     }
                     // Avanzar al siguiente paso si todo es válido
-                    $(`#validacionpaso${currentStep}`).addClass('d-none');
-                    $(`#validacionpaso${nextStep}`).removeClass('d-none');
+                    // Solo ocultar el paso actual si NO estamos en el paso 6 (último paso)
+                    if (currentStep !== 6) {
+                        $(`#validacionpaso${currentStep}`).addClass('d-none');
+                        $(`#validacionpaso${nextStep}`).removeClass('d-none');
+                    }
                     if (currentStep === 2) { // Validación para el paso 2
                         const $idestudiante = $('#id_estudiante').val();
                         const selectedOption = $('input[name="viveConProgenitores"]:checked').val();
@@ -504,7 +627,7 @@
                         let formData = new FormData($('#frmSolicitud')[0]);
                         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
                         $('#next-btn').prop('disabled', true); // Deshabilitar el botón para evitar múltiples envíos
-                        $('#next-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrand Solicitud...'); // Cambiar el contenido del botón a un spinner
+                        $('#next-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrando Solicitud...'); // Cambiar el contenido del botón a un spinner
                         $.ajaxSetup({
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -528,9 +651,6 @@
                                 }).then(() => {
                                     location.reload();
                                 });
-                                // Eliminar el icono de loading y habilitar el botón
-                                $('#next-btn').html('Siguiente'); // Restaurar el texto del botón
-                                $('#next-btn').prop('disabled', false); // Habilitar el botón
                             },
                             error: function (xhr) {
                                 let errorMessage = 'Ocurrió un error al registrar la solicitud de beca. Por favor, inténtelo de nuevo.';
@@ -548,11 +668,28 @@
                                     text: errorMessage,
                                     icon: 'error',
                                     confirmButtonText: 'Entendido'
+                                }).then(() => {
+                                    // Restaurar el botón después de cerrar el modal
+                                    $('#next-btn').html('Solicitar Beca'); // Restaurar el texto del botón
+                                    $('#next-btn').prop('disabled', false); // Habilitar el botón
+
+                                    // Asegurar que el paso 6 permanezca visible
+                                    $('#validacionpaso6').removeClass('d-none').addClass('d-block');
+
+                                    // Enfocar el primer campo del paso 6 para facilitar la corrección
+                                    setTimeout(() => {
+                                        focusFirstField(6);
+                                    }, 100);
                                 });
-                                $('#next-btn').html('Siguiente'); // Restaurar el texto del botón
-                                $('#next-btn').prop('disabled', false); // Habilitar el botón
+
+                                // No hacer return aquí para evitar que se ejecute el resto del código
+                                return false;
                             }
                         });
+
+                        // Si llegamos aquí, significa que la validación pasó pero aún no se envió
+                        // No actualizar el step hasta que se complete el envío
+                        return false;
                     }
 
                     // Saltar el paso 4 si está marcado como omitido
@@ -576,17 +713,22 @@
                         prevStep--;
                     }
 
-                    if ($(`.form-step[data-step="${prevStep}"]`).length) {
-                        currentStep = prevStep;
-                        updateSteps();
-                    }
-
                     // Verificar que el paso anterior exista antes de actualizar
                     if ($(`.form-step[data-step="${prevStep}"]`).length) {
+                        // Limpiar errores del paso actual
+                        $(`#validacionpaso${currentStep}`).find('.is-invalid').removeClass('is-invalid');
+
+                        // Ocultar paso actual y mostrar paso anterior
                         $(`#validacionpaso${currentStep}`).addClass('d-none');
                         $(`#validacionpaso${prevStep}`).removeClass('d-none');
+
                         currentStep = prevStep;
                         updateSteps();
+
+                        // Scroll suave hacia arriba del formulario
+                        $('html, body').animate({
+                            scrollTop: $('.stepper-wrapper').offset().top - 50
+                        }, 300);
                     }
 
                     // Habilitar/deshabilitar el botón de "anterior" según el paso actual
@@ -598,6 +740,32 @@
                 });
 
                 updateSteps();
+
+                // Hacer los pasos del stepper clickeables para navegación
+                $('.stepper-item').on('click', function() {
+                    const stepNumber = parseInt($(this).attr('data-step'));
+
+                    // Solo permitir navegación a pasos anteriores completados o al paso actual
+                    if (stepNumber <= currentStep || stepNumber === 1) {
+                        // Si el paso 4 está marcado para omitirse y estamos tratando de ir al paso 4, saltar al paso 5
+                        if (stepNumber === 4 && $('#step-progenitor-2').attr('data-skip') === 'true') {
+                            currentStep = 5;
+                        } else {
+                            currentStep = stepNumber;
+                        }
+
+                        // Limpiar errores del paso actual
+                        $(`#validacionpaso${currentStep}`).find('.is-invalid').removeClass('is-invalid');
+
+                        // Actualizar la vista usando la función centralizada
+                        updateSteps();
+
+                        // Scroll suave hacia el stepper
+                        $('html, body').animate({
+                            scrollTop: $('.stepper-wrapper').offset().top - 50
+                        }, 300);
+                    }
+                });
 
                 $('#buscarEstudiante').on('click', function() {
                     const tipoDocumento = $('#tipoDocumento').val();

@@ -28,14 +28,43 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-3">
-            <label for="certificadoMovimientosProgenitor1" class="col-sm-6 col-form-label">3. Certificado de movimientos migratorios de ambos progenitores, correspondientes al 2023 y 2024</label>
+        <div class="row mb-3 d-none">
+            <label for="certificadoMovimientosProgenitor1" class="col-sm-6 col-form-label">3. Certificado de movimientos migratorios de ambos progenitores, correspondientes al {{ date('Y') - 2 }} y {{ date('Y') - 1 }}</label>
             <div class="col-sm-6">
                 <input type="file" id="certificadoMovimientosProgenitor1" name="certificadoMovimientosProgenitor1" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Progenitor1">
                 <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
                 <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientosProgenitor1" name="noAplicaCertificadoMovimientosProgenitor1">
                     <label class="form-check-label" for="noAplicaCertificadoMovimientosProgenitor1">
+                        No aplica
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h5 class="text-primary">3. Certificados de Movimientos Migratorios</h5>
+        </div>
+        <div class="row mb-3">
+            <label for="certificadoMovimientoAnioActualProgenitor1" class="col-sm-6 col-form-label">3.1. Certificado de movimientos migratorios del año actual ({{ date('Y') }})</label>
+            <div class="col-sm-6">
+                <input type="file" id="certificadoMovimientoAnioActualProgenitor1" name="certificadoMovimientoAnioActualProgenitor1" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Actual Progenitor1">
+                <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientoAnioActualProgenitor1" name="noAplicaCertificadoMovimientoAnioActualProgenitor1">
+                    <label class="form-check-label" for="noAplicaCertificadoMovimientoAnioActualProgenitor1">
+                        No aplica
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="certificadoMovimientoAnioAnteriorProgenitor1" class="col-sm-6 col-form-label">3.2. Certificado de movimientos migratorios del año anterior ({{ date('Y') - 1 }})</label>
+            <div class="col-sm-6">
+                <input type="file" id="certificadoMovimientoAnioAnteriorProgenitor1" name="certificadoMovimientoAnioAnteriorProgenitor1" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Anterior Progenitor1">
+                <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientoAnioAnteriorProgenitor1" name="noAplicaCertificadoMovimientoAnioAnteriorProgenitor1">
+                    <label class="form-check-label" for="noAplicaCertificadoMovimientoAnioAnteriorProgenitor1">
                         No aplica
                     </label>
                 </div>
@@ -97,14 +126,43 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-3">
-            <label for="certificadoMovimientosProgenitor2" class="col-sm-6 col-form-label">3. Certificado de movimientos migratorios de ambos progenitores, correspondientes al 2023 y 2024</label>
+        <div class="row mb-3 d-none">
+            <label for="certificadoMovimientosProgenitor2" class="col-sm-6 col-form-label">3. Certificado de movimientos migratorios de ambos progenitores, correspondientes al {{ date('Y') - 2 }} y {{ date('Y') - 1 }}</label>
             <div class="col-sm-6">
                 <input type="file" id="certificadoMovimientosProgenitor2" name="certificadoMovimientosProgenitor2" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimientos Progenitor2">
                 <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
                 <div class="form-check mt-2">
                     <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientosProgenitor2" name="noAplicaCertificadoMovimientosProgenitor2">
                     <label class="form-check-label" for="noAplicaCertificadoMovimientosProgenitor2">
+                        No aplica
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <h5 class="text-primary">3. Certificados de Movimientos Migratorios</h5>
+        </div>
+        <div class="row mb-3">
+            <label for="certificadoMovimientoAnioActualProgenitor2" class="col-sm-6 col-form-label">3.1. Certificado de movimientos migratorios del año actual ({{ date('Y') }})</label>
+            <div class="col-sm-6">
+                <input type="file" id="certificadoMovimientoAnioActualProgenitor2" name="certificadoMovimientoAnioActualProgenitor2" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Actual Progenitor2">
+                <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientoAnioActualProgenitor2" name="noAplicaCertificadoMovimientoAnioActualProgenitor2">
+                    <label class="form-check-label" for="noAplicaCertificadoMovimientoAnioActualProgenitor2">
+                        No aplica
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="certificadoMovimientoAnioAnteriorProgenitor2" class="col-sm-6 col-form-label">3.2. Certificado de movimientos migratorios del año anterior ({{ date('Y') - 1 }})</label>
+            <div class="col-sm-6">
+                <input type="file" id="certificadoMovimientoAnioAnteriorProgenitor2" name="certificadoMovimientoAnioAnteriorProgenitor2" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Anterior Progenitor2">
+                <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="noAplicaCertificadoMovimientoAnioAnteriorProgenitor2" name="noAplicaCertificadoMovimientoAnioAnteriorProgenitor2">
+                    <label class="form-check-label" for="noAplicaCertificadoMovimientoAnioAnteriorProgenitor2">
                         No aplica
                     </label>
                 </div>

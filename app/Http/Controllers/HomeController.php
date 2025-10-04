@@ -26,8 +26,12 @@ class HomeController extends Controller
      */
     public function adminHome(Request $request)
     {
+        // Obtener año seleccionado (por defecto año actual)
+        $añoSeleccionado = $request->filled('año') ? $request->año : date('Y');
+
         // Obtener las solicitudes con sus relaciones
-        $solicitudesQuery = Solicitud::with(['progenitores', 'estudiante', 'documentosAdjuntos']);
+        $solicitudesQuery = Solicitud::with(['progenitores', 'estudiante', 'documentosAdjuntos'])
+            ->whereYear('created_at', $añoSeleccionado);
 
         // Filtrar por nombres, apellidos, código SIANET o DNI
         if ($request->filled('search')) {
@@ -58,8 +62,8 @@ class HomeController extends Controller
             $solicitudesQuery->whereDate('created_at', '<=', $request->fecha_fin);
         }
 
-        // Aplicar paginación (20 por página)
-        $solicitudes = $solicitudesQuery->paginate(20);
+        // Ordenar por fecha de registro descendente y aplicar paginación
+        $solicitudes = $solicitudesQuery->orderBy('created_at', 'desc')->paginate(20);
 
         // Obtener fechas actuales para estadísticas
         $hoy = Carbon::today();
@@ -69,27 +73,28 @@ class HomeController extends Controller
         $inicioAnio = Carbon::now()->startOfYear();
 
         // Optimización: Obtener todos los contadores en una sola consulta usando agregación
-        $estadisticas = Solicitud::selectRaw('
-            COUNT(*) as total_solicitudes,
-            SUM(CASE WHEN DATE(created_at) = ? THEN 1 ELSE 0 END) as diario,
-            SUM(CASE WHEN created_at >= ? AND created_at <= ? THEN 1 ELSE 0 END) as semanal,
-            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as mensual,
-            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as anual,
-            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as pendientes,
-            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as en_revision,
-            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as aprobadas,
-            SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as rechazadas
-        ', [
-            $hoy->format('Y-m-d'),
-            $inicioSemana,
-            $finSemana,
-            $inicioMes,
-            $inicioAnio,
-            'pendiente',
-            'en_revision',
-            'aprobada',
-            'rechazada'
-        ])->first();
+        $estadisticas = Solicitud::whereYear('created_at', $añoSeleccionado)
+            ->selectRaw('
+                COUNT(*) as total_solicitudes,
+                SUM(CASE WHEN DATE(created_at) = ? THEN 1 ELSE 0 END) as diario,
+                SUM(CASE WHEN created_at >= ? AND created_at <= ? THEN 1 ELSE 0 END) as semanal,
+                SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as mensual,
+                SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as anual,
+                SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as pendientes,
+                SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as en_revision,
+                SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as aprobadas,
+                SUM(CASE WHEN estado_solicitud = ? THEN 1 ELSE 0 END) as rechazadas
+            ', [
+                $hoy->format('Y-m-d'),
+                $inicioSemana,
+                $finSemana,
+                $inicioMes,
+                $inicioAnio,
+                'pendiente',
+                'en_revision',
+                'aprobada',
+                'rechazada'
+            ])->first();
 
         // Contadores de tiempo
         $contadores = [
@@ -107,12 +112,12 @@ class HomeController extends Controller
             'rechazadas' => $estadisticas->rechazadas,
         ];
 
-        // Contadores adicionales (optimizados)
+        // Contadores adicionales (optimizados) - filtrados por año
         $contadoresAdicionales = [
             'total_estudiantes' => Estudiante::count(),
             'total_solicitudes' => $estadisticas->total_solicitudes,
-            'con_documentos' => Solicitud::whereHas('documentosAdjuntos')->count(),
-            'sin_documentos' => Solicitud::whereDoesntHave('documentosAdjuntos')->count(),
+            'con_documentos' => Solicitud::whereYear('created_at', $añoSeleccionado)->whereHas('documentosAdjuntos')->count(),
+            'sin_documentos' => Solicitud::whereYear('created_at', $añoSeleccionado)->whereDoesntHave('documentosAdjuntos')->count(),
         ];
 
         // Datos para gráficos estadísticos
@@ -130,7 +135,7 @@ class HomeController extends Controller
             ],
 
             // Gráfico de solicitudes por mes (últimos 6 meses)
-            'solicitudes_mensuales' => $this->obtenerSolicitudesMensuales(),
+            'solicitudes_mensuales' => $this->obtenerSolicitudesMensuales($añoSeleccionado),
 
             // Gráfico de documentos
             'documentos' => [
@@ -143,7 +148,7 @@ class HomeController extends Controller
             ],
 
             // Gráfico de tendencia semanal (últimas 4 semanas)
-            'tendencia_semanal' => $this->obtenerTendenciaSemanal()
+            'tendencia_semanal' => $this->obtenerTendenciaSemanal($añoSeleccionado)
         ];
 
         // Pasar los datos a la vista
@@ -157,6 +162,7 @@ class HomeController extends Controller
             'contadoresEstado' => $contadoresEstado,
             'contadoresAdicionales' => $contadoresAdicionales,
             'datosGraficos' => $datosGraficos,
+            'añoSeleccionado' => $añoSeleccionado,
         ]);
     }
 
@@ -168,7 +174,7 @@ class HomeController extends Controller
     /**
      * Obtener solicitudes por mes (últimos 6 meses)
      */
-    private function obtenerSolicitudesMensuales()
+    private function obtenerSolicitudesMensuales($añoSeleccionado)
     {
         $meses = [];
         $datos = [];
@@ -176,7 +182,7 @@ class HomeController extends Controller
         for ($i = 5; $i >= 0; $i--) {
             $fecha = Carbon::now()->subMonths($i);
             $meses[] = $fecha->format('M Y');
-            $datos[] = Solicitud::whereYear('created_at', $fecha->year)
+            $datos[] = Solicitud::whereYear('created_at', $añoSeleccionado)
                 ->whereMonth('created_at', $fecha->month)
                 ->count();
         }
@@ -191,7 +197,7 @@ class HomeController extends Controller
     /**
      * Obtener tendencia semanal (últimas 4 semanas)
      */
-    private function obtenerTendenciaSemanal()
+    private function obtenerTendenciaSemanal($añoSeleccionado)
     {
         $semanas = [];
         $datos = [];
@@ -201,7 +207,9 @@ class HomeController extends Controller
             $finSemana = Carbon::now()->subWeeks($i)->endOfWeek();
 
             $semanas[] = 'Sem ' . $inicioSemana->format('d/m');
-            $datos[] = Solicitud::whereBetween('created_at', [$inicioSemana, $finSemana])->count();
+            $datos[] = Solicitud::whereYear('created_at', $añoSeleccionado)
+                ->whereBetween('created_at', [$inicioSemana, $finSemana])
+                ->count();
         }
 
         return [

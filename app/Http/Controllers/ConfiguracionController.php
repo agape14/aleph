@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Configuracion;
+use App\Models\DocumentoSistema;
+use App\Models\TextoDinamico;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class ConfiguracionController extends Controller
 {
@@ -31,6 +34,23 @@ class ConfiguracionController extends Controller
             }
         }
 
+        // Obtener datos dinámicos con cache
+        $añoActual = date('Y') + 1;
+
+        // Obtener reglamento de becas dinámico con cache
+        $reglamentoBecas = Cache::remember('reglamento_becas_' . $añoActual, 3600, function () use ($añoActual) {
+            return DocumentoSistema::activos()
+                ->porTipo('reglamento')
+                ->porAñoLectivo($añoActual)
+                ->orderBy('orden')
+                ->first();
+        });
+
+        // Obtener textos dinámicos del paso 1 con cache
+        $textosDinamicos = Cache::remember('textos_dinamicos_paso1_' . $añoActual, 3600, function () use ($añoActual) {
+            return TextoDinamico::obtenerPorSeccion('paso1', $añoActual);
+        });
+
         return view('index', [
             'formTimeout' => env('FORM_TIMEOUT', 300),
             'formAlertTime' => env('SESSION_LIFETIME', 240),
@@ -38,6 +58,9 @@ class ConfiguracionController extends Controller
             'mensaje' => $mensaje,
             'titulo_mensaje' => $config->titulo_mensaje === '-' ? '' : $config->titulo_mensaje,
             'pie_mensaje' => $config->pie_mensaje === '-' ? '' : $config->pie_mensaje,
+            'reglamentoBecas' => $reglamentoBecas,
+            'textosDinamicos' => $textosDinamicos,
+            'añoActual' => $añoActual,
         ]);
     }
 

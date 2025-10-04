@@ -130,14 +130,20 @@
                             <!-- Formulario de búsqueda -->
                             <form action="{{ route('admin.home') }}" method="GET" class="d-flex flex-column flex-md-row w-100 me-3">
                                 <div class="input-group mb-2 mb-md-0 flex-fill me-3">
-                                    {{-- <input type="text" class="form-control" name="dni" placeholder="Buscar por DNI" value="{{ request('dni') }}">--}}
                                     <input type="text" class="form-control" name="search" placeholder="Buscar por DNI, Nombre, Apellidos o Código SIANET" value="{{ request('search') }}">
                                 </div>
                                 <div class="input-group mb-2 mb-md-0 flex-fill me-3">
-                                    <input type="date" class="form-control" name="fecha_inicio" value="{{ request('fecha_inicio') }}">
+                                    <select class="form-select" name="año" id="año">
+                                        @for($i = date('Y') - 2; $i <= date('Y') + 1; $i++)
+                                            <option value="{{ $i }}" {{ ($añoSeleccionado ?? date('Y')) == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
                                 <div class="input-group mb-2 mb-md-0 flex-fill me-3">
-                                    <input type="date" class="form-control" name="fecha_fin" value="{{ request('fecha_fin') }}">
+                                    <input type="date" class="form-control" name="fecha_inicio" value="{{ request('fecha_inicio') }}" placeholder="Fecha inicio">
+                                </div>
+                                <div class="input-group mb-2 mb-md-0 flex-fill me-3">
+                                    <input type="date" class="form-control" name="fecha_fin" value="{{ request('fecha_fin') }}" placeholder="Fecha fin">
                                 </div>
                                 <button type="submit" class="btn btn-secondary mb-2 mb-md-0">Buscar</button>
                             </form>
@@ -364,6 +370,8 @@
                                 <option value="boletas_pago">Boletas de Pago</option>
                                 <option value="declaracion_renta">Declaración de Renta</option>
                                 <option value="movimientos_migratorios">Movimientos Migratorios</option>
+                                <option value="certificados_migratorio_anio_actual">Certificados de Movimiento Migratorio - Año Actual</option>
+                                <option value="certificados_migratorio_anio_anterior">Certificados de Movimiento Migratorio - Año Anterior</option>
                                 <option value="bienes_inmuebles">Bienes Inmuebles</option>
                                 <option value="otros">Otros</option>
                             </select>
@@ -766,15 +774,56 @@
                     @if ($solicitud->documentosAdjuntos->count() === 0)
                         <p>No hay documentos adjuntos.</p>
                     @else
-                        <ul>
-                            @foreach ($solicitud->documentosAdjuntos as $documento)
-                                <li>
-                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" target="_blank">
-                                        Ver PDF {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de Documento</th>
+                                        <th>Archivo</th>
+                                        <th>Tamaño</th>
+                                        <th>Fecha de Subida</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($solicitud->documentosAdjuntos as $documento)
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary">
+                                                    {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-file-pdf text-danger"></i>
+                                                {{ $documento->nombre_archivo_original ?? 'Archivo' }}
+                                            </td>
+                                            <td>
+                                                @if($documento->tamaño_archivo)
+                                                    {{ number_format($documento->tamaño_archivo / 1024, 2) }} KB
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $documento->created_at->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </a>
+                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
+                                                   download
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-download"></i> Descargar
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 </div>
             </div>

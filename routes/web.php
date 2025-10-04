@@ -116,6 +116,65 @@ Route::middleware(['auth','user-role:admin'])->group(function()
 
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::post('/admin/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+
+    // Rutas del Gestor de Contenido
+    Route::prefix('admin/gestor-contenido')->name('admin.gestor-contenido.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\GestorContenidoController::class, 'index'])->name('index');
+        Route::post('/limpiar-cache', [App\Http\Controllers\Admin\GestorContenidoController::class, 'limpiarCache'])->name('limpiar-cache');
+        Route::get('/exportar', [App\Http\Controllers\Admin\GestorContenidoController::class, 'exportar'])->name('exportar');
+        Route::post('/importar', [App\Http\Controllers\Admin\GestorContenidoController::class, 'importar'])->name('importar');
+        Route::get('/logs', [App\Http\Controllers\Admin\GestorContenidoController::class, 'logs'])->name('logs');
+    });
+
+    // Rutas de Documentos del Sistema
+    Route::resource('admin/documentos', App\Http\Controllers\Admin\DocumentoSistemaController::class)->names([
+        'index' => 'admin.documentos.index',
+        'create' => 'admin.documentos.create',
+        'store' => 'admin.documentos.store',
+        'show' => 'admin.documentos.show',
+        'edit' => 'admin.documentos.edit',
+        'update' => 'admin.documentos.update',
+        'destroy' => 'admin.documentos.destroy'
+    ]);
+    Route::post('/admin/documentos/{documento}/toggle-active', [App\Http\Controllers\Admin\DocumentoSistemaController::class, 'toggleActive'])->name('admin.documentos.toggle-active');
+
+    // Rutas de Textos Dinámicos
+    Route::resource('admin/textos', App\Http\Controllers\Admin\TextoDinamicoController::class)->names([
+        'index' => 'admin.textos.index',
+        'create' => 'admin.textos.create',
+        'store' => 'admin.textos.store',
+        'show' => 'admin.textos.show',
+        'edit' => 'admin.textos.edit',
+        'update' => 'admin.textos.update',
+        'destroy' => 'admin.textos.destroy'
+    ]);
+    Route::post('/admin/textos/{texto}/toggle-active', [App\Http\Controllers\Admin\TextoDinamicoController::class, 'toggleActive'])->name('admin.textos.toggle-active');
+    Route::post('/admin/textos/{texto}/restaurar-version/{version}', [App\Http\Controllers\Admin\TextoDinamicoController::class, 'restaurarVersion'])->name('admin.textos.restaurar-version');
+
+    // Rutas de Tokens de Activación
+    Route::resource('admin/tokens', App\Http\Controllers\Admin\TokenActivacionController::class)->names([
+        'index' => 'admin.tokens.index',
+        'create' => 'admin.tokens.create',
+        'store' => 'admin.tokens.store',
+        'show' => 'admin.tokens.show',
+        'destroy' => 'admin.tokens.destroy'
+    ]);
+    Route::post('/admin/tokens/{token}/activar', [App\Http\Controllers\Admin\TokenActivacionController::class, 'activar'])->name('admin.tokens.activar');
+    Route::post('/admin/tokens/{token}/desactivar', [App\Http\Controllers\Admin\TokenActivacionController::class, 'desactivar'])->name('admin.tokens.desactivar');
+
+    // Rutas de Tokens de Menú
+    Route::get('/admin/tokens-menu', [App\Http\Controllers\Admin\TokenMenuController::class, 'index'])->name('admin.tokens-menu.index');
+    Route::post('/admin/tokens-menu/{token}/activar', [App\Http\Controllers\Admin\TokenMenuController::class, 'activar'])->name('admin.tokens-menu.activar');
+    Route::post('/admin/tokens-menu/{token}/desactivar', [App\Http\Controllers\Admin\TokenMenuController::class, 'desactivar'])->name('admin.tokens-menu.desactivar');
+    Route::post('/admin/tokens-menu/rol/{rol}/activar', [App\Http\Controllers\Admin\TokenMenuController::class, 'activarRol'])->name('admin.tokens-menu.rol.activar');
+    Route::post('/admin/tokens-menu/rol/{rol}/desactivar', [App\Http\Controllers\Admin\TokenMenuController::class, 'desactivarRol'])->name('admin.tokens-menu.rol.desactivar');
+
+    // Rutas de Plantillas
+    Route::get('/admin/plantillas', [App\Http\Controllers\Admin\PlantillaController::class, 'index'])->name('admin.plantillas.index');
+    Route::get('/admin/plantillas/{plantilla}', [App\Http\Controllers\Admin\PlantillaController::class, 'show'])->name('admin.plantillas.show');
+    Route::post('/admin/plantillas/{plantilla}/generar', [App\Http\Controllers\Admin\PlantillaController::class, 'generar'])->name('admin.plantillas.generar');
+    Route::post('/admin/plantillas/{plantilla}/guardar', [App\Http\Controllers\Admin\PlantillaController::class, 'guardar'])->name('admin.plantillas.guardar');
+    Route::get('/admin/plantillas-api/listar', [App\Http\Controllers\Admin\PlantillaController::class, 'listar'])->name('admin.plantillas.listar');
 });
 
 Route::post('/progenitores/transfer', [EstudianteController::class, 'transferToProgenitores'])->name('progenitores.transfer');
@@ -123,6 +182,51 @@ Route::get('/estudiantes/buscar', [EstudianteController::class, 'buscar'])->name
 Route::get('/progenitores/buscar', [ProgenitorController::class, 'buscar'])->name('progenitores.buscar');
 Route::post('/setdatos', [EstudianteController::class, 'setdatos'])->name('set.datos');
 Route::get('/enviar-notificacion/{id}', [EstudianteController::class, 'notificarPorCorreoprueba']);
+
+// API para activar funcionalidades con token
+Route::post('/api/activar-funcionalidad', [App\Http\Controllers\Admin\TokenActivacionController::class, 'activarConToken'])->name('api.activar-funcionalidad');
+
+// Ruta directa para activar tokens desde URL
+Route::get('/activar/{token}', function($token) {
+    $tokenModel = \App\Models\TokenActivacion::where('token', $token)->first();
+
+    if (!$tokenModel) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Token no encontrado'
+        ], 404);
+    }
+
+    // Verificar si el token puede ser activado (no verificar si ya está activo)
+    if ($tokenModel->fecha_expiracion && $tokenModel->fecha_expiracion < now()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Token expirado'
+        ], 400);
+    }
+
+    if ($tokenModel->usos_maximos && $tokenModel->usos_actuales >= $tokenModel->usos_maximos) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Token sin usos disponibles'
+        ], 400);
+    }
+
+    // Activar el token
+    $tokenModel->update(['activo' => true]);
+    $tokenModel->usar();
+
+    // Limpiar cache
+    \Illuminate\Support\Facades\Cache::forget('menus_activos');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Token activado exitosamente',
+        'token' => $tokenModel->token,
+        'tipo' => $tokenModel->tipo,
+        'nombre' => $tokenModel->nombre
+    ]);
+});
 
 Route::get('/subirarchivo', function () {
     Storage::disk('google')->write('prueba.txt', 'probarsubida');

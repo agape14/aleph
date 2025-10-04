@@ -422,6 +422,38 @@ class EstudianteController extends Controller
             }
         }
 
+        // Certificado movimiento año actual
+        if (!$request->has('noAplicaCertificadoMovimientoAnioActualProgenitor1')) {
+            if ($request->hasFile('certificadoMovimientoAnioActualProgenitor1') && $request->file('certificadoMovimientoAnioActualProgenitor1')->isValid()) {
+                $rutaArchivo3_1 = $request->file('certificadoMovimientoAnioActualProgenitor1')->store('movimientos_migratorios_anio_actual', 'public');
+
+                // Actualizar el campo en la tabla progenitores
+                Progenitor::where('id', $progenitorId)->update([
+                    'certificado_movimiento_anio_actual' => $rutaArchivo3_1
+                ]);
+
+                \Log::info("Archivo certificadoMovimientoAnioActualProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo3_1}");
+            } else {
+                \Log::warning("No se subió el archivo certificadoMovimientoAnioActualProgenitor1 o no es válido.");
+            }
+        }
+
+        // Certificado movimiento año anterior
+        if (!$request->has('noAplicaCertificadoMovimientoAnioAnteriorProgenitor1')) {
+            if ($request->hasFile('certificadoMovimientoAnioAnteriorProgenitor1') && $request->file('certificadoMovimientoAnioAnteriorProgenitor1')->isValid()) {
+                $rutaArchivo3_2 = $request->file('certificadoMovimientoAnioAnteriorProgenitor1')->store('movimientos_migratorios_anio_anterior', 'public');
+
+                // Actualizar el campo en la tabla progenitores
+                Progenitor::where('id', $progenitorId)->update([
+                    'certificado_movimiento_anio_anterior' => $rutaArchivo3_2
+                ]);
+
+                \Log::info("Archivo certificadoMovimientoAnioAnteriorProgenitor1 guardado/verificado exitosamente en: {$rutaArchivo3_2}");
+            } else {
+                \Log::warning("No se subió el archivo certificadoMovimientoAnioAnteriorProgenitor1 o no es válido.");
+            }
+        }
+
         if (!$request->has('noAplicaConstanciaBusquedaRegistrosProgenitor1')) {
             if ($request->hasFile('constanciaBusquedaRegistrosProgenitor1') && $request->file('constanciaBusquedaRegistrosProgenitor1')->isValid()) {
                 $rutaArchivo4 = $request->file('constanciaBusquedaRegistrosProgenitor1')->store('bienes_inmuebles', 'public');
@@ -528,6 +560,38 @@ class EstudianteController extends Controller
                 \Log::info("Archivo certificadoMovimientosProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo8}");
             } else {
                 \Log::warning("No se subió el archivo certificadoMovimientosProgenitor2 o no es válido.");
+            }
+        }
+
+        // Certificado movimiento año actual
+        if (!$request->has('noAplicaCertificadoMovimientoAnioActualProgenitor2')) {
+            if ($request->hasFile('certificadoMovimientoAnioActualProgenitor2') && $request->file('certificadoMovimientoAnioActualProgenitor2')->isValid()) {
+                $rutaArchivo8_1 = $request->file('certificadoMovimientoAnioActualProgenitor2')->store('movimientos_migratorios_anio_actual', 'public');
+
+                // Actualizar el campo en la tabla progenitores
+                Progenitor::where('id', $progenitorId)->update([
+                    'certificado_movimiento_anio_actual' => $rutaArchivo8_1
+                ]);
+
+                \Log::info("Archivo certificadoMovimientoAnioActualProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo8_1}");
+            } else {
+                \Log::warning("No se subió el archivo certificadoMovimientoAnioActualProgenitor2 o no es válido.");
+            }
+        }
+
+        // Certificado movimiento año anterior
+        if (!$request->has('noAplicaCertificadoMovimientoAnioAnteriorProgenitor2')) {
+            if ($request->hasFile('certificadoMovimientoAnioAnteriorProgenitor2') && $request->file('certificadoMovimientoAnioAnteriorProgenitor2')->isValid()) {
+                $rutaArchivo8_2 = $request->file('certificadoMovimientoAnioAnteriorProgenitor2')->store('movimientos_migratorios_anio_anterior', 'public');
+
+                // Actualizar el campo en la tabla progenitores
+                Progenitor::where('id', $progenitorId)->update([
+                    'certificado_movimiento_anio_anterior' => $rutaArchivo8_2
+                ]);
+
+                \Log::info("Archivo certificadoMovimientoAnioAnteriorProgenitor2 guardado/verificado exitosamente en: {$rutaArchivo8_2}");
+            } else {
+                \Log::warning("No se subió el archivo certificadoMovimientoAnioAnteriorProgenitor2 o no es válido.");
             }
         }
 

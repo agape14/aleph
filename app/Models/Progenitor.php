@@ -42,7 +42,9 @@ class Progenitor extends Model
         'credito_hipotecario',
         'direccion_vivienda',
         'm2_vivienda',
-        'cantidad_inmuebles'
+        'cantidad_inmuebles',
+        'certificado_movimiento_anio_actual',
+        'certificado_movimiento_anio_anterior'
     ];
 
     // Relación con Solicitud
