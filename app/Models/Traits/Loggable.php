@@ -25,15 +25,24 @@ trait Loggable
 
     protected function logCambio($accion, $datosAnteriores = null, $datosNuevos = null)
     {
+        // Obtener usuario ID, usar 1 como fallback para seeders
+        $usuarioId = auth()->id() ?? 1;
+
+        // Si no hay usuario autenticado, buscar el primer usuario o crear uno temporal
+        if (!$usuarioId || $usuarioId === 1) {
+            $usuario = \App\Models\User::first();
+            $usuarioId = $usuario ? $usuario->id : 1;
+        }
+
         LogContenido::create([
             'tabla_afectada' => $this->getTable(),
             'registro_id' => $this->getKey(),
             'accion' => $accion,
             'datos_anteriores' => $datosAnteriores,
             'datos_nuevos' => $datosNuevos,
-            'usuario_id' => auth()->id(),
-            'ip_address' => Request::ip(),
-            'user_agent' => Request::userAgent()
+            'usuario_id' => $usuarioId,
+            'ip_address' => Request::ip() ?? '127.0.0.1',
+            'user_agent' => Request::userAgent() ?? 'Seeder'
         ]);
     }
 }

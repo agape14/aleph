@@ -15,6 +15,9 @@ class TextosDinamicosSeeder extends Seeder
     {
         $añoActual = date('Y') + 1;
 
+        // Deshabilitar temporalmente el trait Loggable para seeders
+        TextoDinamico::unsetEventDispatcher();
+
         // Texto de declaración jurada
         TextoDinamico::create([
             'clave' => 'declaracion_jurada',
@@ -36,5 +39,8 @@ class TextosDinamicosSeeder extends Seeder
             'orden' => 2,
             'año_lectivo' => $añoActual,
         ]);
+
+        // Rehabilitar el event dispatcher
+        TextoDinamico::setEventDispatcher(app('events'));
     }
 }

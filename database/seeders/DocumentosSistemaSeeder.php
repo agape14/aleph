@@ -15,6 +15,9 @@ class DocumentosSistemaSeeder extends Seeder
     {
         $añoActual = date('Y') + 1;
 
+        // Deshabilitar temporalmente el trait Loggable para seeders
+        DocumentoSistema::unsetEventDispatcher();
+
         // Crear reglamento de becas por defecto
         DocumentoSistema::create([
             'nombre' => "Reglamento de Becas {$añoActual}",
@@ -28,5 +31,8 @@ class DocumentosSistemaSeeder extends Seeder
             'orden' => 1,
             'año_lectivo' => $añoActual,
         ]);
+
+        // Rehabilitar el event dispatcher
+        DocumentoSistema::setEventDispatcher(app('events'));
     }
 }
