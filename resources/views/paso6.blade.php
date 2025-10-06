@@ -42,10 +42,10 @@
             </div>
         </div>
         <div class="mb-3">
-            <h5 class="text-primary">3. Certificados de Movimientos Migratorios</h5>
+            <label for="certificadoMovimientosProgenitor1" class="col-sm-6 col-form-label">3. Certificados de Movimientos Migratorios</label>
         </div>
         <div class="row mb-3">
-            <label for="certificadoMovimientoAnioActualProgenitor1" class="col-sm-6 col-form-label">3.1. Certificado de movimientos migratorios del año actual ({{ date('Y') }})</label>
+            <label for="certificadoMovimientoAnioActualProgenitor1" class="col-sm-6 col-form-label">3.1. Certificado de movimientos migratorios del año actual</label>
             <div class="col-sm-6">
                 <input type="file" id="certificadoMovimientoAnioActualProgenitor1" name="certificadoMovimientoAnioActualProgenitor1" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Actual Progenitor1">
                 <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <label for="certificadoMovimientoAnioAnteriorProgenitor1" class="col-sm-6 col-form-label">3.2. Certificado de movimientos migratorios del año anterior ({{ date('Y') - 1 }})</label>
+            <label for="certificadoMovimientoAnioAnteriorProgenitor1" class="col-sm-6 col-form-label">3.2. Certificado de movimientos migratorios del año anterior</label>
             <div class="col-sm-6">
                 <input type="file" id="certificadoMovimientoAnioAnteriorProgenitor1" name="certificadoMovimientoAnioAnteriorProgenitor1" class="form-control" accept=".pdf, image/jpeg" data-name="Certificado Movimiento Año Anterior Progenitor1">
                 <small id="fileHelp" class="text-muted">Adjuntar archivo en formato <strong>PDF</strong> o <strong>JPG</strong>. El tamaño máximo de <strong>5MB</strong>. </small>
