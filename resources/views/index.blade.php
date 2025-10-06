@@ -224,7 +224,7 @@
                     const $nroDocumento = $(`#numeroDocumento_${prefix}`);
                     const tipo = $(this).val();
 
-                    $nroDocumento.val('').removeAttr('maxlength minlength pattern placeholder');
+                    $nroDocumento.val('').removeAttr('maxlength minlength pattern placeholder').removeClass('is-invalid');
 
                     switch (tipo) {
                         case 'DNI':
@@ -256,14 +256,36 @@
                 $(`#numeroDocumento_${prefix}`).on('input', function () {
                     const tipo = $(`#tipoDocumento_${prefix}`).val();
                     const value = $(this).val();
+                    const $field = $(this);
+
+                    // Limpiar validación previa
+                    $field.removeClass('is-invalid');
+                    $field[0].setCustomValidity('');
 
                     switch (tipo) {
                         case 'DNI':
+                            $(this).val(value.replace(/[^0-9]/g, ''));
+                            // Validar longitud exacta
+                            if (value && value.length !== 8) {
+                                $field.addClass('is-invalid');
+                                $field[0].setCustomValidity('El DNI debe tener exactamente 8 dígitos');
+                            }
+                            break;
                         case 'Carnet de Extranjería':
                             $(this).val(value.replace(/[^0-9]/g, ''));
+                            // Validar longitud exacta
+                            if (value && value.length !== 9) {
+                                $field.addClass('is-invalid');
+                                $field[0].setCustomValidity('El Carnet de Extranjería debe tener exactamente 9 dígitos');
+                            }
                             break;
                         case 'Pasaporte':
                             $(this).val(value.replace(/[^a-zA-Z0-9]/g, ''));
+                            // Validar longitud máxima
+                            if (value && value.length > 12) {
+                                $field.addClass('is-invalid');
+                                $field[0].setCustomValidity('El Pasaporte no puede tener más de 12 caracteres');
+                            }
                             break;
                     }
                 });
@@ -287,19 +309,284 @@
             toggleVisibilityByPrefix('Prog2', 'inmuebleSi', 'inmuebleNo', 'inmueblesDetalles');
             configureTipoDocumentoChange('Prog2');
 
+            // Validación del año de inicio laboral para Progenitor 1
             document.getElementById('anioLaboral_Prog1').addEventListener('input', function (e) {
                 const value = e.target.value;
+                const currentYear = new Date().getFullYear();
+
                 if (value.length > 4) {
                     e.target.value = value.slice(0, 4); // Limita a 4 caracteres
+                }
+
+                // Validar rango de años (coincide con min/max del HTML)
+                if (value && (parseInt(value) < 1960 || parseInt(value) > currentYear)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity(`El año debe estar entre 1960 y ${currentYear}`);
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
                 }
             });
 
+            // Validación del año de inicio laboral para Progenitor 2
             document.getElementById('anioLaboral_Prog2').addEventListener('input', function (e) {
                 const value = e.target.value;
+                const currentYear = new Date().getFullYear();
+
                 if (value.length > 4) {
                     e.target.value = value.slice(0, 4); // Limita a 4 caracteres
                 }
+
+                // Validar rango de años (coincide con min/max del HTML)
+                if (value && (parseInt(value) < 1960 || parseInt(value) > currentYear)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity(`El año debe estar entre 1960 y ${currentYear}`);
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
             });
+
+            // Validación de RUC para Progenitor 1
+            document.getElementById('nroRuc_Prog1').addEventListener('input', function (e) {
+                const value = e.target.value;
+
+                // Solo permitir números
+                e.target.value = value.replace(/[^0-9]/g, '');
+
+                // Validar longitud
+                if (value && value.length !== 11) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('El RUC debe tener exactamente 11 dígitos');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de RUC para Progenitor 2
+            document.getElementById('nroRuc_Prog2').addEventListener('input', function (e) {
+                const value = e.target.value;
+
+                // Solo permitir números
+                e.target.value = value.replace(/[^0-9]/g, '');
+
+                // Validar longitud
+                if (value && value.length !== 11) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('El RUC debe tener exactamente 11 dígitos');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de porcentaje de acciones para Progenitor 1
+            document.getElementById('acciones_Prog1').addEventListener('input', function (e) {
+                const value = parseInt(e.target.value);
+
+                // Solo permitir números
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                // Validar rango
+                if (e.target.value && (value < 1 || value > 100)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('El porcentaje debe estar entre 1 y 100');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de porcentaje de acciones para Progenitor 2
+            document.getElementById('acciones_Prog2').addEventListener('input', function (e) {
+                const value = parseInt(e.target.value);
+
+                // Solo permitir números
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                // Validar rango
+                if (e.target.value && (value < 1 || value > 100)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('El porcentaje debe estar entre 1 y 100');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de metros cuadrados de vivienda para Progenitor 1
+            document.getElementById('metros_Prog1').addEventListener('input', function (e) {
+                const value = parseFloat(e.target.value);
+
+                // Solo permitir números y un punto decimal
+                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+
+                // Validar que sea positivo
+                if (e.target.value && value <= 0) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('Los metros cuadrados deben ser un valor positivo');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de metros cuadrados de vivienda para Progenitor 2
+            document.getElementById('metros_Prog2').addEventListener('input', function (e) {
+                const value = parseFloat(e.target.value);
+
+                // Solo permitir números y un punto decimal
+                e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+
+                // Validar que sea positivo
+                if (e.target.value && value <= 0) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('Los metros cuadrados deben ser un valor positivo');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de cantidad de inmuebles para Progenitor 1
+            document.getElementById('numInmuebles_Prog1').addEventListener('input', function (e) {
+                const value = parseInt(e.target.value);
+
+                // Solo permitir números
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                // Validar rango
+                if (e.target.value && (value < 1 || value > 1000)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('La cantidad de inmuebles debe estar entre 1 y 1000');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Validación de cantidad de inmuebles para Progenitor 2
+            document.getElementById('numInmuebles_Prog2').addEventListener('input', function (e) {
+                const value = parseInt(e.target.value);
+
+                // Solo permitir números
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                // Validar rango
+                if (e.target.value && (value < 1 || value > 1000)) {
+                    e.target.classList.add('is-invalid');
+                    e.target.setCustomValidity('La cantidad de inmuebles debe estar entre 1 y 1000');
+                } else {
+                    e.target.classList.remove('is-invalid');
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Función para validar campos numéricos positivos
+            function validatePositiveNumber(inputId, fieldName) {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.addEventListener('input', function (e) {
+                        const value = parseFloat(e.target.value);
+
+                        // Solo permitir números y un punto decimal
+                        e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+
+                        // Validar que sea positivo
+                        if (e.target.value && value < 0) {
+                            e.target.classList.add('is-invalid');
+                            e.target.setCustomValidity(`${fieldName} debe ser un valor positivo o cero`);
+                        } else {
+                            e.target.classList.remove('is-invalid');
+                            e.target.setCustomValidity('');
+                        }
+                    });
+                }
+            }
+
+            // Aplicar validación a todos los campos de ingresos y gastos
+            const financialFields = [
+                {id: 'remuneracionPlanilla', name: 'Remuneración mensual'},
+                {id: 'honorariosProfesionales', name: 'Honorarios profesionales'},
+                {id: 'pensionista', name: 'Pensionista / Jubilación'},
+                {id: 'rentasInmuebles', name: 'Rentas por alquiler de inmuebles'},
+                {id: 'rentasVehiculos', name: 'Rentas por alquiler de vehículos'},
+                {id: 'otrosIngresos', name: 'Otros ingresos'},
+                {id: 'pagoColegios', name: 'Pago por colegios'},
+                {id: 'pagoTalleres', name: 'Pago por talleres'},
+                {id: 'pagoUniversidad', name: 'Pago por universidad'},
+                {id: 'pagoAlimentacion', name: 'Pago por alimentación'},
+                {id: 'pagoAlquiler', name: 'Alquiler departamento/casa'},
+                {id: 'pagoCreditoPersonal', name: 'Pago por crédito personal'},
+                {id: 'pagoCreditoHipotecario', name: 'Pago por crédito hipotecario'},
+                {id: 'pagoCreditoVehicular', name: 'Pago por crédito vehicular'},
+                {id: 'pagoServicios', name: 'Pago por servicios'},
+                {id: 'pagoMantenimiento', name: 'Pago por mantenimiento'},
+                {id: 'pagoApoyoCasa', name: 'Pago por apoyo en casa'},
+                {id: 'pagoClubes', name: 'Pago por clubes'},
+                {id: 'pagoSeguros', name: 'Pago por seguros'},
+                {id: 'pagoApoyoFamiliar', name: 'Pago por apoyo familiar'},
+                {id: 'otrosGastos', name: 'Otros gastos'},
+                {id: 'ingresos_Prog1', name: 'Ingresos mensuales Progenitor 1'},
+                {id: 'ingresos_Prog2', name: 'Ingresos mensuales Progenitor 2'}
+            ];
+
+            // Aplicar validaciones a todos los campos financieros
+            financialFields.forEach(field => {
+                validatePositiveNumber(field.id, field.name);
+            });
+
+            // Validación en tiempo real para correos electrónicos
+            function validateEmail(inputId, fieldName) {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.addEventListener('input', function (e) {
+                        const value = e.target.value;
+                        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                        if (value && !emailRegex.test(value)) {
+                            e.target.classList.add('is-invalid');
+                            e.target.setCustomValidity(`${fieldName} debe tener un formato válido (ejemplo: usuario@dominio.com)`);
+                        } else {
+                            e.target.classList.remove('is-invalid');
+                            e.target.setCustomValidity('');
+                        }
+                    });
+                }
+            }
+
+            // Aplicar validación a los correos electrónicos
+            validateEmail('correo_Prog1', 'Correo Electrónico del Progenitor 1');
+            validateEmail('correo_Prog2', 'Correo Electrónico del Progenitor 2');
+
+            // Validación de número de hijos vs hijos matriculados
+            function validateHijos(inputId, matriculadosId, fieldName) {
+                const hijosElement = document.getElementById(inputId);
+                const matriculadosElement = document.getElementById(matriculadosId);
+
+                if (hijosElement && matriculadosElement) {
+                    function validateBoth() {
+                        const hijos = parseInt(hijosElement.value) || 0;
+                        const matriculados = parseInt(matriculadosElement.value) || 0;
+
+                        if (matriculados > hijos) {
+                            matriculadosElement.classList.add('is-invalid');
+                            matriculadosElement.setCustomValidity('Los hijos matriculados no pueden ser más que el total de hijos');
+                        } else {
+                            matriculadosElement.classList.remove('is-invalid');
+                            matriculadosElement.setCustomValidity('');
+                        }
+                    }
+
+                    hijosElement.addEventListener('input', validateBoth);
+                    matriculadosElement.addEventListener('input', validateBoth);
+                }
+            }
+
+            // Aplicar validación a los campos de hijos
+            validateHijos('numeroHijos_Prog1', 'hijosMatriculados_Prog1', 'Progenitor 1');
+            validateHijos('numeroHijos_Prog2', 'hijosMatriculados_Prog2', 'Progenitor 2');
         </script>
 
         <script>
@@ -417,11 +704,11 @@
 
                         // Validar formato de correo si es un campo tipo email
                         if ($field.attr('type') === 'email') {
-                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar email
+                            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Expresión regular mejorada para validar email
                             if (!emailRegex.test(value)) {
                                 isValid = false;
                                 const fieldName = $field.attr('data-name') || 'Correo Electrónico';
-                                errorMessages.push(`- ${fieldName} tiene un formato inválido.`);
+                                errorMessages.push(`- ${fieldName} tiene un formato inválido. Debe ser un correo válido (ejemplo: usuario@dominio.com).`);
                                 $field.addClass('is-invalid'); // Marcar correo como inválido
                             } else {
                                 $field.removeClass('is-invalid'); // Remover error si el formato es correcto
@@ -580,12 +867,7 @@
                     }else {
                         $('#prev-btn').attr('disabled', false);
                     }
-                    // Avanzar al siguiente paso si todo es válido
-                    // Solo ocultar el paso actual si NO estamos en el paso 6 (último paso)
-                    if (currentStep !== 6) {
-                        $(`#validacionpaso${currentStep}`).addClass('d-none');
-                        $(`#validacionpaso${nextStep}`).removeClass('d-none');
-                    }
+                    // Validaciones específicas ANTES de ocultar el paso actual
                     if (currentStep === 2) { // Validación para el paso 2
                         const $idestudiante = $('#id_estudiante').val();
                         const selectedOption = $('input[name="viveConProgenitores"]:checked').val();
@@ -620,6 +902,43 @@
                             });
                             return;
                         }
+                    }
+
+                    if (currentStep === 3) { // Validación para el paso 3 (Progenitor 1)
+                        const anioLaboral = $('#anioLaboral_Prog1').val();
+                        const currentYear = new Date().getFullYear();
+
+                        if (anioLaboral && (parseInt(anioLaboral) < 1960 || parseInt(anioLaboral) > currentYear)) {
+                            $('#anioLaboral_Prog1').addClass('is-invalid');
+                            toastr.error(`El año de inicio laboral debe estar entre 1960 y ${currentYear}.`, 'Error de validación', {
+                                positionClass: 'toast-bottom-right',
+                                closeButton: true,
+                                timeOut: 8000,
+                            });
+                            return;
+                        }
+                    }
+
+                    if (currentStep === 4) { // Validación para el paso 4 (Progenitor 2)
+                        const anioLaboral = $('#anioLaboral_Prog2').val();
+                        const currentYear = new Date().getFullYear();
+
+                        if (anioLaboral && (parseInt(anioLaboral) < 1960 || parseInt(anioLaboral) > currentYear)) {
+                            $('#anioLaboral_Prog2').addClass('is-invalid');
+                            toastr.error(`El año de inicio laboral debe estar entre 1960 y ${currentYear}.`, 'Error de validación', {
+                                positionClass: 'toast-bottom-right',
+                                closeButton: true,
+                                timeOut: 8000,
+                            });
+                            return;
+                        }
+                    }
+
+                    // Avanzar al siguiente paso si todo es válido
+                    // Solo ocultar el paso actual si NO estamos en el paso 6 (último paso)
+                    if (currentStep !== 6) {
+                        $(`#validacionpaso${currentStep}`).addClass('d-none');
+                        $(`#validacionpaso${nextStep}`).removeClass('d-none');
                     }
 
                     if (currentStep === 6) {
