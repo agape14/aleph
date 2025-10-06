@@ -228,6 +228,32 @@ Route::get('/activar/{token}', function($token) {
     ]);
 });
 
+// Ruta directa para desactivar tokens desde URL
+Route::get('/desactivar/{token}', function($token) {
+    $tokenModel = \App\Models\TokenActivacion::where('token', $token)->first();
+
+    if (!$tokenModel) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Token no encontrado'
+        ], 404);
+    }
+
+    // Desactivar el token
+    $tokenModel->update(['activo' => false]);
+
+    // Limpiar cache
+    \Illuminate\Support\Facades\Cache::forget('menus_activos');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Token desactivado exitosamente',
+        'token' => $tokenModel->token,
+        'tipo' => $tokenModel->tipo,
+        'nombre' => $tokenModel->nombre
+    ]);
+});
+
 Route::get('/subirarchivo', function () {
     Storage::disk('google')->write('prueba.txt', 'probarsubida');
     return "Archivo subido con éxito 🚀";
