@@ -175,6 +175,15 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::post('/admin/plantillas/{plantilla}/generar', [App\Http\Controllers\Admin\PlantillaController::class, 'generar'])->name('admin.plantillas.generar');
     Route::post('/admin/plantillas/{plantilla}/guardar', [App\Http\Controllers\Admin\PlantillaController::class, 'guardar'])->name('admin.plantillas.guardar');
     Route::get('/admin/plantillas-api/listar', [App\Http\Controllers\Admin\PlantillaController::class, 'listar'])->name('admin.plantillas.listar');
+
+    // Rutas de Gestor de Logs
+    Route::prefix('admin/logs')->name('admin.logs.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\LogManagerController::class, 'index'])->name('index');
+        Route::post('/copiar', [App\Http\Controllers\Admin\LogManagerController::class, 'copiar'])->name('copiar');
+        Route::post('/ver', [App\Http\Controllers\Admin\LogManagerController::class, 'ver'])->name('ver');
+        Route::post('/eliminar', [App\Http\Controllers\Admin\LogManagerController::class, 'eliminar'])->name('eliminar');
+        Route::get('/descargar/{fileName}', [App\Http\Controllers\Admin\LogManagerController::class, 'descargar'])->name('descargar');
+    });
 });
 
 Route::post('/progenitores/transfer', [EstudianteController::class, 'transferToProgenitores'])->name('progenitores.transfer');
