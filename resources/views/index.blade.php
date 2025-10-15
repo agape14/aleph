@@ -942,6 +942,11 @@
                     }
 
                     if (currentStep === 6) {
+                        // Validar tamaño de archivos antes de enviar
+                        if (!validarTamañoArchivos()) {
+                            return; // Detener el envío si los archivos son demasiado grandes
+                        }
+
                         // Recolectar y enviar todos los formularios
                         let formData = new FormData($('#frmSolicitud')[0]);
                         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
@@ -1260,6 +1265,76 @@
                         });
                     }
                 }, 1000);
+
+                // Función para validar el tamaño de los archivos
+                function validarTamañoArchivos() {
+                    const maxFileSize = 5 * 1024 * 1024; // 5MB por archivo
+                    const maxTotalSize = 100 * 1024 * 1024; // 100MB total
+                    let totalSize = 0;
+                    let archivosGrandes = [];
+
+                    // Obtener todos los inputs de archivo
+                    const fileInputs = document.querySelectorAll('input[type="file"]');
+
+                    for (let input of fileInputs) {
+                        if (input.files && input.files.length > 0) {
+                            for (let file of input.files) {
+                                totalSize += file.size;
+
+                                // Verificar tamaño individual
+                                if (file.size > maxFileSize) {
+                                    archivosGrandes.push({
+                                        nombre: file.name,
+                                        tamaño: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+                                        campo: input.getAttribute('data-name') || input.name
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Verificar tamaño total
+                    if (totalSize > maxTotalSize) {
+                        Swal.fire({
+                            title: '¡Formulario Demasiado Grande!',
+                            html: `
+                                <div class="text-start">
+                                    <p>El tamaño total de los archivos (${(totalSize / (1024 * 1024)).toFixed(2)} MB) excede el límite permitido (100 MB).</p>
+                                    <p><strong>Recomendaciones:</strong></p>
+                                    <ul>
+                                        <li>Comprime los archivos PDF antes de subirlos</li>
+                                        <li>Usa imágenes JPG en lugar de PNG</li>
+                                        <li>Sube menos archivos a la vez</li>
+                                    </ul>
+                                </div>
+                            `,
+                            icon: 'warning',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#d33'
+                        });
+                        return false;
+                    }
+
+                    // Verificar archivos individuales grandes
+                    if (archivosGrandes.length > 0) {
+                        let mensaje = 'Los siguientes archivos exceden el límite de 5MB:\n\n';
+                        archivosGrandes.forEach(archivo => {
+                            mensaje += `• ${archivo.nombre} (${archivo.tamaño}) - ${archivo.campo}\n`;
+                        });
+                        mensaje += '\nPor favor, comprime estos archivos antes de subirlos.';
+
+                        Swal.fire({
+                            title: '¡Archivos Demasiado Grandes!',
+                            text: mensaje,
+                            icon: 'warning',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#d33'
+                        });
+                        return false;
+                    }
+
+                    return true;
+                }
             });
         </script>
         <!-- end container -->

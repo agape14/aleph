@@ -289,3 +289,12 @@ Route::get('/test-maintenance-activate', function () {
     }
     return response()->json(['message' => 'Esta ruta solo está disponible en modo local']);
 });
+
+// Ruta temporal para ver la página de error 413
+Route::get('/test-error-413', function () {
+    return response()->view('errors.413', [
+        'max_size' => '100 MB',
+        'current_size' => '150 MB'
+    ], 413);
+});
+
