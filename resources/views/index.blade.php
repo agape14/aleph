@@ -642,6 +642,15 @@
                     }, 100);
 
                     console.log('currentSteppp',currentStep);
+
+                    // Reglas específicas para el Paso 2: limpiar y exigir selección de estudiante
+                    if (currentStep === 2) {
+                        if (!window.__paso2Initialized) {
+                            resetPaso2Fields();
+                            window.__paso2Initialized = true;
+                        }
+                        updatePaso2UI();
+                    }
                 }
 
                 // Función para enfocar el primer campo del paso actual
@@ -659,6 +668,35 @@
                                 nextField.focus();
                             }
                         }
+                    }
+                }
+
+                // Limpia los campos del estudiante para forzar una búsqueda y selección correcta
+                function resetPaso2Fields() {
+                    $('#id_estudiante').val('');
+                    $('#nombres').val('');
+                    $('#apellidos').val('');
+                    $('#codigo_sianet').val('');
+                }
+
+                // Controla el estado del botón y el mensaje en Paso 2
+                function updatePaso2UI() {
+                    if (currentStep !== 2) return;
+
+                    const hasStudent = !!$('#id_estudiante').val();
+                    $('#next-btn').prop('disabled', !hasStudent);
+
+                    // Insertar mensaje si no existe
+                    let $msg = $('#msg-id-estudiante');
+                    if ($msg.length === 0) {
+                        const $anchor = $('#codigo_sianet').closest('.mb-3');
+                        $msg = $('<div id="msg-id-estudiante" class="text-danger small mt-1"></div>');
+                        $anchor.after($msg);
+                    }
+                    if (!hasStudent) {
+                        $msg.text('Debe buscar y seleccionar un estudiante antes de continuar.').removeClass('d-none');
+                    } else {
+                        $msg.text('').addClass('d-none');
                     }
                 }
 
@@ -1134,6 +1172,8 @@
                                 $('#nombres').val(response.data.nombres);
                                 $('#apellidos').val(response.data.apellidos);
                                 $('#codigo_sianet').val(response.data.codigo_sianet);
+                                // Actualizar UI del paso 2
+                                updatePaso2UI();
                                 toastr.success('Se obtuvieron los datos del estudiante, correctamente.', 'Éxito', {
                                     positionClass: 'toast-bottom-right',
                                     closeButton: true,
@@ -1163,6 +1203,19 @@
                                 });
                         }
                     });
+                });
+
+                // Si cambia el tipo o número de documento, limpiar selección y deshabilitar avance
+                $('#tipoDocumento').on('change', function() {
+                    resetPaso2Fields();
+                    updatePaso2UI();
+                });
+                $('#nroDocumento').on('input', function() {
+                    resetPaso2Fields();
+                    updatePaso2UI();
+                });
+                $('#id_estudiante').on('change input', function(){
+                    updatePaso2UI();
                 });
 
             // Selecciona todos los inputs numéricos relacionados con ingresos

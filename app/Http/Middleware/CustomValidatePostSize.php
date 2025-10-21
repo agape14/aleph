@@ -23,8 +23,11 @@ class CustomValidatePostSize
             $maxSize = 100 * 1024 * 1024; // 100MB
         }
 
-        // Verificar el tamaño del contenido
+        // Verificar el tamaño del contenido (header y server var)
         $contentLength = $request->header('content-length');
+        if (!$contentLength) {
+            $contentLength = $request->server('CONTENT_LENGTH');
+        }
 
         if ($contentLength && $contentLength > $maxSize) {
             // Si es una petición AJAX, devolver JSON
@@ -42,7 +45,16 @@ class CustomValidatePostSize
                 ], 413);
             }
 
-            // Para peticiones normales, mostrar página de error
+            // Para peticiones normales, mostrar página de error o JSON si se espera
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'error' => 'Payload Too Large',
+                    'message' => 'El formulario es demasiado grande. Por favor, reduce el tamaño de los archivos.',
+                    'max_size' => $this->formatBytes($maxSize),
+                    'current_size' => $this->formatBytes($contentLength)
+                ], 413);
+            }
+
             return response()->view('errors.413', [
                 'max_size' => $this->formatBytes($maxSize),
                 'current_size' => $this->formatBytes($contentLength)

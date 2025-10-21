@@ -136,13 +136,64 @@ class EstudianteController extends Controller
 
         try {
 
+            // Diagnóstico previo: presencia de id_estudiante, tamaños y archivos
+            $contentLengthHeader = $request->header('content-length');
+            $contentLengthServer = $request->server('CONTENT_LENGTH');
+            $hasIdEstudiante = $request->has('id_estudiante');
+            $idEstudianteValue = $request->input('id_estudiante');
+            $files = $request->allFiles();
+            $filesCount = 0;
+            $filesSummary = [];
+            foreach ($files as $key => $val) {
+                if (is_array($val)) {
+                    foreach ($val as $idx => $f) {
+                        if ($f) {
+                            $filesCount++;
+                            $filesSummary[] = [
+                                'field' => $key . '[' . $idx . ']',
+                                'name' => method_exists($f, 'getClientOriginalName') ? $f->getClientOriginalName() : null,
+                                'size_bytes' => method_exists($f, 'getSize') ? $f->getSize() : null,
+                            ];
+                        }
+                    }
+                } else {
+                    $f = $val;
+                    if ($f) {
+                        $filesCount++;
+                        $filesSummary[] = [
+                            'field' => $key,
+                            'name' => method_exists($f, 'getClientOriginalName') ? $f->getClientOriginalName() : null,
+                            'size_bytes' => method_exists($f, 'getSize') ? $f->getSize() : null,
+                        ];
+                    }
+                }
+            }
+            Log::info('Diagnostico setdatos pre-validacion', [
+                'id_estudiante_present' => $hasIdEstudiante,
+                'id_estudiante_value' => $idEstudianteValue,
+                'id_estudiante_type' => gettype($idEstudianteValue),
+                'content_length_header' => $contentLengthHeader,
+                'content_length_server' => $contentLengthServer,
+                'files_count' => $filesCount,
+                'files_summary' => $filesSummary,
+            ]);
+
             $this->validateRequest($request);
             \Log::warning("Insert datos formulario: Se valido los parametros.");
             // Crear la solicitud principal
             $solicitud = $this->createSolicitud($request);
             $datosRegistrados['solicitud'] = $solicitud;
             \Log::warning("Insert datos formulario: Se registro los datos la solicitud.");
+            Log::info('Diagnostico setdatos pre-find', [
+                'id_estudiante_value' => $request->id_estudiante,
+                'id_estudiante_is_numeric' => is_numeric($request->id_estudiante),
+            ]);
             $estudiante = Estudiante::find($request->id_estudiante);
+            if (!$estudiante) {
+                \Log::error("Insert datos formulario: Estudiante no encontrado", ['id_estudiante' => $request->id_estudiante]);
+                DB::rollBack();
+                return response()->json(['message' => 'Estudiante no encontrado.'], 404);
+            }
             \Log::warning("Insert datos formulario: Estudiante encontrado");
             // Manejar datos de progenitores
             $progenitor1=$this->handleProgenitor($solicitud->id,$estudiante->id, $request, 'progenitor1');
@@ -179,7 +230,7 @@ class EstudianteController extends Controller
             DB::commit();
             $this->notificarPorCorreo($solicitud);
             return response()->json(['message' => 'Solicitud creada exitosamente.'], 201);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en setdatos:', ['error' => $e->getMessage()]);
             return response()->json([
@@ -192,20 +243,21 @@ class EstudianteController extends Controller
     private function validateRequest(Request $request)
     {
         $request->validate([
+            'id_estudiante' => 'required|exists:estudiantes,id',
             /*'solicitante_nombre' => 'required|string|max:255',
             'solicitante_apellido' => 'required|string|max:255',
             'documentos.*' => 'nullable|file|mimes:jpg,png,pdf|max:2048',*/
             'motivosBeca' => 'nullable|array',
-            'boletasPagoProgenitor1'                    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'declaracionJuradaProgenitor1'              => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'certificadoMovimientosProgenitor1'         => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'constanciaBusquedaRegistrosProgenitor1'    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'otrosDocumentosProgenitor1'                => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'boletasPagoProgenitor2'                    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'declaracionJuradaProgenitor2'              => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'certificadoMovimientosProgenitor2'         => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'constanciaBusquedaRegistrosProgenitor2'    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
-            'otrosDocumentosProgenitor2'                => 'nullable|file|mimes:pdf,jpg,jpeg|max:5242880',  // 5 MB
+            'boletasPagoProgenitor1'                    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'declaracionJuradaProgenitor1'              => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'certificadoMovimientosProgenitor1'         => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'constanciaBusquedaRegistrosProgenitor1'    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'otrosDocumentosProgenitor1'                => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'boletasPagoProgenitor2'                    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'declaracionJuradaProgenitor2'              => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'certificadoMovimientosProgenitor2'         => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'constanciaBusquedaRegistrosProgenitor2'    => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
+            'otrosDocumentosProgenitor2'                => 'nullable|file|mimes:pdf,jpg,jpeg|max:5120',  // 5 MB
         ]);
     }
 
