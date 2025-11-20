@@ -11,10 +11,52 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStartCell, WithStyles
 {
+    protected $filtros;
+
+    public function __construct($filtros = [])
+    {
+        $this->filtros = $filtros;
+    }
+
     public function collection()
     {
         // Obtener las solicitudes con las relaciones necesarias
-        $solicitudes = Solicitud::with(['estudiante', 'progenitores', 'situacionEconomica'])->get();
+        $solicitudesQuery = Solicitud::with(['estudiante', 'progenitores', 'situacionEconomica']);
+
+        // Aplicar filtro de año
+        $añoSeleccionado = $this->filtros['año'] ?? date('Y');
+        $solicitudesQuery->whereYear('created_at', $añoSeleccionado);
+
+        // Filtrar por nombres, apellidos, código SIANET o DNI
+        if (!empty($this->filtros['search'])) {
+            $search = $this->filtros['search'];
+            $solicitudesQuery->where(function ($query) use ($search) {
+                $query->whereHas('estudiante', function ($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                    ->orWhere('apepaterno', 'like', "%{$search}%")
+                    ->orWhere('apematerno', 'like', "%{$search}%")
+                    ->orWhere('nro_documento', 'like', "%{$search}%")
+                    ->orWhere('codigo_sianet', 'like', "%{$search}%");
+                })
+                ->orWhereHas('progenitores', function ($q) use ($search) {
+                    $q->where('nombres', 'like', "%{$search}%")
+                    ->orWhere('apellidos', 'like', "%{$search}%")
+                    ->orWhere('dni', 'like', "%{$search}%")
+                    ->orWhere('codigo_sianet', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filtrar por rango de fechas
+        if (!empty($this->filtros['fecha_inicio'])) {
+            $solicitudesQuery->whereDate('created_at', '>=', $this->filtros['fecha_inicio']);
+        }
+        if (!empty($this->filtros['fecha_fin'])) {
+            $solicitudesQuery->whereDate('created_at', '<=', $this->filtros['fecha_fin']);
+        }
+
+        // Ordenar por fecha de registro descendente
+        $solicitudes = $solicitudesQuery->orderBy('created_at', 'desc')->get();
         // Inicializamos el contador
         $contador = 1;
         // Mapear los datos y prepararlos para la exportación
@@ -120,6 +162,9 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
                 'OTROS GASTOS' => $solicitud->situacionEconomica->otros_gastos ?? 0,
                 'DETALLE OTROS GASTOS' => $solicitud->situacionEconomica->detalle_otros_gastos ?? '',
                 'TOTAL GASTOS' => $solicitud->situacionEconomica->total_gastos ?? 0,
+
+                'FECHA REGISTRO' => $solicitud->created_at->timezone('America/Lima')->format('d/m/Y'),
+                'HORA REGISTRO' => $solicitud->created_at->timezone('America/Lima')->format('H:i:s'),
             ];
         });
     }
@@ -226,6 +271,9 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
             'OTROS GASTOS',
             'DETALLE OTROS GASTOS',
             'TOTAL GASTOS',
+
+            'FECHA REGISTRO',
+            'HORA REGISTRO',
         ];
     }
 
@@ -236,17 +284,28 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
 
     public function styles(Worksheet $sheet)
     {
+        // Calcular dinámicamente las columnas basándose en los headings
+        $headings = $this->headings();
+        $totalColumns = count($headings);
+
+        // SOLICITUDES: 7 columnas (A-G)
+        // ALUMNOS: 6 columnas (H-M)
+        // PROGENITORES: 52 columnas (N-BQ)
+        // SITUACIÓN ECONÓMICA: 24 columnas (BR-CR)
+        // REGISTRO: 2 columnas (CS-CT)
+
         // Combinando las celdas superiores y asignando títulos
         $sheet->mergeCells('A1:G1')->setCellValue('A1', 'SOLICITUDES');
         $sheet->mergeCells('H1:M1')->setCellValue('H1', 'ALUMNOS');
         $sheet->mergeCells('N1:BQ1')->setCellValue('N1', 'PROGENITORES');
         $sheet->mergeCells('BR1:CQ1')->setCellValue('BR1', 'SITUACIÓN ECONÓMICA');
+        $sheet->mergeCells('CR1:CS1')->setCellValue('CR1', 'REGISTRO');
 
         // Obtener el número total de filas con datos
         $totalRows = count($this->collection());
 
         // Aplicando bordes solo al rango de datos con registros
-        $sheet->getStyle("A1:CQ" . ($totalRows + 2))->applyFromArray([
+        $sheet->getStyle("A1:CS" . ($totalRows + 2))->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -255,7 +314,7 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
         ]);
 
         // Alineación y negrita para los títulos agrupados
-        $sheet->getStyle('A1:CQ1')->applyFromArray([
+        $sheet->getStyle('A1:CS1')->applyFromArray([
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
@@ -267,20 +326,20 @@ class SolicitudesExport implements FromCollection, WithHeadings, WithCustomStart
         ]);
 
         // Negrita para las cabeceras
-        $sheet->getStyle('A2:CQ2')->applyFromArray([
+        $sheet->getStyle('A2:CS2')->applyFromArray([
             'font' => [
                 'bold' => true,
             ],
         ]);
-        
-       
 
-        // Ajustar el ancho de las columnas desde A2 hasta CQ2 (cabeceras)
-        $lastColumn = 'CQ2'; // Última columna para la cabecera
+
+
+        // Ajustar el ancho de las columnas desde A2 hasta CT2 (cabeceras)
+        $lastColumn = 'CS2'; // Última columna para la cabecera
         $lastRow = $totalRows + 2; // Si la fila 1 es de títulos agrupados y la fila 2 son las cabeceras
         \Log::debug('Last column: ' . $lastColumn);
         \Log::debug('Last column (encoded): ' . mb_detect_encoding($lastColumn));
-        
+
         // Ajuste de tamaño automático de columnas solo para las cabeceras (A2:CQ2)
         /*
         foreach (range('A', $lastColumn) as $columnID) {

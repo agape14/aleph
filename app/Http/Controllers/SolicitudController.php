@@ -28,7 +28,7 @@ class SolicitudController extends Controller
         return redirect()->back()->with('success', 'Estado actualizado correctamente.');
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
         // Obtener la fecha y hora actual en el formato deseado: YYYYMMDD_HHMMSS
         $timestamp = now()->format('Ymd_His');
@@ -36,8 +36,16 @@ class SolicitudController extends Controller
         // Generar el nombre del archivo concatenando la fecha y hora
         $fileName = 'solicitudes_' . $timestamp . '.xlsx';
 
-        // Descargar el archivo Excel con el nombre generado
-        return Excel::download(new SolicitudesExport, $fileName);
+        // Preparar los filtros desde el request
+        $filtros = [
+            'search' => $request->input('search'),
+            'año' => $request->input('año', date('Y')),
+            'fecha_inicio' => $request->input('fecha_inicio'),
+            'fecha_fin' => $request->input('fecha_fin'),
+        ];
+
+        // Descargar el archivo Excel con el nombre generado y los filtros aplicados
+        return Excel::download(new SolicitudesExport($filtros), $fileName);
     }
 
     public function exportPDF()

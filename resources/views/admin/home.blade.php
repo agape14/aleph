@@ -153,7 +153,7 @@
                                     Exportar
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ route('solicitudes.exportExcel') }}">Exportar a Excel</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('solicitudes.exportExcel', request()->query()) }}">Exportar a Excel</a></li>
                                     {{--<li><a class="dropdown-item" href="{{ route('solicitudes.exportPDF') }}">Exportar a PDF</a></li>--}}
                                 </ul>
                             </div>
