@@ -210,7 +210,14 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($solicitud->documentosAdjuntos->count() === 0)
+                                        @php
+                                            $tieneDocumentosAdjuntos = $solicitud->documentosAdjuntos->count() > 0;
+                                            $tieneCertificadosProgenitores = $solicitud->progenitores->filter(function($progenitor) {
+                                                return !empty($progenitor->certificado_movimiento_anio_actual) || !empty($progenitor->certificado_movimiento_anio_anterior);
+                                            })->isNotEmpty();
+                                            $tieneDocumentos = $tieneDocumentosAdjuntos || $tieneCertificadosProgenitores;
+                                        @endphp
+                                        @if (!$tieneDocumentos)
                                             <span class="badge bg-danger">{{ strtoupper(str_replace('_', ' ', ' Sin Adjuntos')) }}</span>
                                         @else
                                             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAdjuntos{{ $solicitud->id }}">
@@ -771,7 +778,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    @if ($solicitud->documentosAdjuntos->count() === 0)
+                    @php
+                        $tieneDocumentosAdjuntos = $solicitud->documentosAdjuntos->count() > 0;
+                        $tieneCertificadosProgenitores = $solicitud->progenitores->filter(function($progenitor) {
+                            return !empty($progenitor->certificado_movimiento_anio_actual) || !empty($progenitor->certificado_movimiento_anio_anterior);
+                        })->isNotEmpty();
+                    @endphp
+
+                    @if (!$tieneDocumentosAdjuntos && !$tieneCertificadosProgenitores)
                         <p>No hay documentos adjuntos.</p>
                     @else
                         <div class="table-responsive">
@@ -779,6 +793,7 @@
                                 <thead>
                                     <tr>
                                         <th>Tipo de Documento</th>
+                                        <th>Progenitor</th>
                                         <th>Archivo</th>
                                         <th>Tamaño</th>
                                         <th>Fecha de Subida</th>
@@ -794,14 +809,29 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                @if($documento->progenitor_id)
+                                                    <span class="badge bg-info">Progenitor {{ $documento->progenitor_id }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Estudiante</span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 <i class="fas fa-file-pdf text-danger"></i>
-                                                {{ $documento->nombre_archivo_original ?? 'Archivo' }}
+                                                {{ $documento->nombre_archivo_original ?? basename($documento->ruta_archivo) }}
                                             </td>
                                             <td>
                                                 @if($documento->tamaño_archivo)
                                                     {{ number_format($documento->tamaño_archivo / 1024, 2) }} KB
                                                 @else
-                                                    N/A
+                                                    @php
+                                                        $filePath = storage_path('app/public/' . $documento->ruta_archivo);
+                                                        $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
+                                                    @endphp
+                                                    @if($fileSize > 0)
+                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                    @else
+                                                        N/A
+                                                    @endif
                                                 @endif
                                             </td>
                                             <td>
@@ -820,6 +850,95 @@
                                                 </a>
                                             </td>
                                         </tr>
+                                    @endforeach
+
+                                    {{-- Certificados de Movimientos Migratorios de los Progenitores --}}
+                                    @foreach ($solicitud->progenitores as $progenitor)
+                                        @if(!empty($progenitor->certificado_movimiento_anio_actual))
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-success">
+                                                        CERTIFICADO MOVIMIENTO MIGRATORIO AÑO ACTUAL
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">Progenitor {{ $progenitor->id }}</span>
+                                                </td>
+                                                <td>
+                                                    <i class="fas fa-file-pdf text-danger"></i>
+                                                    {{ basename($progenitor->certificado_movimiento_anio_actual) }}
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $filePath = storage_path('app/public/' . $progenitor->certificado_movimiento_anio_actual);
+                                                        $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
+                                                    @endphp
+                                                    @if($fileSize > 0)
+                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $progenitor->updated_at->format('d/m/Y H:i') }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> Ver
+                                                    </a>
+                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
+                                                       download
+                                                       class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-download"></i> Descargar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
+
+                                        @if(!empty($progenitor->certificado_movimiento_anio_anterior))
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-success">
+                                                        CERTIFICADO MOVIMIENTO MIGRATORIO AÑO ANTERIOR
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">Progenitor {{ $progenitor->id }}</span>
+                                                </td>
+                                                <td>
+                                                    <i class="fas fa-file-pdf text-danger"></i>
+                                                    {{ basename($progenitor->certificado_movimiento_anio_anterior) }}
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $filePath = storage_path('app/public/' . $progenitor->certificado_movimiento_anio_anterior);
+                                                        $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
+                                                    @endphp
+                                                    @if($fileSize > 0)
+                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $progenitor->updated_at->format('d/m/Y H:i') }}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i> Ver
+                                                    </a>
+                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
+                                                       download
+                                                       class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-download"></i> Descargar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>
