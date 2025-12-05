@@ -165,10 +165,20 @@ class ProgenitorController extends Controller
     public function descargarDocumentos($solicitud_id)
     {
         try {
-            // Obtener la solicitud y el estudiante
-            $solicitud = Solicitud::with('estudiante', 'documentosAdjuntos')->find($solicitud_id);
+            // Obtener la solicitud con todas sus relaciones necesarias
+            $solicitud = Solicitud::with('estudiante', 'documentosAdjuntos', 'progenitores')->find($solicitud_id);
 
-            if (!$solicitud || $solicitud->documentosAdjuntos->isEmpty()) {
+            if (!$solicitud) {
+                return back()->with('error', 'Solicitud no encontrada.');
+            }
+
+            // Verificar si hay documentos adjuntos o certificados en progenitores
+            $tieneDocumentosAdjuntos = $solicitud->documentosAdjuntos->where('no_aplica', false)->isNotEmpty();
+            $tieneCertificadosProgenitores = $solicitud->progenitores->filter(function($progenitor) {
+                return !empty($progenitor->certificado_movimiento_anio_actual) || !empty($progenitor->certificado_movimiento_anio_anterior);
+            })->isNotEmpty();
+
+            if (!$tieneDocumentosAdjuntos && !$tieneCertificadosProgenitores) {
                 return back()->with('error', 'No hay documentos para esta solicitud.');
             }
 
@@ -190,13 +200,43 @@ class ProgenitorController extends Controller
                 return back()->with('error', "No se pudo crear el archivo ZIP. Error: {$result}");
             }
 
+            // Agregar documentos adjuntos de la tabla documentos_adjuntos
             foreach ($solicitud->documentosAdjuntos as $doc) {
+                // Excluir documentos marcados como "no aplica"
+                if ($doc->no_aplica) {
+                    continue;
+                }
+
                 $filePath = storage_path("app/public/{$doc->ruta_archivo}");
 
                 if (file_exists($filePath)) {
                     // Organizar por progenitor si es posible
                     $folder = $doc->progenitor_id ? "Progenitor_{$doc->progenitor_id}" : "Estudiante";
-                    $zip->addFile($filePath, "{$folder}/" . basename($doc->ruta_archivo));
+                    $nombreArchivo = basename($doc->ruta_archivo);
+                    $zip->addFile($filePath, "{$folder}/{$nombreArchivo}");
+                }
+            }
+
+            // Agregar certificados de movimientos migratorios de los progenitores
+            foreach ($solicitud->progenitores as $progenitor) {
+                $progenitorFolder = "Progenitor_{$progenitor->id}";
+
+                // Certificado de movimientos migratorios del año actual
+                if (!empty($progenitor->certificado_movimiento_anio_actual)) {
+                    $filePath = storage_path("app/public/{$progenitor->certificado_movimiento_anio_actual}");
+                    if (file_exists($filePath)) {
+                        $nombreArchivo = basename($progenitor->certificado_movimiento_anio_actual);
+                        $zip->addFile($filePath, "{$progenitorFolder}/certificado_movimiento_anio_actual_{$nombreArchivo}");
+                    }
+                }
+
+                // Certificado de movimientos migratorios del año anterior
+                if (!empty($progenitor->certificado_movimiento_anio_anterior)) {
+                    $filePath = storage_path("app/public/{$progenitor->certificado_movimiento_anio_anterior}");
+                    if (file_exists($filePath)) {
+                        $nombreArchivo = basename($progenitor->certificado_movimiento_anio_anterior);
+                        $zip->addFile($filePath, "{$progenitorFolder}/certificado_movimiento_anio_anterior_{$nombreArchivo}");
+                    }
                 }
             }
 
