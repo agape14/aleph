@@ -771,83 +771,116 @@
 
     <!-- Modal Adjuntos -->
     <div class="modal fade" id="modalAdjuntos{{ $solicitud->id }}" tabindex="-1" aria-labelledby="modalAdjuntosLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Documentos Adjuntos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-alt me-2"></i>Documentos Adjuntos - {{ $solicitud->estudiante->nombres }} {{ $solicitud->estudiante->apepaterno }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     @php
                         $tieneDocumentosAdjuntos = $solicitud->documentosAdjuntos->count() > 0;
                         $tieneCertificadosProgenitores = $solicitud->progenitores->filter(function($progenitor) {
                             return !empty($progenitor->certificado_movimiento_anio_actual) || !empty($progenitor->certificado_movimiento_anio_anterior);
                         })->isNotEmpty();
+
+                        // Función helper para obtener nombre legible del archivo
+                        $getNombreArchivo = function($tipoDocumento, $rutaArchivo) {
+                            $nombresLegibles = [
+                                'boletas_pago' => 'Boletas de Pago',
+                                'declaracion_renta' => 'Declaración de Renta',
+                                'movimientos_migratorios' => 'Movimientos Migratorios',
+                                'bienes_inmuebles' => 'Bienes Inmuebles',
+                                'otros' => 'Otros Documentos'
+                            ];
+                            $nombreBase = $nombresLegibles[$tipoDocumento] ?? 'Documento';
+                            $extension = pathinfo($rutaArchivo, PATHINFO_EXTENSION);
+                            return $nombreBase . '.' . $extension;
+                        };
                     @endphp
 
                     @if (!$tieneDocumentosAdjuntos && !$tieneCertificadosProgenitores)
-                        <p>No hay documentos adjuntos.</p>
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle me-2"></i>No hay documentos adjuntos para esta solicitud.
+                        </div>
                     @else
                         <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Tipo de Documento</th>
-                                        <th>Progenitor</th>
-                                        <th>Archivo</th>
-                                        <th>Tamaño</th>
-                                        <th>Fecha de Subida</th>
-                                        <th>Acciones</th>
+                                        <th style="min-width: 180px; max-width: 200px;">Tipo de Documento</th>
+                                        <th style="min-width: 150px;">Progenitor</th>
+                                        <th style="min-width: 200px;">Archivo</th>
+                                        <th style="width: 100px;" class="text-center">Tamaño</th>
+                                        <th style="width: 130px;" class="text-center">Fecha</th>
+                                        <th style="width: 150px;" class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($solicitud->documentosAdjuntos as $documento)
+                                        @php
+                                            $progenitor = $documento->progenitor_id ? $solicitud->progenitores->firstWhere('id', $documento->progenitor_id) : null;
+                                            $nombreProgenitor = $progenitor ? trim($progenitor->nombres . ' ' . $progenitor->apellidos) : null;
+                                        @endphp
                                         <tr>
                                             <td>
-                                                <span class="badge bg-primary">
+                                                <span class="badge bg-primary text-wrap text-start" style="line-height: 1.4; white-space: normal; word-break: break-word; display: inline-block; max-width: 100%;">
                                                     {{ strtoupper(str_replace('_', ' ', $documento->tipo_documento)) }}
                                                 </span>
                                             </td>
                                             <td>
-                                                @if($documento->progenitor_id)
-                                                    <span class="badge bg-info">Progenitor {{ $documento->progenitor_id }}</span>
+                                                @if($progenitor && $nombreProgenitor)
+                                                    <div class="d-flex flex-column">
+                                                        <span class="badge bg-info mb-1">{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</span>
+                                                        <small class="text-muted">{{ $nombreProgenitor }}</small>
+                                                    </div>
                                                 @else
                                                     <span class="badge bg-secondary">Estudiante</span>
                                                 @endif
                                             </td>
                                             <td>
-                                                <i class="fas fa-file-pdf text-danger"></i>
-                                                {{ $documento->nombre_archivo_original ?? basename($documento->ruta_archivo) }}
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-file-pdf text-danger me-2 fs-5"></i>
+                                                    <span class="text-truncate" style="max-width: 250px;" title="{{ $getNombreArchivo($documento->tipo_documento, $documento->ruta_archivo) }}">
+                                                        {{ $getNombreArchivo($documento->tipo_documento, $documento->ruta_archivo) }}
+                                                    </span>
+                                                </div>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 @if($documento->tamaño_archivo)
-                                                    {{ number_format($documento->tamaño_archivo / 1024, 2) }} KB
+                                                    <span class="badge bg-secondary">{{ number_format($documento->tamaño_archivo / 1024, 2) }} KB</span>
                                                 @else
                                                     @php
                                                         $filePath = storage_path('app/public/' . $documento->ruta_archivo);
                                                         $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
                                                     @endphp
                                                     @if($fileSize > 0)
-                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                        <span class="badge bg-secondary">{{ number_format($fileSize / 1024, 2) }} KB</span>
                                                     @else
-                                                        N/A
+                                                        <span class="text-muted">N/A</span>
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td>
-                                                {{ $documento->created_at->format('d/m/Y H:i') }}
+                                            <td class="text-center">
+                                                <small class="text-muted">{{ $documento->created_at->format('d/m/Y') }}<br>{{ $documento->created_at->format('H:i') }}</small>
                                             </td>
                                             <td>
-                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
-                                                   target="_blank"
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-eye"></i> Ver
-                                                </a>
-                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
-                                                   download
-                                                   class="btn btn-sm btn-outline-success">
-                                                    <i class="fas fa-download"></i> Descargar
-                                                </a>
+                                                <div class="d-flex gap-1 justify-content-center">
+                                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       title="Ver documento">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ asset('storage/' . $documento->ruta_archivo) }}"
+                                                       download="{{ $getNombreArchivo($documento->tipo_documento, $documento->ruta_archivo) }}"
+                                                       class="btn btn-sm btn-outline-success"
+                                                       title="Descargar documento">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -857,42 +890,53 @@
                                         @if(!empty($progenitor->certificado_movimiento_anio_actual))
                                             <tr>
                                                 <td>
-                                                    <span class="badge bg-success">
-                                                        CERTIFICADO MOVIMIENTO MIGRATORIO AÑO ACTUAL
+                                                    <span class="badge bg-success text-wrap text-start" style="line-height: 1.4; white-space: normal; word-break: break-word; display: inline-block; max-width: 100%;">
+                                                        CERTIFICADO<br>MOVIMIENTO MIGRATORIO<br>AÑO ACTUAL
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-info">Progenitor {{ $progenitor->id }}</span>
+                                                    <div class="d-flex flex-column">
+                                                        <span class="badge bg-info mb-1">{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</span>
+                                                        <small class="text-muted">{{ trim($progenitor->nombres . ' ' . $progenitor->apellidos) }}</small>
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <i class="fas fa-file-pdf text-danger"></i>
-                                                    {{ basename($progenitor->certificado_movimiento_anio_actual) }}
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-file-pdf text-danger me-2 fs-5"></i>
+                                                        <span class="text-truncate" style="max-width: 250px;" title="Certificado Movimiento Migratorio Año Actual.pdf">
+                                                            Certificado Movimiento Migratorio Año Actual.pdf
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     @php
                                                         $filePath = storage_path('app/public/' . $progenitor->certificado_movimiento_anio_actual);
                                                         $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
                                                     @endphp
                                                     @if($fileSize > 0)
-                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                        <span class="badge bg-secondary">{{ number_format($fileSize / 1024, 2) }} KB</span>
                                                     @else
-                                                        N/A
+                                                        <span class="text-muted">N/A</span>
                                                     @endif
                                                 </td>
-                                                <td>
-                                                    {{ $progenitor->updated_at->format('d/m/Y H:i') }}
+                                                <td class="text-center">
+                                                    <small class="text-muted">{{ $progenitor->updated_at->format('d/m/Y') }}<br>{{ $progenitor->updated_at->format('H:i') }}</small>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
-                                                       target="_blank"
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-eye"></i> Ver
-                                                    </a>
-                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
-                                                       download
-                                                       class="btn btn-sm btn-outline-success">
-                                                        <i class="fas fa-download"></i> Descargar
-                                                    </a>
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Ver documento">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_actual) }}"
+                                                           download="Certificado_Movimiento_Migratorio_Año_Actual.pdf"
+                                                           class="btn btn-sm btn-outline-success"
+                                                           title="Descargar documento">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endif
@@ -900,42 +944,53 @@
                                         @if(!empty($progenitor->certificado_movimiento_anio_anterior))
                                             <tr>
                                                 <td>
-                                                    <span class="badge bg-success">
-                                                        CERTIFICADO MOVIMIENTO MIGRATORIO AÑO ANTERIOR
+                                                    <span class="badge bg-success text-wrap text-start" style="line-height: 1.4; white-space: normal; word-break: break-word; display: inline-block; max-width: 100%;">
+                                                        CERTIFICADO<br>MOVIMIENTO MIGRATORIO<br>AÑO ANTERIOR
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-info">Progenitor {{ $progenitor->id }}</span>
+                                                    <div class="d-flex flex-column">
+                                                        <span class="badge bg-info mb-1">{{ $progenitor->tipo === 'progenitor1' ? 'Progenitor 1' : 'Progenitor 2' }}</span>
+                                                        <small class="text-muted">{{ trim($progenitor->nombres . ' ' . $progenitor->apellidos) }}</small>
+                                                    </div>
                                                 </td>
                                                 <td>
-                                                    <i class="fas fa-file-pdf text-danger"></i>
-                                                    {{ basename($progenitor->certificado_movimiento_anio_anterior) }}
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-file-pdf text-danger me-2 fs-5"></i>
+                                                        <span class="text-truncate" style="max-width: 250px;" title="Certificado Movimiento Migratorio Año Anterior.pdf">
+                                                            Certificado Movimiento Migratorio Año Anterior.pdf
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     @php
                                                         $filePath = storage_path('app/public/' . $progenitor->certificado_movimiento_anio_anterior);
                                                         $fileSize = file_exists($filePath) ? filesize($filePath) : 0;
                                                     @endphp
                                                     @if($fileSize > 0)
-                                                        {{ number_format($fileSize / 1024, 2) }} KB
+                                                        <span class="badge bg-secondary">{{ number_format($fileSize / 1024, 2) }} KB</span>
                                                     @else
-                                                        N/A
+                                                        <span class="text-muted">N/A</span>
                                                     @endif
                                                 </td>
-                                                <td>
-                                                    {{ $progenitor->updated_at->format('d/m/Y H:i') }}
+                                                <td class="text-center">
+                                                    <small class="text-muted">{{ $progenitor->updated_at->format('d/m/Y') }}<br>{{ $progenitor->updated_at->format('H:i') }}</small>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
-                                                       target="_blank"
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        <i class="fas fa-eye"></i> Ver
-                                                    </a>
-                                                    <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
-                                                       download
-                                                       class="btn btn-sm btn-outline-success">
-                                                        <i class="fas fa-download"></i> Descargar
-                                                    </a>
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Ver documento">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ asset('storage/' . $progenitor->certificado_movimiento_anio_anterior) }}"
+                                                           download="Certificado_Movimiento_Migratorio_Año_Anterior.pdf"
+                                                           class="btn btn-sm btn-outline-success"
+                                                           title="Descargar documento">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endif
@@ -944,6 +999,11 @@
                             </table>
                         </div>
                     @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
@@ -1209,6 +1269,88 @@
     .modal[id*="modalEditarDocumentos"].show {
         opacity: 1 !important;
         display: block !important;
+    }
+
+    /* Estilos para el modal de documentos adjuntos */
+    #modalAdjuntos .modal-dialog {
+        max-width: 95%;
+    }
+
+    #modalAdjuntos .table {
+        margin-bottom: 0;
+    }
+
+    #modalAdjuntos .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+        padding: 12px 8px;
+    }
+
+    #modalAdjuntos .table td {
+        padding: 12px 8px;
+        vertical-align: middle;
+    }
+
+    #modalAdjuntos .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    #modalAdjuntos .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    #modalAdjuntos .badge {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        font-weight: 500;
+    }
+
+    #modalAdjuntos .btn-sm {
+        padding: 4px 8px;
+        font-size: 0.875rem;
+    }
+
+    #modalAdjuntos .text-truncate {
+        display: inline-block;
+        max-width: 100%;
+    }
+
+    /* Mejora para badges de tipo de documento con múltiples líneas */
+    #modalAdjuntos .badge.text-wrap {
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Mejora para iconos de archivo */
+    #modalAdjuntos .fa-file-pdf {
+        font-size: 1.5rem;
+    }
+
+    /* Espaciado mejorado en las celdas */
+    #modalAdjuntos .table td .d-flex {
+        gap: 0.5rem;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+        #modalAdjuntos .modal-dialog {
+            max-width: 100%;
+            margin: 0.5rem;
+        }
+
+        #modalAdjuntos .table {
+            font-size: 0.8rem;
+        }
+
+        #modalAdjuntos .table th,
+        #modalAdjuntos .table td {
+            padding: 8px 4px;
+        }
     }
 </style>
 
