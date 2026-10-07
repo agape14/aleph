@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DocumentoSistema;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 
 class DocumentoSistemaController extends Controller
@@ -45,24 +44,21 @@ class DocumentoSistemaController extends Controller
             'orden' => 'integer|min:0'
         ]);
 
-        $archivo = $request->file('archivo');
-        $rutaArchivo = $archivo->store('documentos-sistema', 'public');
-
-        $documento = DocumentoSistema::create([
-            'nombre' => $request->nombre,
-            'tipo' => $request->tipo,
-            'ruta_archivo' => $rutaArchivo,
-            'nombre_archivo_original' => $archivo->getClientOriginalName(),
-            'mime_type' => $archivo->getMimeType(),
-            'tamaño_archivo' => $archivo->getSize(),
-            'descripcion' => $request->descripcion,
-            'activo' => $request->has('activo'),
-            'orden' => $request->orden ?? 0,
-            'año_lectivo' => $request->año_lectivo
-        ]);
+        $documento = DocumentoSistema::create(array_merge(
+            DocumentoSistema::guardarArchivo($request->file('archivo')),
+            [
+                'nombre' => $request->nombre,
+                'tipo' => $request->tipo,
+                'descripcion' => $request->descripcion,
+                'activo' => $request->has('activo'),
+                'orden' => $request->orden ?? 0,
+                'año_lectivo' => $request->año_lectivo
+            ]
+        ));
 
         // Limpiar cache
         Cache::forget('documentos_sistema_' . $request->año_lectivo);
+        Cache::forget('reglamento_becas_' . $request->año_lectivo);
 
         return redirect()->route('admin.documentos.index')
             ->with('success', 'Documento creado exitosamente.');
@@ -108,24 +104,15 @@ class DocumentoSistemaController extends Controller
         ];
 
         if ($request->hasFile('archivo')) {
-            // Eliminar archivo anterior
-            if ($documento->ruta_archivo) {
-                Storage::disk('public')->delete($documento->ruta_archivo);
-            }
-
-            $archivo = $request->file('archivo');
-            $rutaArchivo = $archivo->store('documentos-sistema', 'public');
-
-            $datos['ruta_archivo'] = $rutaArchivo;
-            $datos['nombre_archivo_original'] = $archivo->getClientOriginalName();
-            $datos['mime_type'] = $archivo->getMimeType();
-            $datos['tamaño_archivo'] = $archivo->getSize();
+            $documento->eliminarArchivo();
+            $datos = array_merge($datos, DocumentoSistema::guardarArchivo($request->file('archivo')));
         }
 
         $documento->update($datos);
 
         // Limpiar cache
         Cache::forget('documentos_sistema_' . $request->año_lectivo);
+        Cache::forget('reglamento_becas_' . $request->año_lectivo);
 
         return redirect()->route('admin.documentos.index')
             ->with('success', 'Documento actualizado exitosamente.');
@@ -136,16 +123,14 @@ class DocumentoSistemaController extends Controller
      */
     public function destroy(DocumentoSistema $documento)
     {
-        // Eliminar archivo físico
-        if ($documento->ruta_archivo) {
-            Storage::disk('public')->delete($documento->ruta_archivo);
-        }
-
         $añoLectivo = $documento->año_lectivo;
+
+        $documento->eliminarArchivo();
         $documento->delete();
 
         // Limpiar cache
         Cache::forget('documentos_sistema_' . $añoLectivo);
+        Cache::forget('reglamento_becas_' . $añoLectivo);
 
         return redirect()->route('admin.documentos.index')
             ->with('success', 'Documento eliminado exitosamente.');
@@ -160,6 +145,7 @@ class DocumentoSistemaController extends Controller
 
         // Limpiar cache
         Cache::forget('documentos_sistema_' . $documento->año_lectivo);
+        Cache::forget('reglamento_becas_' . $documento->año_lectivo);
 
         return response()->json([
             'success' => true,

@@ -117,6 +117,12 @@ Route::middleware(['auth','user-role:admin'])->group(function()
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::post('/admin/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
 
+    // Reglamento de becas (PDF) gestionado desde la configuración del formulario
+    Route::post('/admin/configuracion/documentos', [ConfiguracionController::class, 'storeDocumento'])->name('configuracion.documentos.store');
+    Route::put('/admin/configuracion/documentos/{documento}', [ConfiguracionController::class, 'updateDocumento'])->name('configuracion.documentos.update');
+    Route::post('/admin/configuracion/documentos/{documento}/estado', [ConfiguracionController::class, 'toggleDocumento'])->name('configuracion.documentos.toggle');
+    Route::delete('/admin/configuracion/documentos/{documento}', [ConfiguracionController::class, 'destroyDocumento'])->name('configuracion.documentos.destroy');
+
     // Rutas del Gestor de Contenido
     Route::prefix('admin/gestor-contenido')->name('admin.gestor-contenido.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\GestorContenidoController::class, 'index'])->name('index');

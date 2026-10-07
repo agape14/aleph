@@ -37,13 +37,17 @@ class ConfiguracionController extends Controller
         // Obtener datos dinámicos con cache
         $añoActual = date('Y') + 1;
 
-        // Obtener reglamento de becas dinámico con cache
+        // Obtener reglamento de becas dinámico con cache: el último PDF subido para el año lectivo
         $reglamentoBecas = Cache::remember('reglamento_becas_' . $añoActual, 3600, function () use ($añoActual) {
             return DocumentoSistema::activos()
-                ->porTipo('reglamento')
-                ->porAñoLectivo($añoActual)
-                ->orderBy('orden')
-                ->first();
+                    ->porTipo('reglamento')
+                    ->porAñoLectivo($añoActual)
+                    ->masReciente()
+                    ->first()
+                ?? DocumentoSistema::activos()
+                    ->porTipo('reglamento')
+                    ->masReciente()
+                    ->first();
         });
 
         // Obtener textos dinámicos del paso 1 con cache
@@ -67,7 +71,13 @@ class ConfiguracionController extends Controller
 
     public function index() {
         $config = Configuracion::where('nombre', 'registro_solicitud')->first();
-        return view('admin.configuracion', compact('config'));
+        $añoActual = date('Y') + 1;
+
+        $documentos = DocumentoSistema::porTipo('reglamento')
+            ->masReciente()
+            ->get();
+
+        return view('admin.configuracion', compact('config', 'documentos', 'añoActual'));
     }
 
     public function update(Request $request) {
@@ -93,4 +103,108 @@ class ConfiguracionController extends Controller
         return redirect()->route('configuracion.index')->with('success', 'Configuración actualizada correctamente.');
     }
 
+    public function storeDocumento(Request $request)
+    {
+        $datos = $request->validateWithBag('documento', [
+            'nombre' => 'required|string|max:255',
+            'año_lectivo' => 'required|integer|min:2020|max:2100',
+            'descripcion' => 'nullable|string|max:1000',
+            'archivo' => 'required|file|mimes:pdf|mimetypes:application/pdf|max:10240',
+        ], [
+            'archivo.mimes' => 'El archivo debe ser un PDF.',
+            'archivo.mimetypes' => 'El archivo debe ser un PDF.',
+            'archivo.max' => 'El PDF no puede superar los 10 MB.',
+        ]);
+
+        DocumentoSistema::create(array_merge(
+            DocumentoSistema::guardarArchivo($request->file('archivo')),
+            [
+                'nombre' => $datos['nombre'],
+                'tipo' => 'reglamento',
+                'descripcion' => $datos['descripcion'] ?? null,
+                'activo' => true,
+                'orden' => 0,
+                'año_lectivo' => $datos['año_lectivo'],
+            ]
+        ));
+
+        $this->limpiarCacheDocumentos($datos['año_lectivo']);
+
+        return redirect()->route('configuracion.index')
+            ->with('success', 'Reglamento subido correctamente. Ya se muestra en el formulario.');
+    }
+
+    public function updateDocumento(Request $request, DocumentoSistema $documento)
+    {
+        $datos = $request->validateWithBag('documentoEdit', [
+            'nombre' => 'required|string|max:255',
+            'año_lectivo' => 'required|integer|min:2020|max:2100',
+            'descripcion' => 'nullable|string|max:1000',
+            'archivo' => 'nullable|file|mimes:pdf|mimetypes:application/pdf|max:10240',
+        ], [
+            'archivo.mimes' => 'El archivo debe ser un PDF.',
+            'archivo.mimetypes' => 'El archivo debe ser un PDF.',
+            'archivo.max' => 'El PDF no puede superar los 10 MB.',
+        ]);
+
+        $añoAnterior = $documento->año_lectivo;
+
+        $atributos = [
+            'nombre' => $datos['nombre'],
+            'descripcion' => $datos['descripcion'] ?? null,
+            'activo' => $request->boolean('activo'),
+            'año_lectivo' => $datos['año_lectivo'],
+        ];
+
+        if ($request->hasFile('archivo')) {
+            $documento->eliminarArchivo();
+            $atributos = array_merge($atributos, DocumentoSistema::guardarArchivo($request->file('archivo')));
+        }
+
+        $documento->update($atributos);
+
+        $this->limpiarCacheDocumentos($añoAnterior, $documento->año_lectivo);
+
+        return redirect()->route('configuracion.index')
+            ->with('success', 'Reglamento actualizado correctamente.');
+    }
+
+    public function toggleDocumento(DocumentoSistema $documento)
+    {
+        $documento->update(['activo' => !$documento->activo]);
+
+        $this->limpiarCacheDocumentos($documento->año_lectivo);
+
+        return redirect()->route('configuracion.index')
+            ->with('success', $documento->activo
+                ? 'Reglamento activado correctamente.'
+                : 'Reglamento desactivado correctamente.');
+    }
+
+    public function destroyDocumento(DocumentoSistema $documento)
+    {
+        $año = $documento->año_lectivo;
+
+        $documento->eliminarArchivo();
+        $documento->delete();
+
+        $this->limpiarCacheDocumentos($año);
+
+        return redirect()->route('configuracion.index')
+            ->with('success', 'Reglamento eliminado correctamente.');
+    }
+
+    /**
+     * El reglamento mostrado en el formulario se cachea por año lectivo,
+     * por lo que hay que invalidar tanto el año afectado como el vigente.
+     */
+    private function limpiarCacheDocumentos(...$años): void
+    {
+        $claves = array_unique(array_filter(array_merge($años, [date('Y'), date('Y') + 1])));
+
+        foreach ($claves as $año) {
+            Cache::forget('reglamento_becas_' . $año);
+            Cache::forget('documentos_sistema_' . $año);
+        }
+    }
 }
